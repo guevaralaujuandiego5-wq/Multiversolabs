@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aplicaciones y Entretenimiento — MultiversoLabs</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
+       ========================================================================== */
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.65);
+      --glass-border: rgba(56, 189, 248, 0.18);
+      --glass-highlight: rgba(56, 189, 248, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-coffee: #f59e0b;
+      --modal-backdrop: rgba(3, 6, 17, 0.85);
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(2, 132, 199, 0.2);
+      --glass-highlight: rgba(2, 132, 199, 0.3);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-coffee: #d97706;
+      --modal-backdrop: rgba(226, 232, 240, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      transition: color 0.4s ease;
+    }
+
+    /* ==========================================================================
+       FONDO DINÁMICO HOLOGRÁFICO (VIVO)
+       ========================================================================== */
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: 
+        radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 20s ease infinite alternate;
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* ==========================================================================
+       BARRA DE NOTICIAS / TICKER SUPERIOR
+       ========================================================================== */
+    .news-ticker {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(244, 63, 94, 0.12));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 8px 20px;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .news-badge {
+      background: var(--accent-cyan);
+      color: #000;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .close-ticker {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* ==========================================================================
+       HEADER Y NAVEGACIÓN UNIVERSAL
+       ========================================================================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    /* Simulador Cubo 3D / Núcleo Central Animado */
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .admin-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--glass-highlight);
+      transform: translateY(-1px);
+    }
+
+    .btn-coffee-bar {
+      border-color: rgba(245, 158, 11, 0.45);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.05));
+    }
+
+    .btn-coffee-bar:hover {
+      border-color: var(--accent-coffee);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+    }
+
+    /* ==========================================================================
+       CONTENIDO PRINCIPAL Y TARJETAS DE JUEGOS
+       ========================================================================== */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 5% 80px;
+    }
+
+    .division-header {
+      margin-bottom: 48px;
+    }
+
+    .division-tag {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .division-header h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 14px;
+    }
+
+    .division-header p {
+      color: var(--text-secondary);
+      max-width: 680px;
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+    }
+
+    .project-card {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 30px;
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        var(--glass-highlight),
+        transparent 40%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent-cyan);
+    }
+
+    .project-card:hover::before {
+      opacity: 1;
+    }
+
+    .status-pill {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-cyan);
+      margin-bottom: 18px;
+      width: fit-content;
+    }
+
+    .project-card h2 {
+      font-size: 1.45rem;
+      margin-bottom: 12px;
+    }
+
+    .project-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 28px;
+    }
+
+    .btn-launch {
+      width: 100%;
+      padding: 13px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-cyan);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(244, 63, 94, 0.15));
+      color: var(--text-primary);
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      display: block;
+    }
+
+    .btn-launch:hover {
+      background: var(--accent-cyan);
+      color: #050811;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.45);
+    }
+
+    /* ==========================================================================
+       MODAL CONDICIONAL DE MECENAZGO (1 VEZ POR SESIÓN SI NO ESTÁ SUSCRITO)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: var(--modal-backdrop);
+      backdrop-filter: blur(14px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-window {
+      max-width: 460px;
+      width: 100%;
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(17, 24, 39, 0.88));
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      color: #f8fafc;
+      transform: scale(0.95);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    [data-theme="light"] .modal-window {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.95));
+      color: #0f172a;
+    }
+
+    .modal-overlay.active .modal-window {
+      transform: scale(1);
+    }
+
+    .modal-window h3 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-window p {
+      font-size: 0.94rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      flex-direction: column;
+    }
+
+    @media (min-width: 480px) {
+      .modal-actions {
+        flex-direction: row;
+      }
+    }
+
+    .btn-accept-coffee {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-accept-coffee:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-skip-coffee {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-skip-coffee:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* ==========================================================================
+       FOOTER INSTITUCIONAL OBLIGATORIO
+       ========================================================================== */
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo vivo holográfico y partículas -->
+  <div class="living-background"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Barra de Noticias / Ticker Superior -->
+  <div class="news-ticker" id="newsTicker">
+    <div>
+      <span class="news-badge">MultiversoLabs</span>
+      <span>División de Aplicaciones y Entretenimiento activa. Servidores de juego en línea.</span>
+    </div>
+    <button class="close-ticker" onclick="document.getElementById('newsTicker').style.display='none'" title="Cerrar">&times;</button>
+  </div>
+
+  <!-- Header / Barra de Navegación Universal -->
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport" title="Volver al Inicio">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.95rem; letter-spacing: 0.5px;">MULTIVERSOLABS</strong>
+        <div style="font-size: 0.7rem; color: var(--text-secondary);">División Entretenimiento</div>
+      </div>
+    </a>
+
+    <div class="admin-controls">
+      <a href="https://www.buymeacoffee.com/TU_USUARIO" target="_blank" rel="noopener" class="btn-glass btn-coffee-bar" id="adminCoffeeBtn">
+        <span>☕</span> Apoyar Servidores
+      </a>
+      <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="index.html" class="btn-glass">← Volver al Inicio</a>
+    </div>
+  </header>
+
+  <!-- Cuerpo Principal de la División -->
+  <main>
+    <section class="division-header">
+      <span class="division-tag">Sector 02 // Aplicaciones & Entretenimiento</span>
+      <h1>Entornos Interactivos y Simuladores</h1>
+      <p>
+        Espacio experimental dedicado al desarrollo de mecánicas de juego, simuladores espaciales y entretenimiento independiente impulsado por MultiversoLabs.
+      </p>
+    </section>
+
+    <section class="projects-grid">
+      <!-- PROYECTO 1: AJEDREZ HOLOGRÁFICO -->
+      <article class="project-card">
+        <div>
+          <span class="status-pill">● Operativo / Beta Abierta</span>
+          <h2>Ajedrez Holográfico</h2>
+          <p>
+            Simulador táctico tridimensional con proyección de piezas, control de iluminación espacial y motor lógico integrado.
+          </p>
+        </div>
+        <a href="ajedrez.html" class="btn-launch" onclick="registrarInteraccion('Ajedrez Holográfico')">
+          Iniciar Ajedrez Holográfico →
+        </a>
+      </article>
+
+      <!-- PROYECTO 2: LABERINTO CAPIBARA -->
+      <article class="project-card">
+        <div>
+          <span class="status-pill">● En Despliegue</span>
+          <h2>Laberinto Capibara</h2>
+          <p>
+            Experiencia de exploración dinámica, generación procedural de rutas y física reactiva en entornos cambiantes.
+          </p>
+        </div>
+        <a href="laberinto-capibara.html" class="btn-launch" onclick="registrarInteraccion('Laberinto Capibara')">
+          Entrar a Laberinto Capibara →
+        </a>
+      </article>
+
+      <!-- PROYECTO 3: ESPACIO LIBRE RESERVADO -->
+      <article class="project-card">
+        <div>
+          <span class="status-pill" style="color: var(--accent-purple); border-color: var(--accent-purple);">◌ Módulo en Preparación</span>
+          <h2>[Proyecto Reservado]</h2>
+          <p>
+            Slot estructural preparado para la próxima aplicación interactiva o experimento lúdico de la división.
+          </p>
+        </div>
+        <a href="#" class="btn-launch" style="opacity: 0.75;" onclick="event.preventDefault(); alert('Módulo en fase de compilación.');">
+          Acceso Próximamente
+        </a>
+      </article>
+    </section>
+  </main>
+
+  <!-- VENTANA EMERGENTE CONDICIONAL (BUY ME A COFFEE - 1 VEZ POR SESIÓN) -->
+  <div class="modal-overlay" id="coffeeModal" role="dialog" aria-modal="true">
+    <div class="modal-window">
+      <h3><span>☕</span> Impulsa este Laboratorio de Juegos</h3>
+      <p>
+        Estás ingresando al área experimental de entretenimiento. Mantener estos entornos interactivos y servidores activos es un esfuerzo independiente de MultiversoLabs.
+        <br><br>
+        Si deseas apoyar el desarrollo con un café, puedes hacerlo ahora o más tarde desde el botón fijo <strong>"Apoyar Servidores"</strong> ubicado en la barra superior.
+      </p>
+      <div class="modal-actions">
+        <a href="https://www.buymeacoffee.com/TU_USUARIO" target="_blank" rel="noopener" class="btn-accept-coffee" id="acceptCoffeeBtn">
+          Aceptar e Invitar Café
+        </a>
+        <button class="btn-skip-coffee" id="skipCoffeeBtn">
+          Pasar por ahora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Institucional con Créditos Obligatorios -->
+  <footer>
+    <div>
+      <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions. Pioneering Solutions.
+    </div>
+    <div style="font-size: 0.82rem; color: var(--text-secondary);">
+      Página creada y estructurada por MultiversoLabs. <a href="index.html" style="color: var(--accent-cyan); text-decoration: none; margin-left: 8px;">Volver al Inicio →</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       1. MODO NOCTURNO / DIURNO (AUTOMÁTICO Y MANUAL)
+       ========================================================================== */
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      const hour = new Date().getHours();
+      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = rootEl.getAttribute('data-theme');
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+
+    /* ==========================================================================
+       2. LÓGICA CONDICIONAL DEL MODAL DE COFFEE (1 VEZ POR SESIÓN)
+       ========================================================================== */
+    const coffeeModal = document.getElementById('coffeeModal');
+    const skipCoffeeBtn = document.getElementById('skipCoffeeBtn');
+    const acceptCoffeeBtn = document.getElementById('acceptCoffeeBtn');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const shownThisSession = sessionStorage.getItem('coffee_modal_shown_session') === 'true';
+      const isSubscribed = localStorage.getItem('multiverso_is_subscribed') === 'true';
+
+      if (!isSubscribed && !shownThisSession) {
+        setTimeout(() => {
+          coffeeModal.classList.add('active');
+          sessionStorage.setItem('coffee_modal_shown_session', 'true');
+        }, 650);
+      }
+    });
+
+    function closeModal() {
+      coffeeModal.classList.remove('active');
+    }
+
+    skipCoffeeBtn.addEventListener('click', closeModal);
+    acceptCoffeeBtn.addEventListener('click', () => {
+      setTimeout(closeModal, 300);
+    });
+
+    /* ==========================================================================
+       3. REGISTRO DE HISTORIAL DE APLICACIONES
+       ========================================================================== */
+    function registrarInteraccion(appName) {
+      let history = JSON.parse(localStorage.getItem('recent_apps_history') || '[]');
+      history = history.filter(item => item.name !== appName);
+      history.unshift({ name: appName, date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+      localStorage.setItem('recent_apps_history', JSON.stringify(history.slice(0, 5)));
+    }
+
+    /* ==========================================================================
+       4. EFECTO SPOTLIGHT EN TARJETAS
+       ========================================================================== */
+    document.querySelectorAll('.project-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    /* ==========================================================================
+       5. PARTÍCULAS EN CANVAS
+       ========================================================================== */
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 42; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.6 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isLight = rootEl.getAttribute('data-theme') === 'light';
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
+</body>
+</html>
+
