@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juan Diego — Guía y Artista Interdisciplinario | Soberanía Interior</title>
+  <style>
+    :root {
+      --bg-primary: #09080d;
+      --bg-secondary: #12101a;
+      --card-bg: rgba(24, 20, 36, 0.78);
+      --border-subtle: rgba(217, 70, 239, 0.22);
+      --text-main: #faf5ff;
+      --text-muted: #a1a1aa;
+      --accent-warm: #f59e0b;
+      --accent-magenta: #d946ef;
+      --accent-cyan: #38bdf8;
+      /* Variables dinámicas vinculadas a la foto activa */
+      --ambient-color-1: rgba(245, 158, 11, 0.22);
+      --ambient-color-2: rgba(217, 70, 239, 0.18);
+      --ambient-tint: rgba(24, 16, 12, 0.45);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #faf8f5;
+      --bg-secondary: #f3efe8;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --border-subtle: rgba(162, 28, 175, 0.2);
+      --text-main: #18181b;
+      --text-muted: #52525b;
+      --accent-warm: #d97706;
+      --accent-magenta: #a21caf;
+      --accent-cyan: #0284c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.65;
+      overflow-x: hidden;
+      transition: background 0.6s ease, color 0.4s ease;
+    }
+
+    /* Fondo ambiental dinámico con transición opaca */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(circle at 20% 20%, var(--ambient-color-1) 0%, transparent 55%),
+        radial-gradient(circle at 80% 70%, var(--ambient-color-2) 0%, transparent 55%),
+        linear-gradient(160deg, var(--bg-primary), var(--bg-secondary));
+      transition: background 1.8s ease;
+    }
+
+    /* Capa opaca atmosférica que tiñe suavemente el fondo según la foto */
+    .ambient-opaque-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-color: var(--ambient-tint);
+      opacity: 0.55;
+      pointer-events: none;
+      transition: background-color 1.8s ease, opacity 1.8s ease;
+    }
+
+    [data-theme="light"] .ambient-opaque-layer {
+      opacity: 0.18;
+    }
+
+    /* ==========================================================================
+       PANEL 1: NOTICIAS Y ENCUENTROS ACTUALIZABLE (CERRABLE)
+       ========================================================================== */
+    .news-encuentros-bar {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(217, 70, 239, 0.18));
+      border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 12px 6%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .news-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .news-pill {
+      background: var(--accent-warm);
+      color: #000;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .news-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .news-link {
+      color: var(--accent-warm);
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 0.84rem;
+      border-bottom: 1px dashed var(--accent-warm);
+    }
+
+    .close-panel-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .close-panel-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-warm);
+    }
+
+    /* ==========================================================================
+       HEADER
+       ========================================================================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 6%;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .signature {
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dot-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-warm);
+      box-shadow: 0 0 12px var(--accent-warm);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .link-lab {
+      text-decoration: none;
+      color: var(--accent-cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 99px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: rgba(56, 189, 248, 0.08);
+      transition: all 0.25s ease;
+    }
+
+    .link-lab:hover {
+      background: rgba(56, 189, 248, 0.18);
+    }
+
+    .theme-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       HERO & GALERÍA DINÁMICA DE PAISAJES / ATARDECERES
+       ========================================================================== */
+    .hero-personal {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 45px 6% 50px;
+    }
+
+    /* Contenedor de fotos dinámicas arriba en la cara principal */
+    .hero-landscape-showcase {
+      position: relative;
+      width: 100%;
+      height: clamp(260px, 42vw, 410px);
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 36px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      background: var(--bg-secondary);
+    }
+
+    .landscape-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transform: scale(1.04);
+      transition: opacity 1.6s ease-in-out, transform 7s ease-out;
+    }
+
+    .landscape-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 1;
+    }
+
+    .landscape-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(
+        to top,
+        rgba(9, 8, 13, 0.85) 0%,
+        rgba(9, 8, 13, 0.2) 50%,
+        transparent 100%
+      );
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 28px;
+    }
+
+    .landscape-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .landscape-caption {
+      color: #faf5ff;
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .landscape-caption span {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: var(--accent-warm);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .landscape-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .landscape-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.35);
+      border: none;
+      cursor: pointer;
+      transition: all 0.35s ease;
+    }
+
+    .landscape-dot.active {
+      width: 26px;
+      background: var(--accent-warm);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--accent-warm);
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .hero-personal h1 {
+      font-size: clamp(2.2rem, 4.8vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.14;
+      margin-bottom: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-personal h1 span {
+      background: linear-gradient(120deg, var(--accent-warm), var(--accent-magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .antibiografia-box {
+      background: rgba(245, 158, 11, 0.08);
+      border-left: 4px solid var(--accent-warm);
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+    }
+
+    .antibiografia-box h2 {
+      font-size: 1.05rem;
+      color: var(--accent-warm);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .antibiografia-box .sub-anti {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .antibiografia-box p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .bio-lead {
+      font-size: 1.12rem;
+      color: var(--text-muted);
+      max-width: 820px;
+      margin-bottom: 32px;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .btn-warm {
+      background: linear-gradient(135deg, var(--accent-warm), var(--accent-magenta));
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-warm:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .btn-bmac {
+      background: #ffdd00;
+      color: #000;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-bmac:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent-warm);
+    }
+
+    /* ==========================================================================
+       SECCIONES & TARJETAS
+       ========================================================================== */
+    .section-block {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 36px 6%;
+    }
+
+    .section-heading {
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-sub {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      font-size: 0.98rem;
+    }
+
+    .disciplines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .skill-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 26px;
+      backdrop-filter: blur(14px);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-magenta);
+    }
+
+    .skill-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .skill-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .skill-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       TABLÓN DE PRÓXIMOS ENCUENTROS ACTUALIZABLE
+       ========================================================================== */
+    .encuentros-board {
+      background: var(--card-bg);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(14px);
+    }
+
+    .encuentro-item {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      padding: 20px;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .badge-cupo {
+      display: inline-block;
+      background: rgba(217, 70, 239, 0.18);
+      color: var(--accent-magenta);
+      border: 1px solid rgba(217, 70, 239, 0.4);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    /* ==========================================================================
+       PANEL 2: EMERGENTE / FIJO PARA FORMAR GRUPO (MÁXIMO 3 PERSONAS)
+       ========================================================================== */
+    .group-floating-panel {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      width: 340px;
+      max-width: calc(100vw - 32px);
+      background: var(--card-bg);
+      border: 1px solid var(--accent-warm);
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(22px);
+      z-index: 60;
+      overflow: hidden;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    .group-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 70, 239, 0.2));
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .group-panel-header span {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-warm);
+    }
+
+    .group-panel-img {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .group-panel-body {
+      padding: 16px;
+    }
+
+    .group-panel-body h4 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .group-panel-body p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .btn-group-cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(135deg, var(--accent-warm), var(--accent-magenta));
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 11px 14px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-group-cta:hover {
+      opacity: 0.92;
+    }
+
+    .reopen-group-btn {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-warm);
+      color: var(--accent-warm);
+      padding: 10px 16px;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      z-index: 55;
+      backdrop-filter: blur(14px);
+      display: none;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .story-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 22px;
+      padding: 36px;
+      margin-top: 16px;
+      backdrop-filter: blur(14px);
+    }
+
+    .story-box p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 1.02rem;
+    }
+
+    footer {
+      max-width: 1050px;
+      margin: 40px auto 0;
+      padding: 32px 6%;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora-bg"></div>
+  <div class="ambient-opaque-layer"></div>
+
+  <!-- PANEL 1: NOTICIAS Y PRÓXIMO ENCUENTRO -->
+  <div class="news-encuentros-bar" id="newsEncuentrosBar">
+    <div class="news-content">
+      <span class="news-pill">🪷Próximo Encuentro</span>
+      <span id="newsText">
+        <strong>Convivencia Elemental & Tierra:</strong> Sábado · Ubicación: Reserva Natural / Espacio Comunitario · Cupo íntimo (Máx. 3 personas).
+      </span>
+    </div>
+    <div class="news-actions">
+      <a href="#encuentros" class="news-link">Ver características →</a>
+      <button class="close-panel-btn" onclick="document.getElementById('newsEncuentrosBar').style.display='none'" title="Cerrar aviso">&times;</button>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <a href="artista.html" class="signature">
+      <span class="dot-pulse"></span>
+      <span>JUAN DIEGO // GUÍA & ARTISTA INTERDISCIPLINARIO</span>
+    </a>
+
+    <div class="nav-actions">
+      <a href="index.html" class="link-lab">MultiversoLabs</a>
+      <button class="theme-btn" id="themeToggle" title="Cambiar iluminación">🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO: GALERÍA DINÁMICA + IDENTIDAD, TRAYECTORIA & SOBERANÍA INTERIOR -->
+    <section class="hero-personal">
+      <!-- VISOR DINÁMICO DE PAISAJES Y ATARDECERES -->
+      <div class="hero-landscape-showcase" id="landscapeShowcase">
+        <div id="slidesContainer"></div>
+        <div class="landscape-overlay">
+          <div class="landscape-meta">
+            <div class="landscape-caption" id="landscapeCaption">
+              <span>Contemplación & Territorio</span>
+              Atardecer sobre la montaña — Pulso vivo de la tierra
+            </div>
+            <div class="landscape-dots" id="landscapeDots"></div>
+          </div>
+        </div>
+      </div>
+
+      <span class="eyebrow">Identidad, Trayectoria & Soberanía Interior</span>
+      <h1>Un camino de arte, código y convivencia para <span>despertar tu propia soberanía.</span></h1>
+
+      <!-- BLOQUE ANTIBIOGRAFÍA -->
+      <div class="antibiografia-box">
+        <h2>Antibiografía, Arte & Soberanía Interior</h2>
+        <div class="sub-anti">Más allá de los títulos: un camino de experiencia viva, arte y convivencia.</div>
+        <p>
+          La <strong>Antibiografía</strong> es la ruptura consciente con el currículum académico estéril. No medimos la sabiduría humana por diplomas ni jerarquías institucionales, sino por el peso real de la experiencia: las caídas, el aprendizaje en la calle, el pulso de la tierra, la convivencia comunitaria y la soberanía interior cultivada en el día a día.
+        </p>
+      </div>
+
+      <p class="bio-lead">
+        Mi nombre es <strong>Juan Diego</strong> (el avatar con el que camino este plano). Soy hijo, hermano, padre y un ser humano común que ha transitado el trabajo diario, los estudios y los desvelos reales. Mi formación nació en el margen, en el ingenio, en comunidades indígenas, en la disciplina del amanecer en el y en la unión entre arte y código.
+      </p>
+
+      <div class="cta-row">
+        <a href="#servicios" class="btn-warm">Explorar Servicios y Convivencia</a>
+        <a href="https://www.buymeacoffee.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-bmac">☕ Buy Me a Coffee</a>
+        <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-outline" style="border-color: var(--accent-magenta); color: var(--accent-magenta);">Instagram</a>
+        <a href="mailto:juandiego@multiversolabs.space?subject=Contacto%20Juan%20Diego%20--%20Soberania%20Interior" class="btn-warm">
+          ✉️ Contáctame
+        </a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN DE NOTICIAS DETALLADAS Y ENCUENTROS ACTUALIZABLES -->
+    <section class="section-block" id="encuentros">
+      <div class="encuentros-board">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h2 class="section-heading" style="margin-bottom: 4px;">🏝️ Tablón de Encuentros & Convivencia</h2>
+            <p style="color: var(--text-muted); font-size: 0.92rem;">Espacios vivos actualizables con ubicación, características y modalidad de reciprocidad.</p>
+          </div>
+          <span class="badge-cupo">Grupos reducidos · Máx. 3 personas por sesión</span>
+        </div>
+
+        <div class="encuentro-item">
+          <div>
+            <strong style="color: var(--accent-warm); display: block; font-size: 1rem;">🪔 Ubicación & Entorno</strong>
+            <span style="font-size: 0.9rem; color: var(--text-muted);">Entorno natural / Espacio de tierra y fuego (Confirmación directa al reservar).</span>
+          </div>
+          <div>
+            <strong style="color: var(--accent-magenta); display: block; font-size: 1rem;">🔥 Características de la Sesión</strong>
+            <span style="font-size: 0.9rem; color: var(--text-muted);">Cocina consciente, agua pura, silencio, movimiento corporal y diálogo sin juicios (Ley del Espejo).</span>
+          </div>
+          <div style="text-align: right;">
+            <a href="mailto:juandiego@multiversolabs.space?subject=Consulta%20Ubicacion%20Encuentro" class="btn-warm" style="display: inline-block; padding: 10px 18px; font-size: 0.88rem;">
+              Consultar Lugar y Fecha →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HABILIDADES Y OFICIOS MULTIDISCIPLINARIOS -->
+    <section class="section-block" id="habilidades">
+      <h2 class="section-heading">Habilidades & Lenguajes Interdisciplinarios</h2>
+      <p class="section-sub">Herramientas artísticas, físicas y digitales que convergen en mi labor cotidiana.</p>
+
+      <div class="disciplines-grid">
+        <div class="skill-card">
+          <span class="skill-icon">🖋️</span>
+          <h3>Tatuaje, Pirograbado e Ilustración</h3>
+          <p>Arte manual sobre piel, madera y papel. El trazo directo como canal de expresión simbólica y memoria viva.</p>
+        </div>
+
+        <div class="skill-card">
+          <span class="skill-icon">📸</span>
+          <h3>Fotografía, Escultura & Música</h3>
+          <p>Captura visual de lo orgánico, modelado de la materia y exploración sonora nacida de la sensibilidad libre.</p>
+        </div>
+
+        <div class="skill-card">
+          <span class="skill-icon">🔅</span>
+          <h3>Meditación en Movimiento</h3>
+          <p>Calistenia, artes marciales y dominio de la vara, el nunchaku y los malabares para disolver el ruido mental en el presente.</p>
+        </div>
+
+        <div class="skill-card">
+          <span class="skill-icon">🌐</span>
+          <h3>Creación de Páginas Web Personales</h3>
+          <p>Diseño y desarrollo de espacios web propios para artistas, creadores y proyectos independientes que buscan soberanía digital.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICIOS DE GUÍA, TIERRA Y CONVIVENCIA -->
+    <section class="section-block" id="servicios">
+      <h2 class="section-heading">Servicios de Guía Vivencial & Evolución Interior</h2>
+      <p class="section-sub">Acompañamiento humano basado en el respeto absoluto a tus tiempos, sin dogmas ni falsas promesas.</p>
+
+      <div class="disciplines-grid">
+        <div class="skill-card" style="border-color: var(--accent-warm);">
+          <span class="skill-icon">🌱</span>
+          <h3>Trabajo Comunitario & Tierra</h3>
+          <p>Experiencia directa cultivando la tierra, compartiendo recursos naturales y colaborando con comunidades de creadores itinerantes y medicina natural andina y amazónica.</p>
+        </div>
+
+        <div class="skill-card" style="border-color: var(--accent-magenta);">
+          <span class="skill-icon">🌅</span>
+          <h3>Disciplina de Presencia & Madrugada</h3>
+          <p>Años de inmersión en la disciplina de estas presente: el despertar antes del alba buscando la estrella de la mañana, el canto tradicional del mantra del corazón, la purificación del espacio interno y la entrega al servicio desinteresado como cimientos de la soberanía interior.</p>
+        </div>
+
+        <div class="skill-card" style="border-color: var(--accent-cyan);">
+          <span class="skill-icon">🌊</span>
+          <h3>Liberación Emocional & Cuatro Elementos</h3>
+          <p>Convivencia real con agua, fuego, tierra y aire, hábitos biológicos diarios y respeto sagrado al estancamiento ajeno sin juicios.</p>
+        </div>
+
+        <div class="skill-card" style="border-color: var(--accent-warm);">
+          <span class="skill-icon">🫂</span>
+          <h3>Conciliación Neutral & Trueque</h3>
+          <p>Mediación imparcial en conflictos (sin tomar bandos) y modelo de reciprocidad equilibrada: intercambio justo de tiempo, limón y arroz.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANIFIESTO PERSONAL -->
+    <section class="section-block" id="historia">
+      <div class="story-box">
+        <h2 class="section-heading">La Ley del Espejo y la Singularidad de tu Proceso</h2>
+        <p>
+          Todo lo que observamos afuera es un reflejo de nuestro mundo interno. No vengo a decirte que viví tu mismo dolor —porque cada sentimiento es único e incomparable—, ni a imponer una autoridad sobre ti. Aprendo de cada persona que cruza mi camino, tanto de la luz como de la sombra.
+        </p>
+        <p>
+          Asimismo, como fundador y CEO de <strong>MultiversoLabs</strong>, separo mis desarrollos tecnológicos e investigaciones en vida artificial de mi oficio personal como artista manual y guía humano. Aquí nos encontramos de igual a igual.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- PANEL 2: EMERGENTE / FIJO PARA FORMAR GRUPO (MÁXIMO 3 PERSONAS) -->
+  <aside class="group-floating-panel" id="groupFloatingPanel">
+    <div class="group-panel-header">
+      <span>🔥 Grupo de Encuentro (Máx. 3)</span>
+      <button class="close-panel-btn" onclick="toggleGroupPanel(false)" title="Cerrar panel">&times;</button>
+    </div>
+
+    <img 
+      id="groupPanelImage" 
+      class="group-panel-img" 
+      src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=700&q=80" 
+      alt="Convivencia y Naturaleza — Encuentro Juan Diego" 
+    />
+
+    <div class="group-panel-body">
+      <h4>Inicia una Sesión Grupal Íntima</h4>
+      <p>
+        Abrimos círculo de convivencia, tierra, elementos y claridad interior con un <strong>máximo de 3 personas</strong> para garantizar presencia real y profundidad.
+      </p>
+      <a href="mailto:juandiego@multiversolabs.space?subject=Solicitud%20Cupo%20Grupo%20Max%203%20Personas" class="btn-group-cta">
+        ✉️ Solicitar Cupo / Formar Grupo →
+      </a>
+    </div>
+  </aside>
+
+  <button class="reopen-group-btn" id="reopenGroupBtn" onclick="toggleGroupPanel(true)">
+    🔥 Grupo Encuentro (Máx. 3)
+  </button>
+
+  <footer>
+    <div><strong>Juan Diego — Guía y Artista Interdisciplinario</strong> &copy; 2026</div>
+    <div>Proyecto Tecnológico: <a href="index2.html" style="color: var(--accent-cyan); text-decoration: none;">MultiversoLabs.space</a> · <a href="mailto:juandiego@multiversolabs.space" style="color: var(--accent-warm); text-decoration: none;">juandiego@multiversolabs.space</a></div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       1. CONFIGURACIÓN DE FOTOS DINÁMICAS Y COLORES OPACOS DE FONDO
+       Puedes cambiar 'url' por tus fotos locales (ej: 'img/atardecer1.jpg')
+       ========================================================================== */
+    const paisajesGaleria = [
+      {
+        url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=85',
+        etiqueta: 'Atardecer Dorado',
+        descripcion: 'Horizonte cálido entre montañas — El silencio del cierre del día',
+        colorLuz1: 'rgba(245, 158, 11, 0.28)',   // Ámbar dorado
+        colorLuz2: 'rgba(217, 70, 239, 0.16)',   // Magenta crepuscular
+        tinteOpaco: 'rgba(42, 24, 10, 0.55)'     // Tono tierra/ámbar opaco
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1400&q=85',
+        etiqueta: 'Tierra & Niebla',
+        descripcion: 'Pradera y neblina al amanecer — Respiración elemental',
+        colorLuz1: 'rgba(16, 185, 129, 0.24)',   // Verde bosque profundo
+        colorLuz2: 'rgba(245, 158, 11, 0.16)',   // Luz suave del alba
+        tinteOpaco: 'rgba(12, 32, 26, 0.58)'     // Tono musgo opaco
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85',
+        etiqueta: 'Agua & Horizonte',
+        descripcion: 'Marea serena bajo luz rosada — Fluidez y presencia',
+        colorLuz1: 'rgba(56, 189, 248, 0.25)',   // Azul océano
+        colorLuz2: 'rgba(244, 114, 182, 0.20)',  // Rosa atardecer
+        tinteOpaco: 'rgba(15, 26, 42, 0.58)'     // Tono azul profundo opaco
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85',
+        etiqueta: 'Cumbre & Éter',
+        descripcion: 'Picos en penumbra violeta — Quietud y soberanía interior',
+        colorLuz1: 'rgba(168, 85, 247, 0.28)',   // Violeta místico
+        colorLuz2: 'rgba(56, 189, 248, 0.16)',   // Destello frío de altura
+        tinteOpaco: 'rgba(28, 15, 42, 0.60)'     // Tono púrpura opaco
+      }
+    ];
+
+    const slidesContainer = document.getElementById('slidesContainer');
+    const dotsContainer = document.getElementById('landscapeDots');
+    const captionEl = document.getElementById('landscapeCaption');
+    let currentSlide = 0;
+    let slideInterval;
+
+    function initGaleria() {
+      paisajesGaleria.forEach((foto, index) => {
+        // Crear imagen
+        const img = document.createElement('img');
+        img.src = foto.url;
+        img.alt = foto.descripcion;
+        img.className = 'landscape-slide' + (index === 0 ? ' active' : '');
+        slidesContainer.appendChild(img);
+
+        // Crear botón indicador
+        const dot = document.createElement('button');
+        dot.className = 'landscape-dot' + (index === 0 ? ' active' : '');
+        dot.ariaLabel = `Ver paisaje ${index + 1}`;
+        dot.addEventListener('click', () => {
+          goToSlide(index);
+          resetInterval();
+        });
+        dotsContainer.appendChild(dot);
+      });
+
+      aplicarAtmosfera(0);
+      startInterval();
+    }
+
+    function aplicarAtmosfera(index) {
+      const foto = paisajesGaleria[index];
+      document.documentElement.style.setProperty('--ambient-color-1', foto.colorLuz1);
+      document.documentElement.style.setProperty('--ambient-color-2', foto.colorLuz2);
+      document.documentElement.style.setProperty('--ambient-tint', foto.tinteOpaco);
+      captionEl.innerHTML = `<span>${foto.etiqueta}</span>${foto.descripcion}`;
+    }
+
+    function goToSlide(index) {
+      const slides = document.querySelectorAll('.landscape-slide');
+      const dots = document.querySelectorAll('.landscape-dot');
+
+      slides[currentSlide].classList.remove('active');
+      dots[currentSlide].classList.remove('active');
+
+      currentSlide = index;
+
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+      aplicarAtmosfera(currentSlide);
+    }
+
+    function nextSlide() {
+      const next = (currentSlide + 1) % paisajesGaleria.length;
+      goToSlide(next);
+    }
+
+    function startInterval() {
+      slideInterval = setInterval(nextSlide, 6500); // Cambia cada 6.5 segundos
+    }
+
+    function resetInterval() {
+      clearInterval(slideInterval);
+      startInterval();
+    }
+
+    initGaleria();
+
+    /* ==========================================================================
+       2. TEMA CLARO / OSCURO Y PANEL FLOTANTE
+       ========================================================================== */
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    applyTheme(localStorage.getItem('multiverso_theme') || 'dark');
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+
+    function toggleGroupPanel(show) {
+      const panel = document.getElementById('groupFloatingPanel');
+      const reopenBtn = document.getElementById('reopenGroupBtn');
+      if (show) {
+        panel.style.display = 'block';
+        reopenBtn.style.display = 'none';
+      } else {
+        panel.style.display = 'none';
+        reopenBtn.style.display = 'inline-block';
+      }
+    }
+  </script>
+</body>
+</html>
