@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto & Conexiones — MultiversoLabs</title>
+  <style>
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.65);
+      --glass-border: rgba(56, 189, 248, 0.18);
+      --glass-highlight: rgba(56, 189, 248, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-gold: #fbbf24;
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-border: rgba(2, 132, 199, 0.2);
+      --glass-highlight: rgba(2, 132, 199, 0.3);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-gold: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      transition: color 0.4s ease;
+    }
+
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 20s ease infinite alternate;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--glass-highlight);
+    }
+
+    .container {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 60px 5% 80px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .hero-tag {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 14px;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .page-header h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-header p {
+      color: var(--text-secondary);
+      max-width: 650px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      margin-bottom: 40px;
+    }
+
+    .panel-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(20px);
+    }
+
+    .panel-card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .channel-item {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .channel-info strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .channel-info span {
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--text-primary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-cyan);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .bmac-card {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(168, 85, 247, 0.14));
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 18px;
+    }
+
+    .bmac-btn {
+      display: inline-block;
+      margin-top: 12px;
+      background: #ffdd00;
+      color: #000000;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: transform 0.2s ease;
+    }
+
+    .bmac-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .instagram-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #ffffff;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: transform 0.2s ease, opacity 0.2s;
+    }
+
+    .instagram-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    [data-theme="light"] .form-group input,
+    [data-theme="light"] .form-group select,
+    [data-theme="light"] .form-group textarea {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.25s, transform 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .creator-banner {
+      background: var(--glass-bg);
+      border: 1px solid var(--accent-purple);
+      border-radius: 18px;
+      padding: 28px 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    footer {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 36px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="living-background"></div>
+
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.95rem;">MULTIVERSOLABS</strong>
+        <div style="font-size: 0.7rem; color: var(--text-secondary);">Exploring Dimensions</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="index.html">Inicio</a>
+      <a href="empresa.html">Empresa</a>
+      <a href="artista.html">Quién Soy</a>
+      <a href="contacto.html" class="active">Contacto</a>
+    </nav>
+
+    <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+      <span id="themeIcon">🌙</span>
+    </button>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <span class="hero-tag">Nodos de Comunicación</span>
+      <h1>Panel de Contacto & Alianzas</h1>
+      <p>Conecta directamente con el núcleo administrativo y el área de arte multidisciplinario de MultiversoLabs.</p>
+    </div>
+
+    <div class="contact-grid">
+      <!-- Columna 1: Canales Oficiales, Buy Me a Coffee e Instagram -->
+      <div class="panel-card">
+        <h2>📡 Canales Oficiales</h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+          Selecciona el nodo correspondiente según el propósito de tu mensaje:
+        </p>
+
+        <!-- 1. Contacto General -->
+        <div class="channel-item">
+          <div class="channel-info">
+            <strong>Contacto General & Alianzas</strong>
+            <span id="mail-general">contacto@multiversolabs.space</span>
+          </div>
+          <button class="copy-btn" onclick="copyMail('mail-general', this)">Copiar</button>
+        </div>
+
+        <!-- 2. Artista -->
+        <div class="channel-item">
+          <div class="channel-info">
+            <strong>Arte Multidisciplinario</strong>
+            <span id="mail-artista">artista@multiversolabs.space</span>
+          </div>
+          <button class="copy-btn" onclick="copyMail('mail-artista', this)">Copiar</button>
+        </div>
+
+        <div class="bmac-card">
+          <strong style="font-size: 1rem; color: var(--text-primary);">☕ Apoya los Proyectos & Tienda Digital</strong>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5;">
+            Accede a recursos creativos, herramientas experimentales o impulsa nuestras investigaciones en Buy Me a Coffee.
+          </p>
+          <a href="https://www.buymeacoffee.com/Multiversolabs.space" target="_blank" rel="noopener" class="bmac-btn">
+            ☕ Visitar Buy Me a Coffee
+          </a>
+          <br>
+          <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="instagram-btn">
+             Conectar en Instagram
+          </a>
+        </div>
+      </div>
+
+      <!-- Columna 2: Formulario Directo -->
+      <div class="panel-card">
+        <h2> Transmisión Directa</h2>
+        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+          <div class="form-group">
+            <label for="senderName">Tu Nombre o Alias</label>
+            <input type="text" id="senderName" placeholder="Ej. Alex Vance" required />
+          </div>
+
+          <div class="form-group">
+            <label for="senderEmail">Tu Correo Electrónico</label>
+            <input type="email" id="senderEmail" placeholder="tu@correo.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="topic">Sector de Destino</label>
+            <select id="topic">
+              <option value="contacto@multiversolabs.space">Consultas Generales / Empresa</option>
+              <option value="artista@multiversolabs.space">Arte Multidisciplinario</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Mensaje</label>
+            <textarea id="message" rows="4" placeholder="Cuéntanos sobre tu idea, proyecto o consulta..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-primary">Enviar Mensaje al Núcleo →</button>
+          <p id="formFeedback" style="margin-top: 12px; font-size: 0.85rem; color: var(--accent-cyan); display: none;"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Banner de conexión hacia la web personal del Artista -->
+    <div class="creator-banner">
+      <div>
+        <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-purple); font-weight: 700;">Autor & Creador</span>
+        <h3 style="font-size: 1.3rem; margin: 4px 0;">¿Buscas conectar directamente con el espacio personal e íntimo?</h3>
+        <p style="color: var(--text-secondary); font-size: 0.92rem;">Visita el perfil de guía, acompañamiento y arte.</p>
+      </div>
+      <a href="artista.html" class="btn-glass" style="border-color: var(--accent-purple); padding: 12px 20px; font-weight: 600;">
+        Ir a Quién Soy (Perfil Artista) →
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div><strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions.</div>
+    <div><a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">← Volver a la plataforma principal</a></div>
+  </footer>
+
+  <script>
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+
+    function copyMail(elementId, btn) {
+      const emailText = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(emailText).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        setTimeout(() => btn.textContent = original, 2000);
+      });
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('senderName').value;
+      const targetMail = document.getElementById('topic').value;
+      const msg = document.getElementById('message').value;
+      const feedback = document.getElementById('formFeedback');
+
+      const subject = encodeURIComponent(`Contacto Web MultiversoLabs — ${name}`);
+      const body = encodeURIComponent(`De: ${name}
+
+${msg}`);
+      window.location.href = `mailto:${targetMail}?subject=${subject}&body=${body}`;
+
+      feedback.textContent = `Abriendo tu cliente de correo para enviar a ${targetMail}...`;
+      feedback.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
