@@ -1,41 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sector en Desarrollo — MultiversoLabs</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MultiversoLabs — Espacio en Desarrollo</title>
   <style>
-    /* ==========================================================================
-       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
-       ========================================================================== */
     :root {
-      --bg-mesh-1: #070514;
-      --bg-mesh-2: #100b25;
-      --bg-mesh-3: #1e1b4b;
-      --glass-bg: rgba(16, 11, 37, 0.70);
-      --glass-border: rgba(217, 70, 239, 0.22);
-      --glass-highlight: rgba(217, 70, 239, 0.4);
-      --text-primary: #fdf4ff;
-      --text-secondary: #d8b4fe;
-      --accent-magenta: #e879f9;
+      --bg-dark: #09080d;
+      --glass-bg: rgba(15, 23, 42, 0.78);
+      --glass-border: rgba(56, 189, 248, 0.25);
       --accent-cyan: #38bdf8;
-      --accent-red: #f43f5e;
-      --modal-backdrop: rgba(5, 3, 10, 0.88);
-    }
-
-    [data-theme="light"] {
-      --bg-mesh-1: #fdf4ff;
-      --bg-mesh-2: #fae8ff;
-      --bg-mesh-3: #f3e8ff;
-      --glass-bg: rgba(255, 255, 255, 0.80);
-      --glass-border: rgba(192, 38, 211, 0.25);
-      --glass-highlight: rgba(192, 38, 211, 0.35);
-      --text-primary: #3b0764;
-      --text-secondary: #701a75;
-      --accent-magenta: #c026d3;
-      --accent-cyan: #0284c7;
-      --accent-red: #e11d48;
-      --modal-backdrop: rgba(250, 232, 255, 0.88);
+      --accent-purple: #a855f7;
+      --accent-gold: #fbbf24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
 
     * {
@@ -46,415 +24,524 @@
     }
 
     body {
-      min-height: 100vh;
-      color: var(--text-primary);
-      background: var(--bg-mesh-1);
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: color 0.4s ease;
-    }
-
-    /* ==========================================================================
-       FONDO DINÁMICO INSPIRADO EN LOS PORTALES CÓSMICOS
-       ========================================================================== */
-    .living-background {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background: 
-        radial-gradient(circle at 50% 30%, rgba(217, 70, 239, 0.2) 0%, transparent 55%),
-        radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 15% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 45%),
-        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
-      background-size: 250% 250%;
-      animation: cosmicShift 16s ease infinite alternate;
-    }
-
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    @keyframes cosmicShift {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    /* ==========================================================================
-       HEADER / BARRA SUPERIOR
-       ========================================================================== */
-    header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 5%;
-      background: var(--glass-bg);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--glass-border);
-    }
-
-    .brand-cluster {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: var(--text-primary);
-    }
-
-    /* Simulador Cubo 3D / Núcleo Central Animado */
-    .cube-viewport {
-      width: 32px;
-      height: 32px;
-      perspective: 220px;
-    }
-
-    .cube-sim {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      transform-style: preserve-3d;
-      animation: rotateCube 10s linear infinite;
-    }
-
-    .cube-sim span {
-      position: absolute;
-      inset: 0;
-      border: 1.5px solid var(--accent-magenta);
-      background: rgba(217, 70, 239, 0.15);
-      box-shadow: 0 0 12px rgba(217, 70, 239, 0.3);
-    }
-
-    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
-    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
-    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
-    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
-    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(56, 189, 248, 0.3); border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
-    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
-
-    @keyframes rotateCube {
-      0% { transform: rotateX(0deg) rotateY(0deg); }
-      100% { transform: rotateX(360deg) rotateY(360deg); }
-    }
-
-    .admin-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-glass {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--text-primary);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-    }
-
-    .btn-glass:hover {
-      border-color: var(--accent-magenta);
-      box-shadow: 0 0 15px var(--glass-highlight);
-      transform: translateY(-1px);
-    }
-
-    /* ==========================================================================
-       CONTENIDO CENTRAL (PORTAL DE ESPERA)
-       ========================================================================== */
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 5%;
-    }
-
-    .portal-card {
-      max-width: 650px;
-      width: 100%;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 48px 36px;
-      backdrop-filter: blur(24px);
-      text-align: center;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      position: relative;
+      margin: 0;
       overflow: hidden;
+      background-color: var(--bg-dark);
     }
 
-    /* Efecto de luz de portal en la tarjeta */
-    .portal-card::before {
-      content: "";
+    /* Panel superior de telemetría y estado */
+    #info {
       position: absolute;
-      top: 0;
+      top: 20px;
+      left: 20px;
+      color: var(--accent-cyan);
+      z-index: 100;
+      background: var(--glass-bg);
+      padding: 16px 22px;
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    #info h3 {
+      margin: 0 0 6px 0;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    #info p {
+      margin: 0 0 4px 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    #agente-status {
+      color: #ff7b72 !important;
+      font-weight: 600;
+    }
+
+    /* Tarjeta flotante inferior institucional */
+    #maintenance-overlay {
+      position: absolute;
+      bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      width: 180px;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, var(--accent-magenta), transparent);
-      box-shadow: 0 0 20px var(--accent-magenta);
-    }
-
-    .portal-tag {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--accent-magenta);
-      font-weight: 700;
-      display: inline-block;
-      margin-bottom: 16px;
-      background: rgba(217, 70, 239, 0.1);
-      padding: 6px 14px;
-      border-radius: 99px;
+      z-index: 200;
+      background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-    }
-
-    .portal-card h1 {
-      font-size: clamp(1.8rem, 3.5vw, 2.4rem);
-      font-weight: 800;
-      margin-bottom: 16px;
-      letter-spacing: -0.02em;
-    }
-
-    .portal-card p {
-      color: var(--text-secondary);
-      font-size: 1.05rem;
-      line-height: 1.6;
-      margin-bottom: 32px;
-    }
-
-    .countdown-box {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      padding: 12px 20px;
-      border-radius: 12px;
-      display: inline-block;
-      margin-bottom: 28px;
-    }
-
-    .countdown-box strong {
-      color: var(--accent-magenta);
-    }
-
-    .btn-portal-action {
-      display: inline-block;
-      width: 100%;
-      max-width: 320px;
-      padding: 14px 24px;
-      border-radius: 12px;
-      border: 1px solid var(--accent-magenta);
-      background: linear-gradient(135deg, rgba(217, 70, 239, 0.25), rgba(56, 189, 248, 0.2));
-      color: var(--text-primary);
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 20px rgba(217, 70, 239, 0.2);
-    }
-
-    .btn-portal-action:hover {
-      background: var(--accent-magenta);
-      color: #070514;
-      box-shadow: 0 0 30px rgba(217, 70, 239, 0.5);
-      transform: translateY(-2px);
-    }
-
-    /* ==========================================================================
-       FOOTER INSTITUCIONAL OBLIGATORIO
-       ========================================================================== */
-    footer {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 30px 5%;
-      border-top: 1px solid var(--glass-border);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
+      padding: 20px 28px;
+      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      color: var(--text-main);
       text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      max-width: 520px;
+      width: 90%;
     }
 
-    @media (min-width: 768px) {
-      footer {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
-      }
+    #maintenance-overlay h2 {
+      margin: 0 0 8px 0;
+      color: var(--accent-cyan);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    #maintenance-overlay p {
+      margin: 0 0 14px 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      min-height: 40px;
+    }
+
+    /* Botón de acción interactivo */
+    .btn-action {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: white;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.35);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      opacity: 0.95;
+      box-shadow: 0 12px 30px rgba(168, 85, 247, 0.45);
+    }
+
+    #countdown {
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    /* Estilo personalizado para el panel de control gráfico (lil-gui) */
+    .lil-gui {
+      --background-color: rgba(15, 23, 42, 0.9) !important;
+      --text-color: var(--text-main) !important;
+      --title-background-color: rgba(22, 27, 34, 0.95) !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+      border: 1px solid var(--glass-border) !important;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
   </style>
+  
+  <!-- Three.js + Controls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Control Panel GUI -->
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
 </head>
 <body>
+  <!-- Panel de telemetría superior -->
+  <div id="info">
+    <h3 style="margin:0 0 5px 0;">MultiversoLabs // Core 3D</h3>
+    <p id="status" style="margin:0 0 3px 0;">Iteraciones bucle While: 0</p>
+    <p id="agente-status" style="margin:0;">Agente: Navegando...</p>
+  </div>
 
-  <!-- Fondo vivo cósmico y partículas estelares -->
-  <div class="living-background"></div>
-  <canvas id="particle-canvas"></canvas>
-
-  <!-- Header / Barra de Navegación Universal -->
-  <header>
-    <a href="index.html" class="brand-cluster">
-      <div class="cube-viewport" title="Volver al Inicio">
-        <div class="cube-sim">
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
-      </div>
-      <div>
-        <strong style="font-size: 0.95rem; letter-spacing: 0.5px;">MULTIVERSOLABS</strong>
-        <div style="font-size: 0.7rem; color: var(--text-secondary);">Portal Dimensional</div>
-      </div>
-    </a>
-
-    <div class="admin-controls">
-      <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
-        <span id="themeIcon">🌙</span>
-      </button>
-      <a href="index.html" class="btn-glass">← Volver al Inicio</a>
-    </div>
-  </header>
-
-  <!-- Contenido Central: Portal de Espera -->
-  <main>
-    <div class="portal-card">
-      <span class="portal-tag">Sector en Construcción</span>
-      <h1>Este universo todavía está tomando forma</h1>
-      <p id="sectionMessage">
-        Sergio y el núcleo de MultiversoLabs están preparando este espacio para que pronto puedas descubrirlo. Gracias por acompañarnos mientras lo construimos.
-      </p>
-
-      <div class="countdown-box">
-        Regreso automático al inicio en <strong id="countdownNum">8</strong> segundos.
-      </div>
-
-      <div>
-        <a href="index.html" class="btn-portal-action">
-          Volver al universo ahora →
-        </a>
-      </div>
-    </div>
-  </main>
-
-  <!-- Footer Institucional con Créditos Obligatorios -->
-  <footer>
-    <div>
-      <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions. Pioneering Solutions.
-    </div>
-    <div style="font-size: 0.82rem; color: var(--text-secondary);">
-      Página creada y estructurada por MultiversoLabs. <a href="index.html" style="color: var(--accent-magenta); text-decoration: none; margin-left: 8px;">Volver al Inicio →</a>
-    </div>
-  </footer>
+  <!-- Tarjeta interactiva inferior con fases dinámicas y retorno -->
+  <div id="maintenance-overlay">
+    <h2 id="msg-title">Ecosistema Tecnológico & Artístico</h2>
+    <p id="msg-desc">Cargando secuencias autónomas de desarrollo... Regreso automático en <span id="countdown">60</span>s.</p>
+    <a href="index.html" class="btn-action">← Volver al Núcleo Principal</a>
+  </div>
 
   <script>
-    /* ==========================================================================
-       1. DETECCIÓN DE PARÁMETRO DE SECCIÓN (Ej: /en-desarrollo.html?seccion=Santuario)
-       ========================================================================== */
-    const urlParams = new URLSearchParams(window.location.search);
-    const sectionName = urlParams.get('seccion');
-    const messageEl = document.getElementById('sectionMessage');
+    // --- LÓGICA DE SECUENCIAS Y REDIRECCIÓN AUTOMÁTICA (60s totales / 3 fases de 20s) ---
+    let tiempoRestante = 60;
+    const contadorElemento = document.getElementById('countdown');
+    const msgTitle = document.getElementById('msg-title');
+    const msgDesc = document.getElementById('msg-desc');
 
-    if (sectionName) {
-      // Decodifica y personaliza el mensaje si se indicó qué sección intentaba abrir
-      const cleanName = decodeURIComponent(sectionName);
-      messageEl.innerHTML = `Estás intentando acceder a la sección <strong>${cleanName}</strong>. Sergio y el núcleo de MultiversoLabs están construyendo este espacio.`;
-    }
+    const mensajesFases = [
+      {
+        title: "01. Simuladores de Vida Artificial",
+        desc: "Exploramos modelos de enjambre y sistemas autónomos guiados por la creatividad humana y la proceduralidad."
+      },
+      {
+        title: "02. Geometría & Arte Generativo",
+        desc: "Construimos arquitecturas paramétricas tridimensionales que fusionan el cálculo matemático con la estética visual."
+      },
+      {
+        title: "03. Plataforma en Evolución",
+        desc: "Estamos esculpiendo los nuevos enlaces y herramientas interactivas de multiversolabs.space. ¡Pronto disponible!"
+      }
+    ];
 
-    /* ==========================================================================
-       2. CONTADOR REGRESIVO Y RETORNO AUTOMÁTICO (8 SEGUNDOS)
-       ========================================================================== */
-    let timeLeft = 8;
-    const countdownNum = document.getElementById('countdownNum');
+    const intervaloRedireccion = setInterval(() => {
+      tiempoRestante--;
+      if(contadorElemento) contadorElemento.innerText = tiempoRestante;
 
-    const timer = setInterval(() => {
-      timeLeft--;
-      countdownNum.textContent = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        window.location.href = 'index.html';
+      let faseActual = Math.floor((60 - tiempoRestante - 1) / 20);
+      if (faseActual > 2) faseActual = 2;
+      if (faseActual < 0) faseActual = 0;
+
+      msgTitle.innerText = mensajesFases[faseActual].title;
+      msgDesc.innerHTML = `${mensajesFases[faseActual].desc} Regreso automático en <span id="countdown">${tiempoRestante}</span>s.`;
+
+      if (tiempoRestante === 40) {
+        params.nivelesEsfera = 2;
+        params.contraccion = 0.5;
+        params.velocidadRotacion = 0.015;
+        sincronizarGuiYEscena();
+      } else if (tiempoRestante === 20) {
+        params.nivelesEsfera = 3;
+        params.contraccion = 0.0;
+        params.velocidadRotacion = 0.025;
+        sincronizarGuiYEscena();
+      }
+
+      if(tiempoRestante <= 0) {
+        clearInterval(intervaloRedireccion);
+        window.location.href = "index.html";
       }
     }, 1000);
 
-    /* ==========================================================================
-       3. MODO NOCTURNO / DIURNO (AUTOMÁTICO Y MANUAL)
-       ========================================================================== */
-    const rootEl = document.documentElement;
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
+    // Parámetros dinámicos controlados por el usuario / secuencias
+    const params = {
+      nivelesEsfera: 1,       
+      radioBase: 2.2,         
+      espaciado: 0.25,        
+      velocidadRotacion: 0.008, 
+      factorAtraccion: 0.05,  
+      tolerancia: 0.001,
+      contraccion: 1.0,
+      animarBucle: false,
+      mostrarEsferas: true,   
+      velocidadAgente: 0.1,
+      agenteActivo: true
+    };
 
-    function applyTheme(theme) {
-      rootEl.setAttribute('data-theme', theme);
-      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
-      localStorage.setItem('multiverso_theme', theme);
+    // Configuración de Escena 3D
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(7, 6, 8);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const light = new THREE.DirectionalLight(0xffffff, 1.2);
+    light.position.set(10, 20, 15);
+    scene.add(light);
+
+    let nodosSagrados = [];
+    let conexionesSagradas = [];
+    let lineasUnion = [];
+    const grupoFlorVida = new THREE.Group();
+    scene.add(grupoFlorVida);
+
+    let agenteMesh;
+    let agenteLuz;
+    const agenteState = {
+      indiceActual: 0,
+      indiceObjetivo: 0,
+      progreso: 0
+    };
+
+    const agenteGeo = new THREE.SphereGeometry(0.18, 16, 16);
+    const agenteMat = new THREE.MeshBasicMaterial({ color: 0xff7b72 });
+    agenteMesh = new THREE.Mesh(agenteGeo, agenteMat);
+    
+    agenteLuz = new THREE.PointLight(0xff7b72, 3, 4);
+    agenteMesh.add(agenteLuz);
+    scene.add(agenteMesh);
+
+    function construirEstructura() {
+      while(grupoFlorVida.children.length > 0){ 
+        grupoFlorVida.remove(grupoFlorVida.children[0]); 
+      }
+      nodosSagrados = [];
+      conexionesSagradas = [];
+      lineasUnion = [];
+
+      const direccionesBase = [
+        new THREE.Vector3(0, 0, 0)
+      ];
+
+      for (let i = 0; i < 6; i++) {
+        const ang = (i * Math.PI) / 3;
+        direccionesBase.push(new THREE.Vector3(Math.cos(ang), 0, Math.sin(ang)));
+      }
+      for (let i = 0; i < 3; i++) {
+        const ang = (i * 2 * Math.PI) / 3 + Math.PI / 6;
+        const rHoriz = Math.sqrt(3) / 3;
+        const hVert = Math.sqrt(2 / 3);
+        direccionesBase.push(new THREE.Vector3(rHoriz * Math.cos(ang), hVert, rHoriz * Math.sin(ang)));
+      }
+      for (let i = 0; i < 3; i++) {
+        const ang = (i * 2 * Math.PI) / 3 - Math.PI / 6;
+        const rHoriz = Math.sqrt(3) / 3;
+        const hVert = -Math.sqrt(2 / 3);
+        direccionesBase.push(new THREE.Vector3(rHoriz * Math.cos(ang), hVert, rHoriz * Math.sin(ang)));
+      }
+
+      const puntosUnicos = [];
+      const epsilon = 0.05;
+
+      function agregarSiUnico(v) {
+        for (let i = 0; i < puntosUnicos.length; i++) {
+          if (puntosUnicos[i].distanceTo(v) < epsilon) return;
+        }
+        puntosUnicos.push(v);
+      }
+
+      agregarSiUnico(new THREE.Vector3(0, 0, 0));
+
+      for (let nivel = 1; nivel <= params.nivelesEsfera; nivel++) {
+        const actuales = [...puntosUnicos];
+        actuales.forEach(base => {
+          for (let d = 1; d < direccionesBase.length; d++) {
+            const nuevo = base.clone().add(direccionesBase[d]);
+            if (nuevo.length() <= params.nivelesEsfera + 0.15) {
+              agregarSiUnico(nuevo);
+            }
+          }
+        });
+      }
+
+      const distanciaBase = params.radioBase + params.espaciado;
+
+      puntosUnicos.forEach((pNorm, idx) => {
+        const pos = pNorm.clone().multiplyScalar(distanciaBase);
+
+        const geomNodo = new THREE.BoxGeometry(0.28, 0.28, 0.28);
+        const matNodo = new THREE.MeshPhongMaterial({
+          color: idx === 0 ? 0xfbbf24 : 0x38bdf8,
+          transparent: true,
+          opacity: 0.9
+        });
+        const meshNodo = new THREE.Mesh(geomNodo, matNodo);
+        meshNodo.position.copy(pos);
+
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geomNodo),
+          new THREE.LineBasicMaterial({ color: 0x000000 })
+        );
+        meshNodo.add(edges);
+
+        let esferaMesh = null;
+        if (params.mostrarEsferas) {
+          const geomEsfera = new THREE.SphereGeometry(distanciaBase, 18, 14);
+          const matEsfera = new THREE.MeshBasicMaterial({
+            color: 0x38bdf8,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.12
+          });
+          esferaMesh = new THREE.Mesh(geomEsfera, matEsfera);
+          meshNodo.add(esferaMesh);
+        }
+
+        grupoFlorVida.add(meshNodo);
+
+        nodosSagrados.push({
+          gridCoords: { id: idx, capa: Math.round(pNorm.length()) },
+          mesh: meshNodo,
+          material: matNodo,
+          esferaMesh: esferaMesh,
+          posBase: pos.clone(),
+          posActual: pos.clone()
+        });
+      });
+
+      const umbralUnion = distanciaBase * 1.08;
+      for (let i = 0; i < nodosSagrados.length; i++) {
+        for (let j = i + 1; j < nodosSagrados.length; j++) {
+          const d = nodosSagrados[i].posBase.distanceTo(nodosSagrados[j].posBase);
+          if (d <= umbralUnion) {
+            conexionesSagradas.push([i, j]);
+
+            const geomLinea = new THREE.BufferGeometry().setFromPoints([
+              nodosSagrados[i].posBase,
+              nodosSagrados[j].posBase
+            ]);
+            const matLinea = new THREE.LineBasicMaterial({
+              color: 0x38bdf8,
+              transparent: true,
+              opacity: 0.45
+            });
+            const linea = new THREE.Line(geomLinea, matLinea);
+            grupoFlorVida.add(linea);
+            lineasUnion.push({ i, j, linea });
+          }
+        }
+      }
+
+      agenteState.indiceActual = 0;
+      agenteState.indiceObjetivo = seleccionarNuevoNodo(0);
+      agenteState.progreso = 0;
+
+      actualizarTransformacion();
     }
 
-    const savedTheme = localStorage.getItem('multiverso_theme');
-    if (savedTheme) {
-      applyTheme(savedTheme);
-    } else {
-      const hour = new Date().getHours();
-      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
+    function seleccionarNuevoNodo(actualIdx) {
+      const vecinos = [];
+      conexionesSagradas.forEach(par => {
+        if (par[0] === actualIdx) vecinos.push(par[1]);
+        if (par[1] === actualIdx) vecinos.push(par[0]);
+      });
+      if (vecinos.length === 0) return (actualIdx + 1) % nodosSagrados.length;
+      return vecinos[Math.floor(Math.random() * vecinos.length)];
     }
 
-    themeToggle.addEventListener('click', () => {
-      const current = rootEl.getAttribute('data-theme');
-      applyTheme(current === 'light' ? 'dark' : 'light');
+    function actualizarTransformacion() {
+      let iteraciones = 0;
+      let enEquilibrio = false;
+
+      const tempPositions = nodosSagrados.map(n => n.posBase.clone());
+
+      while (!enEquilibrio && iteraciones < 1000) {
+        let maxMov = 0;
+        
+        for (let i = 0; i < tempPositions.length; i++) {
+          const p = tempPositions[i];
+          const base = nodosSagrados[i].posBase;
+          
+          const targetX = base.x * (1 - params.contraccion);
+          const targetY = base.y * (1 - params.contraccion);
+          const targetZ = base.z * (1 - params.contraccion);
+
+          const dx = (targetX - p.x) * params.factorAtraccion;
+          const dy = (targetY - p.y) * params.factorAtraccion;
+          const dz = (targetZ - p.z) * params.factorAtraccion;
+
+          p.x += dx;
+          p.y += dy;
+          p.z += dz;
+
+          const mov = Math.sqrt(dx*dx + dy*dy + dz*dz);
+          if (mov > maxMov) maxMov = mov;
+        }
+
+        iteraciones++;
+        if (maxMov < params.tolerancia) enEquilibrio = true;
+      }
+
+      for (let i = 0; i < nodosSagrados.length; i++) {
+        nodosSagrados[i].posActual.copy(tempPositions[i]);
+        nodosSagrados[i].mesh.position.copy(tempPositions[i]);
+        if (nodosSagrados[i].esferaMesh) {
+          const escalaEsfera = 1 - params.contraccion * 0.85;
+          nodosSagrados[i].esferaMesh.scale.set(escalaEsfera, escalaEsfera, escalaEsfera);
+        }
+      }
+
+      lineasUnion.forEach(u => {
+        u.linea.geometry.setFromPoints([
+          nodosSagrados[u.i].posActual,
+          nodosSagrados[u.j].posActual
+        ]);
+      });
+
+      document.getElementById('status').innerText = `Iteraciones bucle While: ${iteraciones}`;
+    }
+
+    function actualizarAgente() {
+      if (!params.agenteActivo || nodosSagrados.length === 0) return;
+
+      agenteState.progreso += params.velocidadAgente;
+
+      const origenLocal = nodosSagrados[agenteState.indiceActual].posActual;
+      const destinoLocal = nodosSagrados[agenteState.indiceObjetivo].posActual;
+
+      const posLocal = new THREE.Vector3().lerpVectors(origenLocal, destinoLocal, agenteState.progreso);
+      agenteMesh.position.copy(posLocal).applyMatrix4(grupoFlorVida.matrixWorld);
+
+      nodosSagrados.forEach((nodo) => {
+        const posMundialNodo = nodo.posActual.clone().applyMatrix4(grupoFlorVida.matrixWorld);
+        const d = agenteMesh.position.distanceTo(posMundialNodo);
+        if (d < 1.1) {
+          nodo.material.color.setHex(0xff7b72);
+          nodo.material.opacity = 1.0;
+        } else {
+          nodo.material.color.setHex(nodo.gridCoords.id === 0 ? 0xfbbf24 : 0x38bdf8);
+          nodo.material.opacity = 0.85;
+        }
+      });
+
+      if (agenteState.progreso >= 1) {
+        agenteState.progreso = 0;
+        agenteState.indiceActual = agenteState.indiceObjetivo;
+        agenteState.indiceObjetivo = seleccionarNuevoNodo(agenteState.indiceActual);
+        
+        const info = nodosSagrados[agenteState.indiceActual].gridCoords;
+        document.getElementById('agente-status').innerText = `Agente: Nodo #${info.id} (Capa ${info.capa})`;
+      }
+    }
+
+    // Panel de Control Visual (lil-gui estilizado)
+    const gui = new lil.GUI({ title: 'Configuración 3D' });
+    gui.domElement.style.position = 'absolute';
+    gui.domElement.style.top = '20px';
+    gui.domElement.style.right = '20px';
+
+    const folderEstructura = gui.addFolder('Geometría Sagrada');
+    folderEstructura.add(params, 'nivelesEsfera', 1, 3, 1).name('Capas').onChange(construirEstructura);
+    folderEstructura.add(params, 'espaciado', 0.0, 2.0, 0.05).name('Expansión').onChange(construirEstructura);
+    folderEstructura.add(params, 'mostrarEsferas').name('Esferas').onChange(construirEstructura);
+    folderEstructura.add(params, 'velocidadRotacion', 0.0, 0.05, 0.001).name('Rotación');
+
+    const folderMovimiento = gui.addFolder('Contracción');
+    folderMovimiento.add(params, 'contraccion', 0.0, 1.0, 0.01).name('Origen').onChange(actualizarTransformacion);
+    folderMovimiento.add(params, 'factorAtraccion', 0.01, 0.3, 0.01).name('Fuerza').onChange(actualizarTransformacion);
+    folderMovimiento.add(params, 'animarBucle').name('Animar');
+
+    const folderAgente = gui.addFolder('Agente Visual');
+    folderAgente.add(params, 'agenteActivo').name('Activo');
+    folderAgente.add(params, 'velocidadAgente', 0.01, 0.3, 0.01).name('Velocidad');
+
+    function sincronizarGuiYEscena() {
+      construirEstructura();
+      actualizarTransformacion();
+      gui.controllers.forEach(c => c.updateDisplay());
+      gui.folders.forEach(f => f.controllers.forEach(c => c.updateDisplay()));
+    }
+
+    construirEstructura();
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (params.velocidadRotacion > 0) {
+        grupoFlorVida.rotation.y += params.velocidadRotacion;
+        grupoFlorVida.rotation.x += params.velocidadRotacion * 0.5;
+        grupoFlorVida.updateMatrixWorld();
+      }
+
+      if (params.animarBucle) {
+        params.contraccion = (Math.sin(Date.now() * 0.002) + 1) / 2;
+        const controller = gui.controllers.find(c => c.property === 'contraccion');
+        if(controller) controller.updateDisplay();
+        actualizarTransformacion();
+      }
+
+      actualizarAgente();
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
-
-    /* ==========================================================================
-       4. PARTÍCULAS CÓSMICAS EN CANVAS (DINAMISMO)
-       ========================================================================== */
-    const canvas = document.getElementById('particle-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    for (let i = 0; i < 50; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.8 + 0.3,
-        dx: (Math.random() - 0.5) * 0.4,
-        dy: (Math.random() - 0.5) * 0.4
-      });
-    }
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const isLight = rootEl.getAttribute('data-theme') === 'light';
-      ctx.fillStyle = isLight ? 'rgba(192, 38, 211, 0.25)' : 'rgba(217, 70, 239, 0.35)';
-
-      particles.forEach(p => {
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
   </script>
 </body>
 </html>
