@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>En Desarrollo — MultiversoLabs</title>
+  <style>
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.72);
+      --glass-border: rgba(56, 189, 248, 0.22);
+      --glass-highlight: rgba(56, 189, 248, 0.4);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-gold: #fbbf24;
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(2, 132, 199, 0.25);
+      --glass-highlight: rgba(2, 132, 199, 0.35);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-gold: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: color 0.4s ease;
+    }
+
+    /* Fondo dinámico vivo con pulso dimensional */
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(56, 189, 248, 0.16) 0%, transparent 45%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 18s ease infinite alternate;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* Encabezado */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 6%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 36px;
+      height: 36px;
+      perspective: 250px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 12s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(18px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(18px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(18px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(18px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(18px); background: rgba(168, 85, 247, 0.25); border-color: var(--accent-purple); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(18px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .theme-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--glass-highlight);
+    }
+
+    /* Contenido central */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 6%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 8px 18px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 24px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-cyan);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px var(--accent-cyan); }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 800;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.15;
+    }
+
+    p.description {
+      color: var(--text-secondary);
+      font-size: 1.12rem;
+      line-height: 1.7;
+      max-width: 650px;
+      margin-bottom: 40px;
+    }
+
+    /* Tarjeta interactiva de telemetría / estado */
+    .telemetry-card {
+      width: 100%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      text-align: left;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .telemetry-item span {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .telemetry-item strong {
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    /* Botón principal de retorno altamente interactivo */
+    .btn-return {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #ffffff;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 15px 32px;
+      border-radius: 14px;
+      font-size: 1.05rem;
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .btn-return:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(168, 85, 247, 0.4);
+      opacity: 0.95;
+    }
+
+    /* Pie de página */
+    footer {
+      max-width: 1150px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 30px 6%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="living-background"></div>
+
+  <!-- HEADER -->
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.95rem;">MULTIVERSOLABS</strong>
+        <div style="font-size: 0.7rem; color: var(--text-secondary);">Exploring Dimensions</div>
+      </div>
+    </a>
+
+    <button class="theme-btn" id="themeToggle" title="Cambiar iluminación">🌙</button>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+    <div class="status-badge">
+      <span class="pulse-dot"></span>
+      <span>Sistema en Síntesis Activa</span>
+    </div>
+
+    <h1>Expandiendo Nuevas Dimensiones</h1>
+    
+    <p class="description">
+      Este nodo de infraestructura se encuentra actualmente en fase de calibración e integración cuántica dentro del ecosistema tecnológico de <strong>MultiversoLabs</strong>. Pronto estará completamente operativo.
+    </p>
+
+    <!-- TARJETA DE TELEMETRÍA TECNOLÓGICA -->
+    <div class="telemetry-card">
+      <div class="telemetry-item">
+        <span>Estado del Nodo</span>
+        <strong style="color: var(--accent-cyan);">En Desarrollo / Build v2.6</strong>
+      </div>
+      <div class="telemetry-item">
+        <span>Arquitectura</span>
+        <strong>Glassmorphism & Ciber-Soberanía</strong>
+      </div>
+      <div class="telemetry-item">
+        <span>Sincronización</span>
+        <strong style="color: var(--accent-purple);">Óptima (GitHub Pages)</strong>
+      </div>
+    </div>
+
+    <!-- BOTÓN DE RETORNO INTERactivo -->
+    <a href="index.html" class="btn-return">
+      <span>← Volver al Núcleo Principal</span>
+    </a>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div><strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions.</div>
+    <div><a href="contacto.html" style="color: var(--accent-cyan); text-decoration: none;">Contacto & Soporte</a></div>
+  </footer>
+
+  <script>
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
