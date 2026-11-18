@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoLabs — Simulador Cardíaco & Impulso Eléctrico 3D</title>
+  <style>
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --glass-bg: rgba(15, 23, 42, 0.72);
+      --glass-border: rgba(56, 189, 248, 0.25);
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-gold: #fbbf24;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 50%, var(--bg-mesh-2), var(--bg-mesh-1));
+      color: var(--text-primary);
+    }
+
+    /* Header Holográfico Compacto */
+    header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 26px;
+      height: 26px;
+      perspective: 180px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(13px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(13px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(13px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(13px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(13px); border-color: var(--accent-red); background: rgba(244, 63, 94, 0.3); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(13px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .btn-glass {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
+    }
+
+    /* Panel de Telemetría Cardíaca y Eléctrica */
+    #telemetry-panel {
+      position: absolute;
+      top: 76px;
+      left: 24px;
+      z-index: 40;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      border-radius: 14px;
+      padding: 18px 22px;
+      width: 310px;
+      pointer-events: none;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    #telemetry-panel h2 {
+      font-size: 0.95rem;
+      color: var(--accent-red);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .metric-row strong {
+      color: var(--text-primary);
+    }
+
+    .legend {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.78rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      color: var(--text-secondary);
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    /* Bloque Interactivo de Control */
+    #interactive-dock {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 40;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      width: min(92%, 720px);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+    }
+
+    .control-group label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-group label span {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .btn-pulse {
+      background: linear-gradient(135deg, var(--accent-red), #be123c);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.35);
+    }
+
+    .btn-pulse:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.5);
+    }
+
+    .btn-shock {
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #050814;
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <!-- Header Institucional MultiversoLabs -->
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.92rem; letter-spacing: 0.5px;">MULTIVERSOLABS</strong>
+        <div style="font-size: 0.68rem; color: var(--text-secondary);">Simulador Bio-Eléctrico 3D</div>
+      </div>
+    </a>
+    <a href="index.html" class="btn-glass">← Núcleo Principal</a>
+  </header>
+
+  <!-- Panel de Telemetría en Tiempo Real -->
+  <div id="telemetry-panel">
+    <h2>Sistema Cardíaco &amp; Nodo Sinusal</h2>
+    <div class="metric-row"><span>Fase Mecánica:</span><strong id="ui-fase">Diástole (Expansión)</strong></div>
+    <div class="metric-row"><span>Impulso Eléctrico:</span><strong id="ui-electrico" style="color: #38bdf8;">Repolarización</strong></div>
+    <div class="metric-row"><span>Células en Flujo:</span><strong id="ui-celulas">300 activas</strong></div>
+    <div class="legend">
+      <div><span class="dot" style="background:#ef4444;"></span>Eritrocitos</div>
+      <div><span class="dot" style="background:#fbbf24;"></span>Plaquetas</div>
+      <div><span class="dot" style="background:#f8fafc;"></span>Leucocitos</div>
+      <div><span class="dot" style="background:#38bdf8; box-shadow:0 0 6px #38bdf8;"></span>Señal Eléctrica</div>
+    </div>
+  </div>
+
+  <!-- Bloque Interactivo Inferior -->
+  <div id="interactive-dock">
+    <div class="control-group">
+      <label>Ritmo Cardíaco <span id="lbl-bpm">72 BPM</span></label>
+      <input type="range" id="ctrl-bpm" min="40" max="180" value="72" />
+    </div>
+
+    <div class="control-group">
+      <label>Capas Nodales <span id="lbl-capas">2</span></label>
+      <input type="range" id="ctrl-capas" min="1" max="3" value="2" />
+    </div>
+
+    <div class="control-group">
+      <label>Células Sangre <span id="lbl-sangre">300</span></label>
+      <input type="range" id="ctrl-sangre" min="80" max="600" step="20" value="300" />
+    </div>
+
+    <button class="btn-pulse btn-shock" id="btn-disparo">⚡ Disparar Nodo Sinusal</button>
+    <button class="btn-pulse" id="btn-pausa">⏸ Pausar</button>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURACIÓN Y ESTADO DEL SIMULADOR CARDÍACO EXCLUSIVO
+    // =========================================================================
+    const state = {
+      bpm: 72,
+      capas: 2,
+      densidadSangre: 300,
+      pausado: false,
+      faseCiclo: 0,
+      radioBase: 2.1,
+      espaciado: 0.35
+    };
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(6.5, 5.5, 7.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(10, 18, 12);
+    scene.add(dirLight);
+
+    const grupoCorazon = new THREE.Group();
+    scene.add(grupoCorazon);
+
+    let nodos = [];
+    let conexiones = [];
+    let lineasUnion = [];
+
+    // Grupos de partículas (Sangre + Impulsos Eléctricos)
+    const grupoSangre = new THREE.Group();
+    const grupoElectrico = new THREE.Group();
+    grupoCorazon.add(grupoSangre, grupoElectrico);
+
+    let meshEritrocitos, meshPlaquetas, meshLeucocitos, meshPulsosElectricos;
+    let particulasSangre = [];
+    let pulsosElectricos = [];
+    const dummy = new THREE.Object3D();
+
+    // =========================================================================
+    // CONSTRUCCIÓN DE LA TOPOLOGÍA NODAL (SUB-CUBOS Y CANALES)
+    // =========================================================================
+    function construirCorazon() {
+      // Limpiar geometrías previas
+      for (let i = grupoCorazon.children.length - 1; i >= 0; i--) {
+        const child = grupoCorazon.children[i];
+        if (child !== grupoSangre && child !== grupoElectrico) {
+          grupoCorazon.remove(child);
+        }
+      }
+      nodos = [];
+      conexiones = [];
+      lineasUnion = [];
+
+      const direcciones = [new THREE.Vector3(0, 0, 0)];
+      for (let i = 0; i < 6; i++) {
+        const ang = (i * Math.PI) / 3;
+        direcciones.push(new THREE.Vector3(Math.cos(ang), 0, Math.sin(ang)));
+      }
+      for (let i = 0; i < 3; i++) {
+        const ang = (i * 2 * Math.PI) / 3 + Math.PI / 6;
+        direcciones.push(new THREE.Vector3((Math.sqrt(3) / 3) * Math.cos(ang), Math.sqrt(2 / 3), (Math.sqrt(3) / 3) * Math.sin(ang)));
+        const ang2 = (i * 2 * Math.PI) / 3 - Math.PI / 6;
+        direcciones.push(new THREE.Vector3((Math.sqrt(3) / 3) * Math.cos(ang2), -Math.sqrt(2 / 3), (Math.sqrt(3) / 3) * Math.sin(ang2)));
+      }
+
+      const puntos = [];
+      const agregarUnico = (v) => {
+        if (!puntos.some(p => p.distanceTo(v) < 0.05)) puntos.push(v);
+      };
+      agregarUnico(new THREE.Vector3(0, 0, 0));
+
+      for (let nivel = 1; nivel <= state.capas; nivel++) {
+        [...puntos].forEach(base => {
+          for (let d = 1; d < direcciones.length; d++) {
+            const nuevo = base.clone().add(direcciones[d]);
+            if (nuevo.length() <= state.capas + 0.15) agregarUnico(nuevo);
+          }
+        });
+      }
+
+      const distanciaBase = state.radioBase + state.espaciado;
+
+      puntos.forEach((pNorm, idx) => {
+        const pos = pNorm.clone().multiplyScalar(distanciaBase);
+        const esNodoSinusal = idx === 0;
+
+        const geom = new THREE.BoxGeometry(esNodoSinusal ? 0.36 : 0.26, esNodoSinusal ? 0.36 : 0.26, esNodoSinusal ? 0.36 : 0.26);
+        const mat = new THREE.MeshPhongMaterial({
+          color: esNodoSinusal ? 0x38bdf8 : 0x991b1b,
+          emissive: esNodoSinusal ? 0x0284c7 : 0x220000,
+          transparent: true,
+          opacity: 0.9
+        });
+
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.copy(pos);
+        mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(geom), new THREE.LineBasicMaterial({ color: 0x050814 })));
+        grupoCorazon.add(mesh);
+
+        nodos.push({
+          id: idx,
+          capa: Math.round(pNorm.length()),
+          esSinusal: esNodoSinusal,
+          mesh,
+          material: mat,
+          posBase: pos.clone(),
+          posActual: pos.clone(),
+          cargaElectrica: 0
+        });
+      });
+
+      const umbral = distanciaBase * 1.08;
+      for (let i = 0; i < nodos.length; i++) {
+        for (let j = i + 1; j < nodos.length; j++) {
+          if (nodos[i].posBase.distanceTo(nodos[j].posBase) <= umbral) {
+            conexiones.push([i, j]);
+            const geomLinea = new THREE.BufferGeometry().setFromPoints([nodos[i].posBase, nodos[j].posBase]);
+            const matLinea = new THREE.LineBasicMaterial({ color: 0x7f1d1d, transparent: true, opacity: 0.45 });
+            const linea = new THREE.Line(geomLinea, matLinea);
+            grupoCorazon.add(linea);
+            lineasUnion.push({ i, j, linea });
+          }
+        }
+      }
+
+      inicializarSangreYElectricidad();
+    }
+
+    // =========================================================================
+    // SISTEMA DE SANGRE E IMPULSOS ELÉCTRICOS (INSTANCED MESH)
+    // =========================================================================
+    function inicializarSangreYElectricidad() {
+      while (grupoSangre.children.length > 0) grupoSangre.remove(grupoSangre.children[0]);
+      while (grupoElectrico.children.length > 0) grupoElectrico.remove(grupoElectrico.children[0]);
+
+      particulasSangre = [];
+      pulsosElectricos = [];
+
+      const total = state.densidadSangre;
+      const nRojos = Math.floor(total * 0.88);
+      const nPlaquetas = Math.floor(total * 0.09);
+      const nBlancos = Math.max(4, total - nRojos - nPlaquetas);
+
+      meshEritrocitos = new THREE.InstancedMesh(
+        new THREE.CylinderGeometry(0.065, 0.065, 0.024, 12),
+        new THREE.MeshPhongMaterial({ color: 0xef4444, emissive: 0x450a0a }),
+        nRojos
+      );
+      meshPlaquetas = new THREE.InstancedMesh(
+        new THREE.OctahedronGeometry(0.032, 0),
+        new THREE.MeshPhongMaterial({ color: 0xfbbf24, emissive: 0x78350f }),
+        nPlaquetas
+      );
+      meshLeucocitos = new THREE.InstancedMesh(
+        new THREE.SphereGeometry(0.09, 12, 12),
+        new THREE.MeshPhongMaterial({ color: 0xf8fafc, emissive: 0x38bdf8, transparent: true, opacity: 0.85 }),
+        nBlancos
+      );
+
+      // Chispas del sistema de conducción eléctrica (Has de His / Fibras de Purkinje)
+      const maxChispas = conexiones.length * 2;
+      meshPulsosElectricos = new THREE.InstancedMesh(
+        new THREE.SphereGeometry(0.055, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8 }),
+        maxChispas
+      );
+
+      grupoSangre.add(meshEritrocitos, meshPlaquetas, meshLeucocitos);
+      grupoElectrico.add(meshPulsosElectricos);
+
+      const crearCelula = (tipo, idx) => {
+        const par = conexiones[Math.floor(Math.random() * conexiones.length)];
+        const dir = Math.random() > 0.5 ? 1 : -1;
+        return {
+          tipo,
+          idx,
+          nodoA: dir === 1 ? par[0] : par[1],
+          nodoB: dir === 1 ? par[1] : par[0],
+          progreso: Math.random(),
+          vel: tipo === 'blanco' ? 0.004 : (tipo === 'plaqueta' ? 0.009 : 0.007 + Math.random() * 0.004),
+          offset: new THREE.Vector3((Math.random() - 0.5) * 0.14, (Math.random() - 0.5) * 0.14, (Math.random() - 0.5) * 0.14),
+          rot: new THREE.Euler(Math.random() * Math.PI, Math.random() * Math.PI, 0)
+        };
+      };
+
+      for (let i = 0; i < nRojos; i++) particulasSangre.push(crearCelula('rojo', i));
+      for (let i = 0; i < nPlaquetas; i++) particulasSangre.push(crearCelula('plaqueta', i));
+      for (let i = 0; i < nBlancos; i++) particulasSangre.push(crearCelula('blanco', i));
+
+      document.getElementById('ui-celulas').innerText = `${total} activas`;
+    }
+
+    function dispararImpulsoDesdeCentro() {
+      // Genera una onda eléctrica desde el Nodo Sinusal (nodo 0) hacia la periferia
+      nodos[0].cargaElectrica = 1.0;
+      conexiones.forEach(par => {
+        if (par[0] === 0 || par[1] === 0) {
+          const destino = par[0] === 0 ? par[1] : par[0];
+          pulsosElectricos.push({ origen: 0, destino, progreso: 0, generacion: 1 });
+        }
+      });
+    }
+
+    function siguienteNodoContinuo(actual, previo) {
+      const vecinos = [];
+      conexiones.forEach(par => {
+        if (par[0] === actual && par[1] !== previo) vecinos.push(par[1]);
+        if (par[1] === actual && par[0] !== previo) vecinos.push(par[0]);
+      });
+      return vecinos.length ? vecinos[Math.floor(Math.random() * vecinos.length)] : previo;
+    }
+
+    // =========================================================================
+    // BUCLE DE SIMULACIÓN BIO-ELÉCTRICA EN TIEMPO REAL
+    // =========================================================================
+    let ultimoTiempo = performance.now();
+    let pulsoDisparadoEnCiclo = false;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const ahora = performance.now();
+      const dt = Math.min((ahora - ultimoTiempo) / 1000, 0.1);
+      ultimoTiempo = ahora;
+
+      grupoCorazon.rotation.y += 0.004;
+
+      if (!state.pausado) {
+        const freqHz = state.bpm / 60;
+        const faseAnterior = state.faseCiclo;
+        state.faseCiclo = (state.faseCiclo + dt * freqHz) % 1.0;
+
+        // Si el ciclo reinicia, el Nodo Sinusal dispara la señal eléctrica
+        if (state.faseCiclo < faseAnterior) {
+          pulsoDisparadoEnCiclo = false;
+        }
+        if (state.faseCiclo >= 0.02 && !pulsoDisparadoEnCiclo) {
+          dispararImpulsoDesdeCentro();
+          pulsoDisparadoEnCiclo = true;
+        }
+
+        // Fase 1 (0% - 18%): Despolarización eléctrica (el impulso viaja antes de contraer)
+        // Fase 2 (15% - 45%): Sístole mecánica (contracción y eyección)
+        // Fase 3 (45% - 100%): Diástole mecánica (expansión y llenado)
+        let contraccion = 0;
+        let esSistole = false;
+
+        if (state.faseCiclo >= 0.14 && state.faseCiclo < 0.44) {
+          const t = (state.faseCiclo - 0.14) / 0.30;
+          contraccion = Math.sin(t * Math.PI);
+          esSistole = true;
+        } else if (state.faseCiclo >= 0.44 && state.faseCiclo < 0.54) {
+          const t = (state.faseCiclo - 0.44) / 0.10;
+          contraccion = Math.sin(t * Math.PI) * 0.2;
+        }
+
+        // Actualizar posiciones de sub-cubos según contracción sistólica
+        const factorEncogimiento = 0.06 + contraccion * 0.44;
+        nodos.forEach(n => {
+          n.posActual.copy(n.posBase).multiplyScalar(1 - factorEncogimiento);
+          n.mesh.position.copy(n.posActual);
+
+          // Decaimiento de carga eléctrica en el tejido
+          n.cargaElectrica = Math.max(0, n.cargaElectrica - dt * 3.5);
+
+          if (n.esSinusal) {
+            n.material.color.setHex(0x38bdf8);
+            n.material.emissiveIntensity = 0.5 + n.cargaElectrica * 2.0;
+          } else if (n.cargaElectrica > 0.1) {
+            // Destello cian eléctrico al recibir el impulso
+            n.material.color.lerpColors(new THREE.Color(0xef4444), new THREE.Color(0x38bdf8), n.cargaElectrica);
+          } else {
+            n.material.color.setHex(esSistole ? 0xef4444 : 0x991b1b);
+          }
+        });
+
+        lineasUnion.forEach(u => {
+          u.linea.geometry.setFromPoints([nodos[u.i].posActual, nodos[u.j].posActual]);
+          u.linea.material.color.setHex(esSistole ? 0xf87171 : 0x7f1d1d);
+          u.linea.material.opacity = 0.35 + contraccion * 0.45;
+        });
+
+        // Actualizar propagación de chispas eléctricas
+        const nuevasChispas = [];
+        for (let i = pulsosElectricos.length - 1; i >= 0; i--) {
+          const p = pulsosElectricos[i];
+          p.progreso += dt * freqHz * 7.5; // El impulso viaja mucho más rápido que la sangre
+          if (p.progreso >= 1) {
+            nodos[p.destino].cargaElectrica = 1.0;
+            // Propagar hacia capas exteriores si quedan niveles
+            if (p.generacion < state.capas) {
+              conexiones.forEach(par => {
+                const sig = par[0] === p.destino ? par[1] : (par[1] === p.destino ? par[0] : -1);
+                if (sig !== -1 && nodos[sig].capa > nodos[p.destino].capa) {
+                  nuevasChispas.push({ origen: p.destino, destino: sig, progreso: 0, generacion: p.generacion + 1 });
+                }
+              });
+            }
+            pulsosElectricos.splice(i, 1);
+          }
+        }
+        pulsosElectricos.push(...nuevasChispas);
+
+        // Renderizar InstancedMesh de impulsos eléctricos
+        const maxChispas = meshPulsosElectricos.count;
+        for (let i = 0; i < maxChispas; i++) {
+          if (i < pulsosElectricos.length) {
+            const p = pulsosElectricos[i];
+            dummy.position.lerpVectors(nodos[p.origen].posActual, nodos[p.destino].posActual, p.progreso);
+            dummy.scale.set(1, 1, 1);
+          } else {
+            dummy.scale.set(0, 0, 0);
+          }
+          dummy.updateMatrix();
+          meshPulsosElectricos.setMatrixAt(i, dummy.matrix);
+        }
+        meshPulsosElectricos.instanceMatrix.needsUpdate = true;
+
+        // Actualizar flujo sanguíneo entre sub-cubos
+        const velMult = (state.bpm / 72) * (0.45 + contraccion * 2.5);
+        particulasSangre.forEach(c => {
+          c.progreso += c.vel * velMult;
+          if (c.progreso >= 1) {
+            c.progreso = 0;
+            const prev = c.nodoA;
+            c.nodoA = c.nodoB;
+            c.nodoB = siguienteNodoContinuo(c.nodoA, prev);
+          }
+          dummy.position.lerpVectors(nodos[c.nodoA].posActual, nodos[c.nodoB].posActual, c.progreso).add(c.offset);
+          c.rot.x += 0.03 * velMult;
+          c.rot.y += 0.02 * velMult;
+          dummy.rotation.copy(c.rot);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+
+          if (c.tipo === 'rojo') meshEritrocitos.setMatrixAt(c.idx, dummy.matrix);
+          else if (c.tipo === 'plaqueta') meshPlaquetas.setMatrixAt(c.idx, dummy.matrix);
+          else meshLeucocitos.setMatrixAt(c.idx, dummy.matrix);
+        });
+
+        meshEritrocitos.instanceMatrix.needsUpdate = true;
+        meshPlaquetas.instanceMatrix.needsUpdate = true;
+        meshLeucocitos.instanceMatrix.needsUpdate = true;
+
+        // Actualizar Telemetría UI
+        document.getElementById('ui-fase').innerText = esSistole ? 'Sístole (Contracción)' : 'Diástole (Expansión)';
+        document.getElementById('ui-electrico').innerText = pulsosElectricos.length > 0 ? '⚡ Despolarizando red' : 'Repolarización';
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // =========================================================================
+    // EVENTOS DEL BLOQUE INTERACTIVO
+    // =========================================================================
+    document.getElementById('ctrl-bpm').addEventListener('input', (e) => {
+      state.bpm = parseInt(e.target.value, 10);
+      document.getElementById('lbl-bpm').innerText = `${state.bpm} BPM`;
+    });
+
+    document.getElementById('ctrl-capas').addEventListener('input', (e) => {
+      state.capas = parseInt(e.target.value, 10);
+      document.getElementById('lbl-capas').innerText = state.capas;
+      construirCorazon();
+    });
+
+    document.getElementById('ctrl-sangre').addEventListener('input', (e) => {
+      state.densidadSangre = parseInt(e.target.value, 10);
+      document.getElementById('lbl-sangre').innerText = state.densidadSangre;
+      inicializarSangreYElectricidad();
+    });
+
+    document.getElementById('btn-disparo').addEventListener('click', () => {
+      state.faseCiclo = 0.01;
+      pulsoDisparadoEnCiclo = false;
+      dispararImpulsoDesdeCentro();
+    });
+
+    document.getElementById('btn-pausa').addEventListener('click', (e) => {
+      state.pausado = !state.pausado;
+      e.target.innerText = state.pausado ? '▶ Reanudar' : '⏸ Pausar';
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    construirCorazon();
+    animate();
+  </script>
+</body>
+</html>
