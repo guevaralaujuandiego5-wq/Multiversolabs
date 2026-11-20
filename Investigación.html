@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Investigación — MultiversoLabs</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
+       ========================================================================== */
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.85);
+      --glass-border: rgba(56, 189, 248, 0.2);
+      --glass-highlight: rgba(56, 189, 248, 0.35);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.92);
+      --glass-border: rgba(2, 132, 199, 0.22);
+      --glass-highlight: rgba(2, 132, 199, 0.28);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-emerald: #059669;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      transition: color 0.4s ease;
+    }
+
+    /* ==========================================================================
+       FONDO DINÁMICO HOLOGRÁFICO (VIVO)
+       ========================================================================== */
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: 
+        radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 20s ease infinite alternate;
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* ==========================================================================
+       BARRA DE NOTICIAS / TICKER SUPERIOR
+       ========================================================================== */
+    .news-ticker {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(244, 63, 94, 0.12));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 8px 20px;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .news-badge {
+      background: var(--accent-cyan);
+      color: #000;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .close-ticker {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    /* ==========================================================================
+       HEADER Y NAVEGACIÓN UNIVERSAL
+       ========================================================================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .admin-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 15px var(--glass-highlight);
+      transform: translateY(-1px);
+    }
+
+    .btn-glass.primary {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       CONTENEDORES Y TIPOGRAFÍA DE SECCIÓN
+       ========================================================================== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 5%;
+    }
+
+    .section-block {
+      padding: 44px 0;
+    }
+
+    .section-header {
+      margin-bottom: 26px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .section-kicker {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       0. INTRODUCCIÓN & MAPA DE SECTORES
+       ========================================================================== */
+    .hero-research {
+      padding: 56px 0 36px;
+    }
+
+    .hero-badge {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 14px;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 6px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .hero-research h1 {
+      font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      line-height: 1.12;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-research p {
+      color: var(--text-secondary);
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      max-width: 800px;
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+
+    .sector-jumpbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      backdrop-filter: blur(16px);
+    }
+
+    .jump-pill {
+      font-size: 0.78rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .jump-pill:hover {
+      color: var(--accent-cyan);
+      border-color: var(--glass-border);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* ==========================================================================
+       INTERACCIÓN 1: EXPLORADOR DE LOS 5 PILARES NUCLEARES
+       ========================================================================== */
+    .pillars-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .pillar-tab {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-tab:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .pillar-tab.active {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.14);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.2);
+    }
+
+    .pillar-tab .p-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .pillar-tab .p-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+    }
+
+    .pillar-stage {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(22px);
+      animation: fadeSlide 0.3s ease;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stage-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .stage-top h3 {
+      font-size: 1.55rem;
+      margin-bottom: 8px;
+    }
+
+    .stage-top p {
+      color: var(--text-secondary);
+      max-width: 740px;
+      line-height: 1.6;
+      font-size: 0.96rem;
+    }
+
+    .submodules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .submodule-card {
+      background: rgba(56, 189, 248, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: border-color 0.25s ease;
+    }
+
+    .submodule-card:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .submodule-card h4 {
+      font-size: 1.02rem;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+    }
+
+    .submodule-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .submodule-card li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.45;
+    }
+
+    .submodule-card li::before {
+      content: "›";
+      position: absolute;
+      left: 0;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       INTERACCIÓN 2: SANDBOX DE SIMULACIÓN & CONSOLA DE EXPERIMENTOS
+       ========================================================================== */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 920px) {
+      .sandbox-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+      }
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 26px;
+      backdrop-filter: blur(20px);
+    }
+
+    .sim-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 270px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      background: rgba(5, 8, 20, 0.75);
+      margin: 16px 0;
+    }
+
+    #lab-sim-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .sim-hud-overlay {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      color: #38bdf8;
+      pointer-events: none;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .sim-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .exp-item {
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: rgba(56, 189, 248, 0.03);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .exp-item:hover,
+    .exp-item.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.09);
+    }
+
+    .exp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .exp-code {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .status-proto {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    /* ==========================================================================
+       SOPORTE CONCEPTUAL (MARCO TEÓRICO & ARTE PROCEDURAL)
+       ========================================================================== */
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .spotlight-card {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 26px;
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .spotlight-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        480px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        var(--glass-highlight),
+        transparent 40%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .spotlight-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-cyan);
+    }
+
+    .spotlight-card:hover::before {
+      opacity: 1;
+    }
+
+    .spotlight-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+    }
+
+    .spotlight-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       INTERACCIÓN 3: BIBLIOTECA VIVA CON FILTROS Y LECTOR MODAL
+       ========================================================================== */
+    .library-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+    }
+
+    .search-input {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      min-width: 240px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .library-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .doc-row {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 18px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .doc-row:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .doc-meta-tag {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      margin-right: 10px;
+    }
+
+    /* ==========================================================================
+       SECTOR 10: ROADMAP CIENTÍFICO
+       ========================================================================== */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .roadmap-col {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .roadmap-col .horizon {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-purple);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .roadmap-col h3 {
+      font-size: 1.15rem;
+      margin-bottom: 14px;
+    }
+
+    .roadmap-col ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .roadmap-col li::before {
+      content: "◆ ";
+      color: var(--accent-cyan);
+      font-size: 0.75rem;
+    }
+
+    /* ==========================================================================
+       MODAL LECTOR DE DOCUMENTOS / PAPERS
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 20px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.25);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .modal-body p {
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 16px;
+      font-size: 0.96rem;
+    }
+
+    /* ==========================================================================
+       FOOTER INSTITUCIONAL OBLIGATORIO
+       ========================================================================== */
+    footer {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding: 36px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo vivo holográfico y partículas -->
+  <div class="living-background"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Barra de Noticias / Ticker Superior -->
+  <div class="news-ticker" id="newsTicker">
+    <div>
+      <span class="news-badge">Centro I+D</span>
+      <span>Arquitectura Multidisciplinar Activa — 5 Pilares Nucleares & Laboratorio Experimental.</span>
+    </div>
+    <button class="close-ticker" onclick="document.getElementById('newsTicker').style.display='none'" title="Cerrar">&times;</button>
+  </div>
+
+  <!-- Header / Barra de Navegación Universal -->
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport" title="Núcleo Central MultiversoLabs">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.95rem; letter-spacing: 0.5px;">MULTIVERSOLABS</strong>
+        <div style="font-size: 0.7rem; color: var(--text-secondary);">Exploring Dimensions</div>
+      </div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="empresa.html">Empresa</a>
+      <a href="division-entretenimiento.html">Juegos & Apps</a>
+      <a href="investigacion.html" class="active">Investigación</a>
+      <a href="contacto.html">Contacto</a>
+    </nav>
+
+    <div class="admin-controls">
+      <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="admin.html" class="btn-glass">🔒 Admin</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========================================================================
+         00. INTRODUCCIÓN Y MAPA DE SECTORES
+         ======================================================================== -->
+    <section class="hero-research" id="sec-intro">
+      <span class="hero-badge">00 // Centro de Investigación Multidisciplinar</span>
+      <h1>Investigación MultiversoLabs</h1>
+      <p>
+        Exploración científica, simulación computacional y experimentación estética articuladas en torno a <strong>cinco pilares nucleares</strong>. Todo marco teórico, manifiesto ético y obra procedural opera como soporte y validación de nuestros entornos experimentales.
+      </p>
+
+      <nav class="sector-jumpbar" aria-label="Mapa de sectores">
+        <a href="#sec-pilares" class="jump-pill">02–06 // 5 Pilares Nucleares</a>
+        <a href="#sec-laboratorio" class="jump-pill">08 // Laboratorio Experimental</a>
+        <a href="#sec-soporte" class="jump-pill">01 & 07 // Marco Teórico y Arte Procedural</a>
+        <a href="#sec-biblioteca" class="jump-pill">09 // Biblioteca Viva</a>
+        <a href="#sec-roadmap" class="jump-pill">10 // Roadmap Científico</a>
+      </nav>
+    </section>
+
+    <!-- ========================================================================
+         SECTORES 02–06: EXPLORADOR INTERACTIVO DE LOS 5 PILARES PRINCIPALES
+         ======================================================================== -->
+    <section class="section-block" id="sec-pilares">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Núcleo Científico // Sectores 02 a 06</span>
+          <h2 class="section-title">Los Cinco Pilares de Investigación</h2>
+        </div>
+        <span style="font-size: 0.84rem; color: var(--text-secondary);">Selecciona un pilar para inspeccionar sus módulos y variables</span>
+      </div>
+
+      <!-- Pestañas de los 5 Pilares -->
+      <div class="pillars-tabs" role="tablist">
+        <button class="pillar-tab active" data-pillar="geometria" role="tab" aria-selected="true">
+          <span class="p-num">Pilar 01 · Sector 02</span>
+          <span class="p-name">Geometría Relacional</span>
+        </button>
+        <button class="pillar-tab" data-pillar="vida" role="tab" aria-selected="false">
+          <span class="p-num">Pilar 02 · Sector 03</span>
+          <span class="p-name">Vida Artificial</span>
+        </button>
+        <button class="pillar-tab" data-pillar="ia" role="tab" aria-selected="false">
+          <span class="p-num">Pilar 03 · Sector 04</span>
+          <span class="p-name">IA Cooperativa</span>
+        </button>
+        <button class="pillar-tab" data-pillar="holografia" role="tab" aria-selected="false">
+          <span class="p-num">Pilar 04 · Sector 05</span>
+          <span class="p-name">Simulación Holográfica</span>
+        </button>
+        <button class="pillar-tab" data-pillar="emergencia" role="tab" aria-selected="false">
+          <span class="p-num">Pilar 05 · Sector 06</span>
+          <span class="p-name">Sistemas Emergentes</span>
+        </button>
+      </div>
+
+      <!-- Escenario Dinámico del Pilar Seleccionado -->
+      <div class="pillar-stage" id="pillarStage"></div>
+    </section>
+
+    <!-- ========================================================================
+         SECTOR 08: LABORATORIO EXPERIMENTAL INTERACTIVO
+         ======================================================================== -->
+    <section class="section-block" id="sec-laboratorio">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Sector 08 // Validación en Tiempo Real</span>
+          <h2 class="section-title">Laboratorio Experimental</h2>
+        </div>
+        <span style="font-size: 0.84rem; color: var(--text-secondary);">Simulador activo conectado a las hipótesis del laboratorio</span>
+      </div>
+
+      <div class="sandbox-grid">
+        <!-- Visor Interactivo en Tiempo Real -->
+        <div class="glass-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <strong id="simTitle" style="font-size:1.05rem;">EXP-001: Dinámica Jalar-Empujar & Órbitas Relacionales</strong>
+            <span class="status-badge status-active">Simulación Viva</span>
+          </div>
+
+          <div class="sim-canvas-wrap">
+            <canvas id="lab-sim-canvas"></canvas>
+            <div class="sim-hud-overlay">
+              <span id="hudMode">MODO: GEOMETRÍA RELACIONAL</span>
+              <span id="hudMetrics">NODOS: 18 | ACOPLAMIENTO: 0.65</span>
+            </div>
+          </div>
+
+          <div class="sim-controls">
+            <div class="slider-group">
+              <label for="couplingSlider">Acoplamiento / Mutación:</label>
+              <input type="range" id="couplingSlider" min="10" max="100" value="65" />
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-glass" id="pulseBtn">⚡ Inyectar Pulso</button>
+              <button class="btn-glass primary" id="resetSimBtn">↻ Reiniciar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selector de Experimentos Activos y Bitácora -->
+        <div class="glass-panel">
+          <strong style="font-size:1.05rem;">Experimentos Activos & Registro</strong>
+          <p style="font-size:0.84rem; color:var(--text-secondary); margin-top:4px;">
+            Haz clic en un experimento para cargar su modelo en el visor interactivo.
+          </p>
+
+          <div class="exp-list" id="expList">
+            <div class="exp-item selected" data-exp="0">
+              <div class="exp-top">
+                <span class="exp-code">EXPERIMENTO 001 // SECTOR 02</span>
+                <span class="status-badge status-active">Activo</span>
+              </div>
+              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Relaciones Sol-Tierra-Luna y Gravedad Residual</strong>
+              <span style="font-size:0.82rem; color:var(--text-secondary);">Evaluación de equilibrio orbital mediante dinámica de jalar y empujar.</span>
+            </div>
+
+            <div class="exp-item" data-exp="1">
+              <div class="exp-top">
+                <span class="exp-code">EXPERIMENTO 002 // SECTOR 03</span>
+                <span class="status-badge status-active">Activo</span>
+              </div>
+              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Reactor Life: Ecologías y Mutación Genética</strong>
+              <span style="font-size:0.82rem; color:var(--text-secondary);">Selección adaptativa y cooperación entre agentes digitales autónomos.</span>
+            </div>
+
+            <div class="exp-item" data-exp="2">
+              <div class="exp-top">
+                <span class="exp-code">EXPERIMENTO 003 // SECTOR 06</span>
+                <span class="status-badge status-proto">En Calibración</span>
+              </div>
+              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Enjambres Concurrentes & Sincronización de Hilos</strong>
+              <span style="font-size:0.82rem; color:var(--text-secondary);">Autoorganización colectiva sin controlador centralizado.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTORES 01 & 07: ARQUITECTURA DE SOPORTE (MARCO TEÓRICO Y ARTE PROCEDURAL)
+         ======================================================================== -->
+    <section class="section-block" id="sec-soporte">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Estructuras de Soporte // Sectores 01 & 07</span>
+          <h2 class="section-title">Fundamentos Éticos y Expresión Procedural</h2>
+        </div>
+      </div>
+
+      <div class="support-grid">
+        <article class="spotlight-card">
+          <span class="section-kicker">Sector 01.1 // Tesis Fundacional</span>
+          <h3>Creatividad Humana como Origen de Valor</h3>
+          <p>
+            Toda investigación parte de la primacía de la intención, autoría y supervisión ética humana. La IA actúa como amplificador cognitivo bajo transparencia algorítmica estricta.
+          </p>
+        </article>
+
+        <article class="spotlight-card">
+          <span class="section-kicker">Sector 01.2 // Ontología del Laboratorio</span>
+          <h3>Observador, Multiverso y Simulación</h3>
+          <p>
+            Estudio de la realidad computacional como espacio de hipótesis: cómo el observador define marcos de referencia y permite observar fenómenos emergentes.
+          </p>
+        </article>
+
+        <article class="spotlight-card">
+          <span class="section-kicker">Sector 07 // Arte Generativo</span>
+          <h3>Fósiles Estelares & Geometría Procedural</h3>
+          <p>
+            Traducción estética de los modelos matemáticos del laboratorio en arquitecturas holográficas, fósiles estelares y sistemas visuales reactivos.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECTOR 09: BIBLIOTECA VIVA DE PUBLICACIONES
+         ======================================================================== -->
+    <section class="section-block" id="sec-biblioteca">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Sector 09 // Archivo Documental</span>
+          <h2 class="section-title">Biblioteca Viva de Publicaciones</h2>
+        </div>
+      </div>
+
+      <div class="library-toolbar">
+        <div class="filter-pills" id="libraryFilters">
+          <button class="filter-btn active" data-cat="todos">Todos</button>
+          <button class="filter-btn" data-cat="Manifiesto">Manifiestos</button>
+          <button class="filter-btn" data-cat="Paper">Papers</button>
+          <button class="filter-btn" data-cat="Nota Técnica">Notas Técnicas</button>
+          <button class="filter-btn" data-cat="Bitácora">Bitácoras</button>
+          <button class="filter-btn" data-cat="Ensayo">Ensayos</button>
+        </div>
+        <input type="search" id="docSearch" class="search-input" placeholder="Buscar por título, pilar o concepto..." />
+      </div>
+
+      <div class="library-list" id="libraryList"></div>
+    </section>
+
+    <!-- ========================================================================
+         SECTOR 10: ROADMAP CIENTÍFICO
+         ======================================================================== -->
+    <section class="section-block" id="sec-roadmap">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Sector 10 // Proyección Evolutiva</span>
+          <h2 class="section-title">Roadmap Científico</h2>
+        </div>
+      </div>
+
+      <div class="roadmap-grid">
+        <div class="roadmap-col">
+          <span class="horizon">Horizonte 01 // Corto Plazo</span>
+          <h3>Consolidación Modular</h3>
+          <ul>
+            <li>Iteración estable de <strong>Reactor Life</strong> y ciclos evolutivos.</li>
+            <li>Despliegue operativo de los agentes cognitivos <strong>ASUMMA</strong> y <strong>ARIA</strong>.</li>
+            <li>Refinamiento del HUD y visualización holográfica en tiempo real.</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-col">
+          <span class="horizon">Horizonte 02 // Medio Plazo</span>
+          <h3>Acoplamiento Sistémico</h3>
+          <ul>
+            <li>Ecosistemas digitales completos con poblaciones persistentes.</li>
+            <li>Simulación integral de <strong>Geometría Relacional</strong> y <em>Master Equation</em>.</li>
+            <li>Interconexión entre agentes multiagente y entornos reactivos.</li>
+          </ul>
+        </div>
+
+        <div class="roadmap-col">
+          <span class="horizon">Horizonte 03 // Largo Plazo</span>
+          <h3>Motor Multiverso</h3>
+          <ul>
+            <li>Arquitectura unificada del <strong>Motor Multiverso</strong>.</li>
+            <li>Entornos emergentes persistentes de alta concurrencia.</li>
+            <li>Plataforma abierta de investigación y publicación experimental.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Lector de Documentos -->
+  <div class="modal-backdrop" id="docModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="section-kicker" id="modalCat">Categoría</span>
+          <h3 id="modalTitle" style="font-size:1.35rem;">Título del Documento</h3>
+          <span id="modalMeta" style="font-size:0.8rem; color:var(--text-secondary);"></span>
+        </div>
+        <button class="btn-glass" id="closeModalBtn">✕ Cerrar</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Footer Institucional con Créditos Obligatorios -->
+  <footer>
+    <div>
+      <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions. Pioneering Solutions.
+    </div>
+    <div style="font-size: 0.82rem; color: var(--text-secondary);">
+      Página creada y estructurada por MultiversoLabs.
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       1. MODO NOCTURNO / DIURNO (SINCRONIZADO CON INDEX.HTML)
+       ========================================================================== */
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      const hour = new Date().getHours();
+      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = rootEl.getAttribute('data-theme');
+      applyTheme(current === 'light' ? 'dark' : 'light');
+    });
+
+    /* ==========================================================================
+       2. DATOS E INTERACTIVIDAD DE LOS 5 PILARES NUCLEARES
+       ========================================================================== */
+    const pillarsData = {
+      geometria: {
+        tag: "Pilar 01 // Sector 02 · Núcleo Cosmométrico",
+        title: "Geometría Relacional y Cosmometría",
+        desc: "Estudio de las interacciones espaciales y dinámicas de referencia sin depender de marcos absolutos rígidos, modelando cómo la masa, la radiación y el equilibrio orbital emergen de relaciones geométricas.",
+        expLink: 0,
+        modules: [
+          {
+            title: "2.1 Geometría Relacional",
+            items: [
+              "Principios fundamentales de posición relativa.",
+              "Dinámica orbital y relaciones Sol-Tierra-Luna.",
+              "Sistemas de referencia acoplados."
+            ]
+          },
+          {
+            title: "2.2 Master Equation",
+            items: [
+              "Definición formal y variables de estado.",
+              "Masa emergente e interacción con fotones.",
+              "Gravedad residual y dinámica Jalar y Empujar."
+            ]
+          },
+          {
+            title: "2.3 Modelos Cosmométricos",
+            items: [
+              "Simulaciones numéricas de estabilidad.",
+              "Escenarios comparativos de perturbación.",
+              "Resultados preliminares y métricas de ajuste."
+            ]
+          }
+        ]
+      },
+      vida: {
+        tag: "Pilar 02 // Sector 03 · Biología Computacional",
+        title: "Vida Artificial y Ecologías Digitales",
+        desc: "Derivado del módulo Reactor Life, este pilar investiga cómo entidades digitales dotadas de reglas metabólicas y genéticas desarrollan adaptación, competencia y cooperación sostenida.",
+        expLink: 1,
+        modules: [
+          {
+            title: "3.1 Reactor Life",
+            items: [
+              "Arquitectura modular del entorno vital.",
+              "Ciclo de vida, energía y reproducción.",
+              "Operadores de mutación genética controlada."
+            ]
+          },
+          {
+            title: "3.2 Sistemas Evolutivos",
+            items: [
+              "Algoritmos genéticos de adaptación continua.",
+              "Presión selectiva y nichos dinámicos.",
+              "Emergencia de estrategias no programadas."
+            ]
+          },
+          {
+            title: "3.3 Ecologías Digitales",
+            items: [
+              "Dinámica de poblaciones y equilibrio trófico.",
+              "Mecanismos de competencia y simbiosis.",
+              "Resiliencia ante cambios ambientales."
+            ]
+          }
+        ]
+      },
+      ia: {
+        tag: "Pilar 03 // Sector 04 · Cognición Simbiótica",
+        title: "Inteligencia Artificial Cooperativa",
+        desc: "Diseño de arquitecturas cognitivas donde los agentes artificiales asisten, navegan y razonan en colaboración directa con la supervisión y criterio ético del investigador humano.",
+        expLink: 2,
+        modules: [
+          {
+            title: "4.1 Modelo Humano-IA",
+            items: [
+              "Supervisión humana en el bucle de decisión.",
+              "Límites éticos y trazabilidad de acciones.",
+              "Responsabilidad autoral compartida."
+            ]
+          },
+          {
+            title: "4.2 Agentes Cognitivos (ASUMMA & ARIA)",
+            items: [
+              "ASUMMA: arquitectura conceptual, diálogo y rol experimental.",
+              "ARIA: navegación vectorial e interacción espacial.",
+              "Especialización funcional dentro del laboratorio."
+            ]
+          },
+          {
+            title: "4.3 Sistemas Multiagente",
+            items: [
+              "Protocolos de coordinación distribuida.",
+              "Emergencia de consenso operativo.",
+              "Toma de decisiones en entornos cambiantes."
+            ]
+          }
+        ]
+      },
+      holografia: {
+        tag: "Pilar 04 // Sector 05 · Visualización Espacial",
+        title: "Simulación Holográfica y Entornos Reactivos",
+        desc: "Construcción de espacios vectoriales interactivos e interfaces HUD que permiten observar, manipular y comprender sistemas complejos en tiempo real.",
+        expLink: 0,
+        modules: [
+          {
+            title: "5.1 Núcleo Holográfico 3D",
+            items: [
+              "Arquitectura del núcleo tridimensional.",
+              "Motor gráfico ligero y renderizado continuo.",
+              "Representación de espacios vectoriales."
+            ]
+          },
+          {
+            title: "5.2 Interfaces Holográficas",
+            items: [
+              "Diseño de HUD de baja fricción cognitiva.",
+              "Visualización espacial de datos y estados.",
+              "Interacción inmersiva multi-dispositivo."
+            ]
+          },
+          {
+            title: "5.3 Entornos Reactivos",
+            items: [
+              "Generación procedural sensible al contexto.",
+              "Eventos dinámicos en tiempo real.",
+              "Feedback visual inmediato ante estímulos."
+            ]
+          }
+        ]
+      },
+      emergencia: {
+        tag: "Pilar 05 // Sector 06 · Complejidad & Paralelismo",
+        title: "Sistemas Emergentes y Concurrencia",
+        desc: "Investigación sobre cómo múltiples hilos concurrentes y agentes locales producen patrones globales coherentes e inteligencia colectiva escalable.",
+        expLink: 2,
+        modules: [
+          {
+            title: "6.1 Enjambres Digitales",
+            items: [
+              "Reglas locales de cohesión, alineación y separación.",
+              "Formación de patrones colectivos espontáneos.",
+              "Autoorganización sin jerarquía rígida."
+            ]
+          },
+          {
+            title: "6.2 Hilos Concurrentes",
+            items: [
+              "Ejecución de procesos paralelos desacoplados.",
+              "Sincronización temporal y paso de mensajes.",
+              "Estabilidad de simulación en tiempo real."
+            ]
+          },
+          {
+            title: "6.3 Inteligencia Colectiva",
+            items: [
+              "Topologías de redes adaptativas.",
+              "Comportamientos emergentes de orden superior.",
+              "Escalabilidad computacional del ecosistema."
+            ]
+          }
+        ]
+      }
+    };
+
+    const pillarStage = document.getElementById('pillarStage');
+    const pillarTabs = document.querySelectorAll('.pillar-tab');
+
+    function renderPillar(key) {
+      const p = pillarsData[key];
+      pillarStage.innerHTML = `
+        <div class="stage-top">
+          <div>
+            <span class="section-kicker">${p.tag}</span>
+            <h3>${p.title}</h3>
+            <p>${p.desc}</p>
+          </div>
+          <a href="#sec-laboratorio" class="btn-glass primary" onclick="selectExperiment(${p.expLink})">
+            🔬 Probar en Laboratorio →
+          </a>
+        </div>
+        <div class="submodules-grid">
+          ${p.modules.map(m => `
+            <div class="submodule-card">
+              <h4>${m.title}</h4>
+              <ul>
+                ${m.items.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    pillarTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        pillarTabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        renderPillar(tab.dataset.pillar);
+      });
+    });
+
+    renderPillar('geometria');
+
+    /* ==========================================================================
+       3. LABORATORIO EXPERIMENTAL INTERACTIVO (CANVAS EN VIVO)
+       ========================================================================== */
+    const simCanvas = document.getElementById('lab-sim-canvas');
+    const simCtx = simCanvas.getContext('2d');
+    const couplingSlider = document.getElementById('couplingSlider');
+    const hudMode = document.getElementById('hudMode');
+    const hudMetrics = document.getElementById('hudMetrics');
+    const simTitle = document.getElementById('simTitle');
+
+    let currentExp = 0;
+    let simNodes = [];
+    let simTick = 0;
+
+    const experimentsMeta = [
+      {
+        title: "EXP-001: Dinámica Jalar-Empujar & Órbitas Relacionales",
+        mode: "MODO: GEOMETRÍA RELACIONAL",
+        count: 16
+      },
+      {
+        title: "EXP-002: Reactor Life — Ecologías y Mutación Genética",
+        mode: "MODO: REACTOR LIFE (EVOLUTIVO)",
+        count: 24
+      },
+      {
+        title: "EXP-003: Enjambres Concurrentes & Sincronización de Hilos",
+        mode: "MODO: ENJAMBRE CONCURRENTE",
+        count: 34
+      }
+    ];
+
+    function resizeSimCanvas() {
+      const rect = simCanvas.parentElement.getBoundingClientRect();
+      simCanvas.width = rect.width;
+      simCanvas.height = rect.height;
+    }
+
+    function initSimNodes() {
+      resizeSimCanvas();
+      simNodes = [];
+      const count = experimentsMeta[currentExp].count;
+      for (let i = 0; i < count; i++) {
+        simNodes.push({
+          x: Math.random() * simCanvas.width,
+          y: Math.random() * simCanvas.height,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+          angle: (Math.PI * 2 * i) / count,
+          radius: 30 + (i % 5) * 22,
+          energy: Math.random()
+        });
+      }
+    }
+
+    window.selectExperiment = function(idx) {
+      currentExp = idx;
+      document.querySelectorAll('.exp-item').forEach((el, i) => {
+        el.classList.toggle('selected', i === idx);
+      });
+      simTitle.textContent = experimentsMeta[idx].title;
+      hudMode.textContent = experimentsMeta[idx].mode;
+      initSimNodes();
+    };
+
+    document.querySelectorAll('.exp-item').forEach(item => {
+      item.addEventListener('click', () => {
+        selectExperiment(parseInt(item.dataset.exp, 10));
+      });
+    });
+
+    document.getElementById('pulseBtn').addEventListener('click', () => {
+      simNodes.forEach(n => {
+        n.vx += (Math.random() - 0.5) * 6;
+        n.vy += (Math.random() - 0.5) * 6;
+        n.energy = 1;
+      });
+    });
+
+    document.getElementById('resetSimBtn').addEventListener('click', initSimNodes);
+    window.addEventListener('resize', resizeSimCanvas);
+    initSimNodes();
+
+    function drawLabSimulation() {
+      simTick += 0.02;
+      const w = simCanvas.width;
+      const h = simCanvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const factor = parseInt(couplingSlider.value, 10) / 100;
+
+      simCtx.fillStyle = 'rgba(5, 8, 20, 0.28)';
+      simCtx.fillRect(0, 0, w, h);
+
+      hudMetrics.textContent = `NODOS: ${simNodes.length} | ACOPLAMIENTO: ${factor.toFixed(2)}`;
+
+      if (currentExp === 0) {
+        // Geometría Relacional: núcleo central + cuerpos acoplados
+        simCtx.beginPath();
+        simCtx.arc(cx, cy, 10 + Math.sin(simTick * 2) * 2, 0, Math.PI * 2);
+        simCtx.fillStyle = '#f43f5e';
+        simCtx.fill();
+
+        simNodes.forEach((n, i) => {
+          n.angle += (0.01 + factor * 0.025) * (i % 2 === 0 ? 1 : -0.7);
+          const r = n.radius * (0.75 + factor * 0.5);
+          const x = cx + Math.cos(n.angle) * r * 1.45;
+          const y = cy + Math.sin(n.angle) * r * 0.85;
+
+          simCtx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
+          simCtx.beginPath();
+          simCtx.moveTo(cx, cy);
+          simCtx.lineTo(x, y);
+          simCtx.stroke();
+
+          simCtx.beginPath();
+          simCtx.arc(x, y, 3.2, 0, Math.PI * 2);
+          simCtx.fillStyle = '#38bdf8';
+          simCtx.fill();
+        });
+      } else if (currentExp === 1) {
+        // Reactor Life: células orgánicas con atracción y mutación
+        simNodes.forEach((n, i) => {
+          n.x += n.vx * (0.5 + factor);
+          n.y += n.vy * (0.5 + factor);
+          if (n.x < 12 || n.x > w - 12) n.vx *= -1;
+          if (n.y < 12 || n.y > h - 12) n.vy *= -1;
+
+          const size = 3 + Math.sin(simTick * 3 + i) * 1.5 + factor * 2;
+          simCtx.beginPath();
+          simCtx.arc(n.x, n.y, size, 0, Math.PI * 2);
+          simCtx.fillStyle = i % 3 === 0 ? '#10b981' : '#38bdf8';
+          simCtx.fill();
+        });
+      } else {
+        // Enjambres Concurrentes: redes de proximidad
+        simNodes.forEach((n, i) => {
+          n.x += n.vx * (0.6 + factor * 1.2);
+          n.y += n.vy * (0.6 + factor * 1.2);
+          if (n.x < 8 || n.x > w - 8) n.vx *= -1;
+          if (n.y < 8 || n.y > h - 8) n.vy *= -1;
+
+          for (let j = i + 1; j < simNodes.length; j++) {
+            const m = simNodes[j];
+            const dist = Math.hypot(n.x - m.x, n.y - m.y);
+            if (dist < 65 + factor * 45) {
+              simCtx.strokeStyle = `rgba(168, 85, 247, ${0.35 * (1 - dist / 110)})`;
+              simCtx.beginPath();
+              simCtx.moveTo(n.x, n.y);
+              simCtx.lineTo(m.x, m.y);
+              simCtx.stroke();
+            }
+          }
+
+          simCtx.beginPath();
+          simCtx.arc(n.x, n.y, 2.6, 0, Math.PI * 2);
+          simCtx.fillStyle = '#a855f7';
+          simCtx.fill();
+        });
+      }
+
+      requestAnimationFrame(drawLabSimulation);
+    }
+    drawLabSimulation();
+
+    /* ==========================================================================
+       4. BIBLIOTECA VIVA DE PUBLICACIONES Y MODAL LECTOR
+       ========================================================================== */
+    const documentsDB = [
+      {
+        cat: "Manifiesto",
+        title: "Manifiesto de Cooperación Humano-IA y Primacía Creativa",
+        meta: "Sector 01 · Versión 2.0 (2026)",
+        summary: "Marco ético que establece la creatividad humana como origen indiscutible de valor y delimita el rol operativo de los modelos algorítmicos.",
+        content: [
+          "En MultiversoLabs concebimos la inteligencia artificial como un instrumento de amplificación técnica y exploratoria, subordinado siempre a la intención conceptual, sensibilidad estética y juicio ético del ser humano.",
+          "Toda obra, simulación o modelo teórico desarrollado en el laboratorio documenta explícitamente el grado de intervención procedural o asistida, garantizando trazabilidad y rigor intelectual."
+        ]
+      },
+      {
+        cat: "Paper",
+        title: "Fundamentos de Geometría Relacional y Dinámica Jalar-Empujar",
+        meta: "Sector 02 · Pilar 01 · Borrador de Trabajo",
+        summary: "Formulación preliminar de la Master Equation, relaciones Sol-Tierra-Luna, masa emergente y gravedad residual.",
+        content: [
+          "Este documento explora cómo las magnitudes observadas en sistemas orbitales acoplados pueden describirse mediante relaciones geométricas directas y tensiones de equilibrio entre atracción y repulsión.",
+          "Se presentan las variables principales de la Master Equation junto con las primeras simulaciones cosmométricas desarrolladas en el laboratorio experimental."
+        ]
+      },
+      {
+        cat: "Nota Técnica",
+        title: "Arquitectura de Reactor Life: Mutación y Ecologías Digitales",
+        meta: "Sector 03 · Pilar 02 · Rev. Técnica",
+        summary: "Especificación del ciclo de vida, reglas de selección evolutiva y dinámica poblacional en entornos cerrados.",
+        content: [
+          "Reactor Life implementa entidades autónomas con parámetros heredables sujetos a mutación estocástica y presión energética.",
+          "Las observaciones iniciales muestran transiciones espontáneas desde competencia aislada hacia patrones de cooperación local cuando los recursos fluctúan."
+        ]
+      },
+      {
+        cat: "Nota Técnica",
+        title: "Agentes Cognitivos ASUMMA y ARIA en el Núcleo Holográfico",
+        meta: "Sector 04 · Pilar 03 · Arquitectura",
+        summary: "Definición funcional de ASUMMA (interacción experimental) y ARIA (navegación vectorial y orientación espacial).",
+        content: [
+          "La división de roles entre agentes especializados evita cajas negras monolíticas. ASUMMA articula la síntesis conceptual y el diálogo con el investigador, mientras ARIA gestiona la navegación vectorial dentro del espacio 3D.",
+          "Ambos agentes operan bajo supervisión humana directa y protocolos verificables."
+        ]
+      },
+      {
+        cat: "Bitácora",
+        title: "Bitácora #014: Sincronización de Hilos Concurrentes en Enjambres",
+        meta: "Sector 06 & 08 · Registro de Laboratorio",
+        summary: "Observaciones sobre latencia, autoorganización colectiva y estabilidad en simulaciones multi-hilo en tiempo real.",
+        content: [
+          "Durante las pruebas del Experimento 003 se ajustó el umbral de acoplamiento local para evitar oscilaciones caóticas en enjambres superiores a treinta nodos.",
+          "El desacoplamiento entre cálculo de estado y renderizado holográfico permitió sostener fluidez visual sin pérdida de coherencia en los patrones emergentes."
+        ]
+      },
+      {
+        cat: "Ensayo",
+        title: "Fósiles Estelares: Estética de los Sistemas Emergentes",
+        meta: "Sector 07 · Arte Generativo & Arquitectura Procedural",
+        summary: "Reflexión sobre cómo las trayectorias matemáticas dejan huellas visuales comparables a registros geológicos o astronómicos.",
+        content: [
+          "Cuando un sistema dinámico evoluciona bajo reglas deterministicas o semi-estocásticas, la acumulación de sus estados pasados conforma una estructura visual única: un fósil estelar.",
+          "El arte generativo en MultiversoLabs no es decorativo: constituye una herramienta de lectura intuitiva de la complejidad."
+        ]
+      }
+    ];
+
+    const libraryList = document.getElementById('libraryList');
+    const docSearch = document.getElementById('docSearch');
+    let activeCategory = 'todos';
+
+    function renderLibrary() {
+      const q = docSearch.value.trim().toLowerCase();
+      const filtered = documentsDB.filter(doc => {
+        const matchCat = activeCategory === 'todos' || doc.cat === activeCategory;
+        const matchQuery = !q ||
+          doc.title.toLowerCase().includes(q) ||
+          doc.summary.toLowerCase().includes(q) ||
+          doc.meta.toLowerCase().includes(q);
+        return matchCat && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        libraryList.innerHTML = `<div class="glass-panel" style="text-align:center; color:var(--text-secondary);">No se encontraron documentos con ese filtro.</div>`;
+        return;
+      }
+
+      libraryList.innerHTML = filtered.map((doc, idx) => `
+        <div class="doc-row">
+          <div style="max-width:760px;">
+            <div style="margin-bottom:4px;">
+              <span class="doc-meta-tag">${doc.cat}</span>
+              <span style="font-size:0.78rem; color:var(--text-secondary);">${doc.meta}</span>
+            </div>
+            <h4 style="font-size:1.05rem; margin-bottom:4px;">${doc.title}</h4>
+            <p style="font-size:0.88rem; color:var(--text-secondary);">${doc.summary}</p>
+          </div>
+          <button class="btn-glass primary" onclick="openDocModal(${documentsDB.indexOf(doc)})">Leer documento →</button>
+        </div>
+      `).join('');
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeCategory = btn.dataset.cat;
+        renderLibrary();
+      });
+    });
+
+    docSearch.addEventListener('input', renderLibrary);
+    renderLibrary();
+
+    /* Modal Lector */
+    const docModal = document.getElementById('docModal');
+    window.openDocModal = function(index) {
+      const doc = documentsDB[index];
+      document.getElementById('modalCat').textContent = doc.cat;
+      document.getElementById('modalTitle').textContent = doc.title;
+      document.getElementById('modalMeta').textContent = doc.meta;
+      document.getElementById('modalBody').innerHTML = doc.content.map(p => `<p>${p}</p>`).join('');
+      docModal.classList.add('open');
+    };
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      docModal.classList.remove('open');
+    });
+
+    docModal.addEventListener('click', e => {
+      if (e.target === docModal) docModal.classList.remove('open');
+    });
+
+    /* ==========================================================================
+       5. EFECTO SPOTLIGHT EN TARJETAS DE SOPORTE
+       ========================================================================== */
+    document.querySelectorAll('.spotlight-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    /* ==========================================================================
+       6. PARTÍCULAS HOLOGRÁFICAS DE FONDO EN CANVAS
+       ========================================================================== */
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 48; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.6 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isLight = rootEl.getAttribute('data-theme') === 'light';
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+  </script>
+</body>
+</html>
