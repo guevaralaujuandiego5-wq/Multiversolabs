@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Empresa & Ecosistema — MultiversoLabs</title>
+  <title>¿Por qué existe MultiversoLabs? — Manifiesto & Origen</title>
   <style>
     /* ==========================================================================
        VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
@@ -13,7 +13,7 @@
       --bg-mesh-2: #0b1120;
       --bg-mesh-3: #111827;
       --glass-bg: rgba(15, 23, 42, 0.68);
-      --glass-bg-elevated: rgba(15, 23, 42, 0.88);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.92);
       --glass-border: rgba(56, 189, 248, 0.2);
       --glass-highlight: rgba(56, 189, 248, 0.35);
       --text-primary: #f8fafc;
@@ -30,7 +30,7 @@
       --bg-mesh-2: #e2e8f0;
       --bg-mesh-3: #cbd5e1;
       --glass-bg: rgba(255, 255, 255, 0.78);
-      --glass-bg-elevated: rgba(255, 255, 255, 0.94);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.96);
       --glass-border: rgba(2, 132, 199, 0.22);
       --glass-highlight: rgba(2, 132, 199, 0.28);
       --text-primary: #0f172a;
@@ -68,7 +68,7 @@
       position: fixed;
       inset: 0;
       z-index: -2;
-      background: 
+      background:
         radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
         radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
         linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
@@ -234,455 +234,481 @@
     }
 
     /* ==========================================================================
-       CONTENEDORES Y ENCABEZADOS DE SECCIÓN
+       CONTENEDORES Y TIPOGRAFÍA
        ========================================================================== */
     .container {
-      max-width: 1200px;
+      max-width: 1060px;
       margin: 0 auto;
       padding: 0 5%;
     }
 
     .section-block {
-      padding: 44px 0;
+      padding: 40px 0;
     }
 
-    .section-header {
-      margin-bottom: 26px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-    }
-
-    .section-kicker {
+    .kicker {
       font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       color: var(--accent-cyan);
       font-weight: 700;
       display: block;
-      margin-bottom: 6px;
-    }
-
-    .section-title {
-      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
+      margin-bottom: 8px;
     }
 
     /* ==========================================================================
-       HERO INSTITUCIONAL
+       BLOQUE 1: ¿POR QUÉ EXISTE MULTIVERSOLABS? (ORIGEN & RELACIONES)
        ========================================================================== */
-    .hero-corp {
+    .origin-hero {
       padding: 56px 0 32px;
     }
 
-    .hero-badge {
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      color: var(--accent-cyan);
-      font-weight: 700;
-      display: inline-block;
-      margin-bottom: 14px;
-      background: rgba(56, 189, 248, 0.1);
-      padding: 6px 14px;
-      border-radius: 99px;
+    .origin-card {
+      background: var(--glass-bg);
       border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: clamp(28px, 5vw, 48px);
+      backdrop-filter: blur(22px);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
     }
 
-    .hero-corp h1 {
-      font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+    .origin-card h1 {
+      font-size: clamp(2rem, 4.4vw, 3.2rem);
       font-weight: 800;
       letter-spacing: -0.03em;
-      margin-bottom: 16px;
       line-height: 1.12;
+      margin-bottom: 22px;
       background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .hero-corp p {
+    .origin-lead {
+      font-size: clamp(1.05rem, 1.9vw, 1.25rem);
+      line-height: 1.7;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      font-weight: 500;
+    }
+
+    .origin-prose {
+      font-size: 1rem;
+      line-height: 1.78;
       color: var(--text-secondary);
-      font-size: clamp(1rem, 1.8vw, 1.15rem);
-      max-width: 820px;
+      margin-bottom: 16px;
+    }
+
+    .comprehension-quote {
+      margin: 24px 0;
+      padding: 18px 22px;
+      border-left: 3px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.06);
+      border-radius: 0 12px 12px 0;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .relations-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .rel-pill {
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .rel-pill:hover,
+    .rel-pill.active {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--accent-cyan);
+    }
+
+    .rel-reflection {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.35);
+      border: 1px solid var(--glass-border);
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    [data-theme="light"] .rel-reflection {
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    /* ==========================================================================
+       BLOQUE 2: PREGUNTAS QUE SEGUIMOS INVESTIGANDO (INCERTIDUMBRE ABIERTA)
+       ========================================================================== */
+    .questions-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: clamp(28px, 4.5vw, 42px);
+      backdrop-filter: blur(22px);
+    }
+
+    .questions-box h2 {
+      font-size: clamp(1.45rem, 2.6vw, 1.9rem);
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .questions-sub {
+      color: var(--text-secondary);
+      font-size: 0.96rem;
       line-height: 1.65;
       margin-bottom: 24px;
     }
 
-    .quick-nav {
+    .questions-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 14px;
-      background: var(--glass-bg);
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .question-card {
       border: 1px solid var(--glass-border);
       border-radius: 14px;
-      backdrop-filter: blur(16px);
+      padding: 18px 22px;
+      background: rgba(56, 189, 248, 0.03);
+      cursor: pointer;
+      transition: border-color 0.25s ease, background 0.25s ease;
     }
 
-    .jump-pill {
-      font-size: 0.78rem;
-      padding: 6px 12px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--text-secondary);
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-
-    .jump-pill:hover {
-      color: var(--accent-cyan);
-      border-color: var(--glass-border);
+    .question-card:hover,
+    .question-card.open {
+      border-color: var(--accent-cyan);
       background: rgba(56, 189, 248, 0.08);
     }
 
-    /* ==========================================================================
-       INTERACCIÓN 1: INSPECTOR DE ESTRUCTURA ORGANIZACIONAL & GOBERNANZA
-       ========================================================================== */
-    .org-switcher {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .org-tab {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      color: var(--text-secondary);
-      padding: 10px 18px;
-      border-radius: 12px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s ease;
-    }
-
-    .org-tab:hover {
-      border-color: var(--accent-cyan);
-      color: var(--text-primary);
-    }
-
-    .org-tab.active {
-      border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.14);
-      color: var(--accent-cyan);
-      box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
-    }
-
-    .org-stage {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 32px;
-      backdrop-filter: blur(22px);
-      animation: fadeUp 0.3s ease;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .org-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 18px;
-      margin-top: 22px;
-    }
-
-    .org-node {
-      background: rgba(56, 189, 248, 0.04);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      padding: 20px;
-    }
-
-    .org-node h4 {
-      color: var(--accent-cyan);
-      font-size: 1rem;
+    .q-focus-pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--accent-purple);
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.28);
+      padding: 3px 9px;
+      border-radius: 999px;
       margin-bottom: 8px;
     }
 
-    .org-node p {
-      color: var(--text-secondary);
-      font-size: 0.88rem;
-      line-height: 1.55;
-    }
-
-    /* ==========================================================================
-       INTERACCIÓN 2: ECOSISTEMA DE DIVISIONES (TARJETAS SPOTLIGHT)
-       ========================================================================== */
-    .divisions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 20px;
-    }
-
-    .spotlight-card {
-      position: relative;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 26px;
-      backdrop-filter: blur(20px);
-      overflow: hidden;
-      transition: transform 0.3s ease, border-color 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .spotlight-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        480px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        var(--glass-highlight),
-        transparent 40%
-      );
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-
-    .spotlight-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent-cyan);
-    }
-
-    .spotlight-card:hover::before {
-      opacity: 1;
-    }
-
-    .spotlight-card h3 {
-      font-size: 1.18rem;
-      margin-bottom: 10px;
-    }
-
-    .spotlight-card p {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      margin-bottom: 18px;
-    }
-
-    .div-footer {
+    .q-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 12px;
-      border-top: 1px solid var(--glass-border);
-      font-size: 0.8rem;
-    }
-
-    /* ==========================================================================
-       INTERACCIÓN 3: ESTACIÓN DE DIVULGACIÓN & SIMULADORES INTERACTIVOS QR
-       ========================================================================== */
-    .qr-hub-panel {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 22px;
-      padding: 32px;
-      backdrop-filter: blur(22px);
-    }
-
-    .qr-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 28px;
-      margin-top: 24px;
-    }
-
-    @media (min-width: 920px) {
-      .qr-layout {
-        grid-template-columns: 1.15fr 0.85fr;
-      }
-    }
-
-    .sim-cards-selector {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
     }
 
-    .sim-qr-item {
-      background: rgba(56, 189, 248, 0.04);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      padding: 18px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .sim-qr-item:hover,
-    .sim-qr-item.selected {
-      border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.12);
-      transform: translateY(-2px);
-    }
-
-    .sim-shape-tag {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent-purple);
-      margin-bottom: 6px;
-      display: block;
-    }
-
-    .sim-qr-item h4 {
+    .q-text {
       font-size: 1rem;
-      margin-bottom: 6px;
+      font-weight: 600;
       color: var(--text-primary);
-    }
-
-    .sim-qr-item p {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
       line-height: 1.45;
     }
 
-    /* Terminal QR + Vista Previa Interactiva */
-    .qr-terminal {
-      background: rgba(5, 8, 20, 0.55);
-      border: 1px solid var(--glass-border);
-      border-radius: 18px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      justify-content: space-between;
-    }
-
-    [data-theme="light"] .qr-terminal {
-      background: rgba(241, 245, 249, 0.85);
-    }
-
-    .qr-frame {
-      background: #ffffff;
-      padding: 14px;
-      border-radius: 16px;
-      box-shadow: 0 0 28px rgba(56, 189, 248, 0.28);
-      margin: 14px 0;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #qrCanvas {
-      display: block;
-      width: 176px;
-      height: 176px;
-      image-rendering: pixelated;
-    }
-
-    .qr-url-box {
-      width: 100%;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.78rem;
+    .q-toggle {
+      font-size: 0.85rem;
       color: var(--accent-cyan);
-      word-break: break-all;
-      margin: 10px 0 14px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
-    .qr-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      width: 100%;
+    .q-note {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--glass-border);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .question-card.open .q-note {
+      display: block;
     }
 
     /* ==========================================================================
-       MODAL SANDBOX: DEMO INTERACTIVA EN VIVO DEL SIMULADOR SELECCIONADO
+       BLOQUE 3: MANIFIESTO PERSONAL DEL FUNDADOR (VOZ DEL EXPLORADOR)
        ========================================================================== */
-    .modal-backdrop {
+    .manifesto-personal {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-left: 4px solid var(--accent-purple);
+      border-radius: 22px;
+      padding: clamp(28px, 5vw, 46px);
+      backdrop-filter: blur(22px);
+    }
+
+    .manifesto-personal h2 {
+      font-size: clamp(1.45rem, 2.6vw, 1.9rem);
+      font-weight: 800;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .manifesto-personal p {
+      font-size: 1.02rem;
+      line-height: 1.82;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+    }
+
+    .manifesto-personal p strong {
+      color: var(--text-primary);
+    }
+
+    .signature-block {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+    }
+
+    .signature-name {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .signature-role {
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      margin-top: 2px;
+    }
+
+    /* ==========================================================================
+       CIERRE SOBRIO: PUENTES Y REGALO DE SIMULADORES QR EN ESPIRAL
+       ========================================================================== */
+    .bridge-bar {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 24px 28px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .bridge-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* ==========================================================================
+       PANTALLA EMERGENTE EN ESPIRAL DINÁMICA (REGALO QR ACADÉMICO)
+       ========================================================================== */
+    .spiral-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 100;
-      background: rgba(2, 6, 23, 0.82);
-      backdrop-filter: blur(10px);
+      z-index: 120;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(12px);
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      perspective: 1100px;
+      overflow: hidden;
     }
 
-    .modal-backdrop.open {
+    .spiral-backdrop.open {
       display: flex;
     }
 
-    .modal-card {
+    .spiral-card {
       background: var(--glass-bg-elevated);
       border: 1px solid var(--accent-cyan);
-      border-radius: 20px;
-      max-width: 760px;
+      border-radius: 24px;
+      max-width: 660px;
       width: 100%;
-      padding: 28px;
-      box-shadow: 0 0 40px rgba(56, 189, 248, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: clamp(24px, 4vw, 36px);
+      box-shadow: 0 0 48px rgba(56, 189, 248, 0.28);
+      transform-origin: center center;
     }
 
-    .modal-header {
+    .spiral-card.animating {
+      animation: bounceApproach 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes bounceApproach {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 0, -450px) scale(0.14);
+        filter: blur(6px);
+      }
+      22% {
+        opacity: 0.65;
+        transform: translate3d(-135px, -46px, -280px) scale(0.32);
+        filter: blur(3px);
+      }
+      46% {
+        opacity: 0.85;
+        transform: translate3d(115px, 28px, -150px) scale(0.56);
+        filter: blur(1.5px);
+      }
+      70% {
+        opacity: 0.96;
+        transform: translate3d(-68px, -16px, -55px) scale(0.8);
+        filter: blur(0px);
+      }
+      86% {
+        opacity: 1;
+        transform: translate3d(34px, 8px, 15px) scale(0.95);
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px);
+      }
+    }
+
+    .gift-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .spiral-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 16px;
-      padding-bottom: 14px;
-      margin-bottom: 16px;
+      gap: 14px;
+      padding-bottom: 16px;
+      margin-bottom: 18px;
       border-bottom: 1px solid var(--glass-border);
     }
 
-    .mini-sim-wrap {
-      width: 100%;
-      height: 260px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--glass-border);
-      background: #050814;
-      margin-bottom: 14px;
-      position: relative;
+    .spiral-top h3 {
+      font-size: 1.35rem;
+      line-height: 1.25;
+      margin-bottom: 6px;
     }
 
-    #miniSimCanvas {
-      width: 100%;
-      height: 100%;
+    .spiral-top p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .qr-gift-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (min-width: 600px) {
+      .qr-gift-grid {
+        grid-template-columns: 200px 1fr;
+      }
+    }
+
+    .qr-box-wrap {
+      background: #ffffff;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    #giftQrCanvas {
+      width: 168px;
+      height: 168px;
       display: block;
+      image-rendering: pixelated;
     }
 
-    .mini-sim-hint {
-      position: absolute;
-      bottom: 10px;
-      left: 12px;
-      right: 12px;
+    .sim-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .sim-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.06);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sim-pill:hover,
+    .sim-pill.active {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.16);
+      font-weight: 600;
+    }
+
+    .gift-url {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.78rem;
-      color: #38bdf8;
-      background: rgba(5, 8, 20, 0.7);
-      padding: 6px 10px;
-      border-radius: 8px;
-      pointer-events: none;
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.07);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      word-break: break-all;
+      margin-bottom: 14px;
+    }
+
+    .gift-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* ==========================================================================
        FOOTER INSTITUCIONAL OBLIGATORIO
        ========================================================================== */
     footer {
-      max-width: 1200px;
-      margin: 40px auto 0;
+      max-width: 1060px;
+      margin: 36px auto 0;
       padding: 36px 5%;
       border-top: 1px solid var(--glass-border);
       display: flex;
@@ -712,8 +738,8 @@
   <!-- Barra de Noticias / Ticker Superior -->
   <div class="news-ticker" id="newsTicker">
     <div>
-      <span class="news-badge">Institucional</span>
-      <span>MultiversoLabs — Organización independiente, gobernanza Humano-IA y simuladores educativos QR.</span>
+      <span class="news-badge">Origen</span>
+      <span>MultiversoLabs — Exploración de relaciones, preguntas abiertas y búsqueda de comprensión.</span>
     </div>
     <button class="close-ticker" onclick="document.getElementById('newsTicker').style.display='none'" title="Cerrar">&times;</button>
   </div>
@@ -750,183 +776,234 @@
   <main class="container">
 
     <!-- ========================================================================
-         HERO INSTITUCIONAL
+         1. ¿POR QUÉ EXISTE MULTIVERSOLABS?
          ======================================================================== -->
-    <section class="hero-corp">
-      <span class="hero-badge">Sector 01 // Identidad & Estructura Corporativa</span>
-      <h1>Arquitectura Institucional y Ecosistema</h1>
-      <p>
-        MultiversoLabs opera como un laboratorio independiente de desarrollo tecnológico, investigación conceptual y creación artística. Estructuramos nuestra organización bajo un modelo híbrido donde la visión humana dirige el propósito y la tecnología amplifica la ejecución.
-      </p>
+    <section class="origin-hero" id="por-que-existe">
+      <article class="origin-card">
+        <span class="kicker">Razón de ser // Origen</span>
+        <h1>¿Por qué existe MultiversoLabs?</h1>
 
-      <nav class="quick-nav" aria-label="Navegación interna de empresa">
-        <a href="#sec-modelo" class="jump-pill">01 // Modelo Operativo & Gobernanza</a>
-        <a href="#sec-divisiones" class="jump-pill">02 // Divisiones del Ecosistema</a>
-        <a href="#sec-qr-academy" class="jump-pill">03 // Estación de Aprendizaje Interactivo (QR)</a>
-      </nav>
-    </section>
-
-    <!-- ========================================================================
-         01. INSPECTOR DE MODELO OPERATIVO, FINANZAS Y GOBERNANZA
-         ======================================================================== -->
-    <section class="section-block" id="sec-modelo">
-      <div class="section-header">
-        <div>
-          <span class="section-kicker">Organización // Principios & Operación</span>
-          <h2 class="section-title">Modelo Operativo y Gobernanza</h2>
-        </div>
-        <span style="font-size: 0.84rem; color: var(--text-secondary);">Explora cada dimensión institucional</span>
-      </div>
-
-      <div class="org-switcher" role="tablist">
-        <button class="org-tab active" data-org="identidad" role="tab">Identidad y Misión</button>
-        <button class="org-tab" data-org="humanoia" role="tab">Cooperación Humano-IA</button>
-        <button class="org-tab" data-org="activos" role="tab">Activos, Recursos y Sostenibilidad</button>
-        <button class="org-tab" data-org="etica" role="tab">Transparencia y Autoría</button>
-      </div>
-
-      <div class="org-stage" id="orgStage"></div>
-    </section>
-
-    <!-- ========================================================================
-         02. DIVISIONES DEL ECOSISTEMA MULTIVERSOLABS
-         ======================================================================== -->
-    <section class="section-block" id="sec-divisiones">
-      <div class="section-header">
-        <div>
-          <span class="section-kicker">Mapa Corporativo // Sectores Operativos</span>
-          <h2 class="section-title">Divisiones del Ecosistema</h2>
-        </div>
-      </div>
-
-      <div class="divisions-grid">
-        <article class="spotlight-card">
-          <div>
-            <span class="section-kicker">División I // I+D</span>
-            <h3>Centro de Investigación</h3>
-            <p>
-              Núcleo científico articulado en cinco pilares: Geometría Relacional, Vida Artificial, IA Cooperativa, Simulación Holográfica y Sistemas Emergentes.
-            </p>
-          </div>
-          <div class="div-footer">
-            <span style="color: var(--accent-emerald); font-weight: 600;">● Activo</span>
-            <a href="investigacion.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">Explorar I+D →</a>
-          </div>
-        </article>
-
-        <article class="spotlight-card">
-          <div>
-            <span class="section-kicker">División II // Interactivo</span>
-            <h3>Aplicaciones y Entretenimiento</h3>
-            <p>
-              Desarrollo de experiencias lúdicas y entornos experimentales en tiempo real como Ajedrez Holográfico y Laberinto Capibara.
-            </p>
-          </div>
-          <div class="div-footer">
-            <span style="color: var(--accent-emerald); font-weight: 600;">● Activo</span>
-            <a href="division-entretenimiento.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">Ir a Juegos & Apps →</a>
-          </div>
-        </article>
-
-        <article class="spotlight-card">
-          <div>
-            <span class="section-kicker">División III // Creación</span>
-            <h3>Arte Multidisciplinario & Procedural</h3>
-            <p>
-              Exploración estética mediante fósiles estelares, geometría procedural y arquitecturas visuales generadas a partir de sistemas dinámicos.
-            </p>
-          </div>
-          <div class="div-footer">
-            <span style="color: var(--accent-purple); font-weight: 600;">● En Expansión</span>
-            <a href="proyectos.html" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">Ver Proyectos →</a>
-          </div>
-        </article>
-
-        <article class="spotlight-card">
-          <div>
-            <span class="section-kicker">División IV // Divulgación</span>
-            <h3>Puente Educativo & Simuladores QR</h3>
-            <p>
-              Transferencia de conocimiento mediante simuladores táctiles y visuales accesibles al instante desde dispositivos móviles mediante códigos QR.
-            </p>
-          </div>
-          <div class="div-footer">
-            <span style="color: var(--accent-cyan); font-weight: 600;">● Integrado</span>
-            <a href="#sec-qr-academy" style="color: var(--accent-cyan); text-decoration: none; font-weight: 600;">Abrir Estación QR ↓</a>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         03. ESTACIÓN DE DIVULGACIÓN & SIMULADORES INTERACTIVOS QR
-         ======================================================================== -->
-    <section class="section-block" id="sec-qr-academy">
-      <div class="qr-hub-panel">
-        <div class="section-header" style="margin-bottom: 10px;">
-          <div>
-            <span class="section-kicker">Transferencia & Aprendizaje Interactivo // Acceso Rápido QR</span>
-            <h2 class="section-title">Simuladores Pedagógicos con Acceso QR</h2>
-          </div>
-          <span class="btn-glass" style="cursor: default; font-size: 0.78rem;">📱 Escanea, descarga el QR o prueba en pantalla</span>
-        </div>
-
-        <p style="color: var(--text-secondary); font-size: 0.96rem; line-height: 1.65; max-width: 840px;">
-          Para acercar la ciencia y la simulación al público sin barreras técnicas, cada módulo interactivo de MultiversoLabs dispone de un <strong>código QR de acceso directo</strong>. Selecciona cualquier simulador para generar su QR descargable o probar su mecánica directamente aquí.
+        <p class="origin-lead">
+          MultiversoLabs nació de una pregunta simple: ¿qué ocurre cuando dejamos de separar la ciencia, la tecnología, el arte y la imaginación?
         </p>
 
-        <div class="qr-layout">
-          <!-- Lista de Simuladores con diferentes formas de aprendizaje -->
-          <div class="sim-cards-selector" id="qrSimList"></div>
+        <p class="origin-prose">
+          Durante mucho tiempo, las disciplinas se han presentado en compartimentos aislados, como si observar el cielo, escribir código, modelar sistemas vivos o crear formas visuales no nacieran de la misma curiosidad humana. Este espacio existe para mirar qué pasa cuando esas fronteras se vuelven porosas y dialogan entre sí.
+        </p>
 
-          <!-- Terminal de Código QR + Acción -->
-          <div class="qr-terminal">
-            <div>
-              <span class="section-kicker" id="qrSelectedShape">Forma 01 // Orbital</span>
-              <h3 id="qrSelectedTitle" style="font-size: 1.15rem; margin-bottom: 4px;">Simulador Sol-Tierra-Luna</h3>
-              <p id="qrSelectedObjective" style="font-size: 0.82rem; color: var(--text-secondary);">
-                Aprende equilibrio orbital modificando distancias y fuerzas de empuje.
-              </p>
+        <p class="origin-prose">
+          MultiversoLabs no surgió primero como una fábrica de software ni como un catálogo de productos. Nació de la necesidad de explorar relaciones: entre humano e inteligencia artificial, entre arte y ciencia, entre orden y caos, entre individuo y sistema, entre geometría y vida, y entre simulación y realidad.
+        </p>
+
+        <div class="comprehension-quote">
+          No perseguimos únicamente resultados. Perseguimos comprensión.
+        </div>
+
+        <p class="origin-prose">
+          Toca una de las relaciones que atraviesan el laboratorio para leer cómo se vive dentro de este espacio:
+        </p>
+
+        <div class="relations-strip" id="relationsStrip">
+          <button class="rel-pill active" data-rel="humano-ia">Humano e IA</button>
+          <button class="rel-pill" data-rel="arte-ciencia">Arte y ciencia</button>
+          <button class="rel-pill" data-rel="orden-caos">Orden y caos</button>
+          <button class="rel-pill" data-rel="individuo-sistema">Individuo y sistema</button>
+          <button class="rel-pill" data-rel="geometria-vida">Geometría y vida</button>
+          <button class="rel-pill" data-rel="simulacion-realidad">Simulación y realidad</button>
+        </div>
+
+        <div class="rel-reflection" id="relReflection"></div>
+      </article>
+    </section>
+
+    <!-- ========================================================================
+         2. PREGUNTAS QUE SEGUIMOS INVESTIGANDO
+         ======================================================================== -->
+    <section class="section-block" id="preguntas-abiertas">
+      <div class="questions-box">
+        <span class="kicker">Incertidumbre & Búsqueda</span>
+        <h2>Preguntas que seguimos investigando</h2>
+        <p class="questions-sub">
+          Un laboratorio vivo se define menos por las certezas que exhibe que por las preguntas que se atreve a sostener. Aquí reunimos las preguntas abiertas y la tensión de origen que guían el trabajo diario; haz clic en cualquiera para ver qué estamos observando.
+        </p>
+
+        <div class="questions-list" id="questionsList">
+          <div class="question-card open">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Origen & Impulso</span>
+                <div class="q-text">¿Qué llevó a Juan a crear MultiversoLabs y qué pregunta persigue desde hace años?</div>
+              </div>
+              <span class="q-toggle">−</span>
             </div>
-
-            <div class="qr-frame" title="Código QR de acceso directo">
-              <canvas id="qrCanvas" width="176" height="176"></canvas>
-            </div>
-
-            <div class="qr-url-box" id="qrUrlText">https://multiversolabs.space/sim/orbital</div>
-
-            <div class="qr-actions">
-              <button class="btn-glass primary" id="launchPreviewBtn">▶ Probar Simulador Aquí</button>
-              <button class="btn-glass" id="downloadQrBtn">⬇ Descargar QR (PNG)</button>
-              <button class="btn-glass" id="copyUrlBtn">📋 Copiar Enlace</button>
+            <div class="q-note">
+              Nació de observar un vacío entre disciplinas separadas artificialmente y de la necesidad de tener un espacio propio para unir ciencia, geometría, creatividad y simulación sin perder el asombro.
             </div>
           </div>
+
+          <div class="question-card">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Emergencia</span>
+                <div class="q-text">¿Puede emerger complejidad a partir de reglas simples?</div>
+              </div>
+              <span class="q-toggle">+</span>
+            </div>
+            <div class="q-note">
+              Observamos cómo interacciones locales mínimas, repetidas en el tiempo y en el espacio, pueden dar lugar a estructuras, ritmos y comportamientos que no estaban escritos de forma explícita en ninguna regla aislada.
+            </div>
+          </div>
+
+          <div class="question-card">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Estabilidad</span>
+                <div class="q-text">¿Puede un ecosistema digital evolucionar de forma estable?</div>
+              </div>
+              <span class="q-toggle">+</span>
+            </div>
+            <div class="q-note">
+              Nos interesa entender el delicado equilibrio entre cambio y continuidad: qué ocurre cuando entidades artificiales compiten, cooperan, mutan y agotan o renuevan recursos sin colapsar ni congelarse.
+            </div>
+          </div>
+
+          <div class="question-card">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Humano e IA</span>
+                <div class="q-text">¿Cómo cooperan humanos e IA sin perder la autoría humana?</div>
+              </div>
+              <span class="q-toggle">+</span>
+            </div>
+            <div class="q-note">
+              Exploramos formas de trabajo donde la máquina acelera cálculos, variantes o pruebas, pero el sentido, la pregunta, el criterio estético y la responsabilidad moral siguen anclados en la mirada humana.
+            </div>
+          </div>
+
+          <div class="question-card">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Geometría & Forma</span>
+                <div class="q-text">¿Qué patrones geométricos generan orden en sistemas complejos?</div>
+              </div>
+              <span class="q-toggle">+</span>
+            </div>
+            <div class="q-note">
+              Indagamos en proporciones, tensiones relacionales y equilibrios dinámicos —desde relaciones orbitales hasta arquitecturas generativas— para ver qué configuraciones sostienen coherencia en medio del movimiento.
+            </div>
+          </div>
+
+          <div class="question-card">
+            <div class="q-header">
+              <div>
+                <span class="q-focus-pill">Divulgación</span>
+                <div class="q-text">¿Cómo transformar conocimiento difícil en experiencias accesibles?</div>
+              </div>
+              <span class="q-toggle">+</span>
+            </div>
+            <div class="q-note">
+              Creemos que comprender no debería exigir siempre un muro de tecnicismos. Buscamos traducir ideas abstractas en simulaciones visuales y táctiles —incluso accesibles mediante un simple código QR— donde cualquiera pueda experimentar y descubrir por sí mismo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         3. MANIFIESTO PERSONAL DEL FUNDADOR
+         ======================================================================== -->
+    <section class="section-block" id="manifiesto-personal">
+      <article class="manifesto-personal">
+        <span class="kicker">Voz en Primera Persona // Explorador</span>
+        <h2>Manifiesto Personal</h2>
+
+        <p>
+          No empecé MultiversoLabs con la ambición de levantar una corporación fría ni de seguir una fórmula de mercado. Empecé porque necesitaba un lugar propio donde pensar en voz alta, probar intuiciones y unir cosas que en mí siempre estuvieron juntas: la curiosidad por cómo funcionan las cosas, el dibujo o la forma, la matemática de las relaciones y el asombro ante lo que emerge cuando un sistema cobra vida.
+        </p>
+
+        <p>
+          Muchas veces he sentido que el mundo nos pide elegir demasiado pronto: o eres técnico o eres artista; o haces teoría o haces algo útil; o usas herramientas nuevas o defiendes lo humano. A mí me ha interesado exactamente el cruce entre esos polos. Simular un mundo, trazar una geometría o conversar con una inteligencia artificial no son fines en sí mismos: son formas de hacerse mejores preguntas.
+        </p>
+
+        <p>
+          <strong>No me presento aquí como el director de una maquinaria que ya tiene todas las respuestas, sino como alguien que explora.</strong> A veces una simulación ilumina algo con claridad; otras veces revela exactamente dónde estaba el error de partida. Aceptar esa incertidumbre es parte del oficio.
+        </p>
+
+        <p>
+          Si algo quiero que permanezca en cada rincón de MultiversoLabs es el respeto por la creatividad humana como origen de valor y la libertad de seguir buscando comprensión sin perder el asombro.
+        </p>
+
+        <div class="signature-block">
+          <div>
+            <div class="signature-name">Juan</div>
+            <div class="signature-role">Fundador y explorador · MultiversoLabs</div>
+          </div>
+          <div style="font-size: 0.84rem; color: var(--text-secondary);">
+            Buscar comprensión antes que apariencia.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ========================================================================
+         CIERRE CON OFERTA / REGALO DE SIMULADORES QR EN ESPIRAL
+         ======================================================================== -->
+    <section class="section-block" style="padding-top: 12px;">
+      <div class="bridge-bar">
+        <div style="font-size: 0.92rem; color: var(--text-secondary);">
+          Como regalo abierto para aprender explorando: abre la ventana en espiral con los <strong>QR académicos</strong> de MultiversoLabs.
+        </div>
+        <div class="bridge-links">
+          <button class="btn-glass primary" id="openSpiralGiftBtn">🌀 Regalo QR Académicos</button>
+          <a href="investigacion.html" class="btn-glass">Investigación →</a>
+          <a href="contacto.html" class="btn-glass">Contacto</a>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Modal Interactivo para probar cada Simulador QR en vivo -->
-  <div class="modal-backdrop" id="simPreviewModal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-header">
+  <!-- ========================================================================
+       PANTALLA EMERGENTE EN ESPIRAL DINÁMICA (REGALO DE SIMULADORES QR)
+       ======================================================================== -->
+  <div class="spiral-backdrop" id="spiralBackdrop" role="dialog" aria-modal="true" aria-labelledby="spiralTitle">
+    <div class="spiral-card" id="spiralCard">
+      <div class="spiral-top">
         <div>
-          <span class="section-kicker" id="modalSimShape">Simulador Interactivo</span>
-          <h3 id="modalSimTitle" style="font-size: 1.3rem;">Título del Simulador</h3>
-          <p id="modalSimDesc" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;"></p>
+          <span class="gift-badge">✦ Regalo Abierto de MultiversoLabs</span>
+          <h3 id="spiralTitle">Simuladores Académicos para Aprender Jugando</h3>
+          <p id="spiralSubtitle">
+            Un obsequio interactivo de la casa: escanea o descarga el código QR de cada forma de simulación para explorar conceptos en movimiento.
+          </p>
         </div>
-        <button class="btn-glass" id="closeSimModalBtn">✕ Cerrar</button>
+        <button class="btn-glass" id="closeSpiralBtn" title="Cerrar">✕</button>
       </div>
 
-      <div class="mini-sim-wrap">
-        <canvas id="miniSimCanvas"></canvas>
-        <div class="mini-sim-hint" id="miniSimHint">Haz clic o mueve el cursor dentro del visor para interactuar con el sistema.</div>
+      <div class="sim-pills" id="giftSimPills">
+        <button class="sim-pill active" data-gift="0">Forma I: Órbita Relacional</button>
+        <button class="sim-pill" data-gift="1">Forma II: Vida & Mutación</button>
+        <button class="sim-pill" data-gift="2">Forma III: Enjambre Colectivo</button>
+        <button class="sim-pill" data-gift="3">Forma IV: Fósiles Geométricos</button>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <span style="font-size: 0.82rem; color: var(--text-secondary);">Vista previa educativa vinculada al código QR</span>
-        <a href="investigacion.html#sec-laboratorio" class="btn-glass primary">Ir al Laboratorio Completo →</a>
+      <div class="qr-gift-grid">
+        <div class="qr-box-wrap">
+          <canvas id="giftQrCanvas" width="168" height="168"></canvas>
+        </div>
+
+        <div>
+          <span class="kicker" id="giftShapeTag" style="margin-bottom:4px;">Forma I // Dinámica Relacional</span>
+          <h4 id="giftSimName" style="font-size:1.1rem; margin-bottom:6px;">Simulador Sol-Tierra-Luna</h4>
+          <p id="giftSimLesson" style="font-size:0.88rem; color:var(--text-secondary); line-height:1.55; margin-bottom:10px;">
+            Observa cómo el equilibrio entre atracción y empuje sostiene trayectorias estables sin necesidad de un centro inmóvil absoluto.
+          </p>
+          <div class="gift-url" id="giftQrUrl">https://multiversolabs.space/investigacion.html#sec-laboratorio</div>
+          <div class="gift-actions">
+            <a class="btn-glass primary" id="giftGoLink" href="investigacion.html#sec-laboratorio">Abrir Simulador →</a>
+            <button class="btn-glass" id="giftDownloadBtn">⬇ Descargar QR</button>
+            <button class="btn-glass" id="giftCopyBtn">📋 Copiar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -969,421 +1046,187 @@
     });
 
     /* ==========================================================================
-       2. INSPECTOR DE MODELO OPERATIVO & GOBERNANZA
+       2. RELACIONES QUE ATRAVIESAN EL LABORATORIO
        ========================================================================== */
-    const orgData = {
-      identidad: {
-        kicker: "01 // Propósito & Naturaleza",
-        title: "Identidad y Misión de MultiversoLabs",
-        desc: "Somos un ecosistema independiente nacido para unir simulación científica, desarrollo de software interactivo y arte generativo sin las rigideces de las estructuras corporativas tradicionales.",
-        nodes: [
-          {
-            title: "Independencia Creativa",
-            text: "Libertad para explorar hipótesis no convencionales en geometría relacional, vida artificial y visualización holográfica."
-          },
-          {
-            title: "Enfoque Multidisciplinar",
-            text: "Cada avance técnico dialoga con una expresión visual y pedagógica comprensible para cualquier visitante."
-          },
-          {
-            title: "Evolución Modular",
-            text: "Construcción progresiva por sectores interconectados dentro de MultiversoLabs.space."
-          }
-        ]
-      },
-      humanoia: {
-        kicker: "02 // Arquitectura Simbiótica",
-        title: "Modelo de Cooperación Humano-IA",
-        desc: "En MultiversoLabs la inteligencia artificial no reemplaza al creador: funciona como co-piloto técnico y agente especializado bajo dirección humana.",
-        nodes: [
-          {
-            title: "Dirección y Juicio Humano",
-            text: "La concepción de ideas, el diseño conceptual, la validación ética y el sentido artístico son 100% humanos."
-          },
-          {
-            title: "Agentes Cognitivos Especializados",
-            text: "Integración de asistentes como ASUMMA y ARIA para análisis, navegación espacial y asistencia experimental."
-          },
-          {
-            title: "Iteración Acelerada",
-            text: "Prototipado rápido de simuladores y entornos interactivos manteniendo rigor y control sobre cada línea de código."
-          }
-        ]
-      },
-      activos: {
-        kicker: "03 // Gestión & Sostenibilidad",
-        title: "Activos, Recursos y Desarrollo Sostenible",
-        desc: "Administramos el capital intelectual, tecnológico y creativo del laboratorio con visión a largo plazo y eficiencia de recursos.",
-        nodes: [
-          {
-            title: "Activos Tecnológicos y Código",
-            text: "Motores de simulación propios, arquitecturas web ligeras sin dependencias pesadas y herramientas procedurales."
-          },
-          {
-            title: "Propiedad Intelectual & Tesis",
-            text: "Documentos fundacionales, modelos cosmométricos y diseños originales protegidos y documentados por versión."
-          },
-          {
-            title: "Crecimiento Orgánico",
-            text: "Reinversión continua en investigación aplicada, herramientas abiertas y experiencias educativas accesibles."
-          }
-        ]
-      },
-      etica: {
-        kicker: "04 // Gobernanza & Rigor",
-        title: "Transparencia, Autoría y Compromiso Ético",
-        desc: "Creemos en el desarrollo responsable: declarar cómo se construye cada sistema fortalece la confianza de usuarios, colaboradores e investigadores.",
-        nodes: [
-          {
-            title: "Trazabilidad de Procesos",
-            text: "Distinción clara entre hipótesis teóricas, simulaciones experimentales y obras de arte generativo."
-          },
-          {
-            title: "Acceso Abierto al Aprendizaje",
-            text: "Uso de interfaces visuales y códigos QR para democratizar conceptos complejos mediante interacción directa."
-          },
-          {
-            title: "Respeto al Valor Humano",
-            text: "Compromiso explícito con la dignidad creativa del autor humano frente a la automatización indiscriminada."
-          }
-        ]
-      }
+    const relationsNotes = {
+      "humano-ia": "La IA puede explorar caminos y asistir en la construcción, pero la intención, el criterio y la responsabilidad de dar sentido siguen perteneciendo al ser humano.",
+      "arte-ciencia": "La ciencia ayuda a formular cómo se comporta un sistema; el arte ayuda a sentir qué significa y a percibir formas que las cifras solas no muestran.",
+      "orden-caos": "Ni el orden rígido ni el caos puro son estériles por sí solos: la vida y la creatividad suelen habitar en el umbral donde ambos se encuentran.",
+      "individuo-sistema": "Cada parte responde a su entorno y, al mismo tiempo, transforma el conjunto del que forma parte.",
+      "geometria-vida": "Las formas, proporciones y tensiones del espacio no son un decorado vacío: condicionan y acompañan la manera en que los sistemas se organizan y evolucionan.",
+      "simulacion-realidad": "Una simulación no es la realidad completa, pero es un espejo limpio para probar ideas, observar dinámicas y afinar la mirada."
     };
 
-    const orgStage = document.getElementById('orgStage');
-    const orgTabs = document.querySelectorAll('.org-tab');
+    const relReflection = document.getElementById('relReflection');
+    const relPills = document.querySelectorAll('.rel-pill');
 
-    function renderOrg(key) {
-      const d = orgData[key];
-      orgStage.innerHTML = `
-        <span class="section-kicker">${d.kicker}</span>
-        <h3 style="font-size: 1.45rem; margin-bottom: 10px;">${d.title}</h3>
-        <p style="color: var(--text-secondary); line-height: 1.65; max-width: 780px;">${d.desc}</p>
-        <div class="org-grid">
-          ${d.nodes.map(n => `
-            <div class="org-node">
-              <h4>${n.title}</h4>
-              <p>${n.text}</p>
-            </div>
-          `).join('')}
-        </div>
-      `;
+    function setRelation(key) {
+      relReflection.textContent = relationsNotes[key];
+      relPills.forEach(pill => pill.classList.toggle('active', pill.dataset.rel === key));
     }
 
-    orgTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        orgTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        renderOrg(tab.dataset.org);
+    relPills.forEach(pill => {
+      pill.addEventListener('click', () => setRelation(pill.dataset.rel));
+    });
+
+    setRelation("humano-ia");
+
+    /* ==========================================================================
+       3. DESPLEGABLE DE PREGUNTAS ABIERTAS
+       ========================================================================== */
+    document.querySelectorAll('.question-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const isOpen = card.classList.toggle('open');
+        const toggleEl = card.querySelector('.q-toggle');
+        if (toggleEl) toggleEl.textContent = isOpen ? '−' : '+';
       });
     });
 
-    renderOrg('identidad');
-
     /* ==========================================================================
-       3. ESTACIÓN DE SIMULADORES QR (GENERADOR DETERMINISTA + DEMO EN VIVO)
+       4. PANTALLA EMERGENTE EN ESPIRAL DINÁMICA CON REGALO DE SIMULADORES QR
        ========================================================================== */
-    const qrSimulators = [
+    const giftSims = [
       {
-        id: "orbital",
-        shape: "Forma 01 // Dinámica Orbital",
-        title: "Simulador Sol-Tierra-Luna",
-        shortDesc: "Explora cómo la geometría relacional y las fuerzas de jalar y empujar estabilizan órbitas.",
-        objective: "Aprende equilibrio orbital modificando distancias y fuerzas de empuje.",
+        slug: "orbita-relacional",
+        tag: "Forma I // Dinámica Relacional",
+        name: "Simulador Sol-Tierra-Luna",
+        lesson: "Observa cómo el equilibrio entre atracción y empuje sostiene trayectorias estables y relaciones acopladas.",
         url: "https://multiversolabs.space/investigacion.html#sec-laboratorio",
-        hint: "Haz clic en el espacio para alterar la órbita del satélite y observar su recuperación relacional."
+        href: "investigacion.html#sec-laboratorio"
       },
       {
-        id: "reactor",
-        shape: "Forma 02 // Vida Artificial",
-        title: "Reactor Life: Células y Mutación",
-        shortDesc: "Observa cómo organismos digitales compiten, cooperan y evolucionan según su energía.",
-        objective: "Comprende selección natural y adaptación mediante interacción táctil directa.",
+        slug: "vida-mutacion",
+        tag: "Forma II // Vida Artificial",
+        name: "Reactor Life: Células y Mutación",
+        lesson: "Explora cómo pequeñas variaciones y recursos limitados moldean la adaptación y cooperación entre agentes.",
         url: "https://multiversolabs.space/investigacion.html#sec-pilares",
-        hint: "Haz clic para liberar nutrientes en el medio y observar cómo se agrupan las células."
+        href: "investigacion.html#sec-pilares"
       },
       {
-        id: "enjambre",
-        shape: "Forma 03 // Inteligencia Colectiva",
-        title: "Enjambre Concurrente",
-        shortDesc: "Descubre cómo reglas locales simples generan patrones globales coordinados sin líder.",
-        objective: "Experimenta autoorganización y cohesión en tiempo real con el cursor.",
+        slug: "enjambre-colectivo",
+        tag: "Forma III // Inteligencia Colectiva",
+        name: "Enjambre Concurrente",
+        lesson: "Descubre cómo reglas locales simples producen movimientos colectivos coordinados sin necesidad de un mando central.",
         url: "https://multiversolabs.space/division-entretenimiento.html",
-        hint: "Mueve el cursor por el visor: los agentes alinearán su trayectoria alrededor de tu punto de influencia."
+        href: "division-entretenimiento.html"
       },
       {
-        id: "fosiles",
-        shape: "Forma 04 // Geometría Procedural",
-        title: "Fósiles Estelares & Ondas",
-        shortDesc: "Visualiza la huella geométrica que dejan las frecuencias armónicas al superponerse.",
-        objective: "Aprende relaciones matemáticas y simetría creando estructuras holográficas.",
+        slug: "fosiles-geometricos",
+        tag: "Forma IV // Geometría Procedural",
+        name: "Fósiles Estelares y Simetría",
+        lesson: "Aprende cómo las proporciones y frecuencias dejan huellas geométricas que ayudan a leer sistemas complejos.",
         url: "https://multiversolabs.space/proyectos.html",
-        hint: "Haz clic para cambiar la frecuencia armónica y esculpir un nuevo fósil estelar."
+        href: "proyectos.html"
       }
     ];
 
-    const qrSimList = document.getElementById('qrSimList');
-    const qrCanvas = document.getElementById('qrCanvas');
-    const qrCtx = qrCanvas.getContext('2d');
-    let selectedSimIdx = 0;
+    const spiralBackdrop = document.getElementById('spiralBackdrop');
+    const spiralCard = document.getElementById('spiralCard');
+    const giftQrCanvas = document.getElementById('giftQrCanvas');
+    const giftQrCtx = giftQrCanvas.getContext('2d');
+    let activeGiftIdx = 0;
 
-    // Generador visual de matriz QR determinista por URL (estética limpia y escaneable/descargable)
-    function drawMatrixQR(text) {
+    function renderGiftQR(text) {
       const size = 25;
-      const padding = 2;
-      const cell = qrCanvas.width / (size + padding * 2);
+      const pad = 2;
+      const cell = giftQrCanvas.width / (size + pad * 2);
 
-      qrCtx.fillStyle = "#ffffff";
-      qrCtx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
+      giftQrCtx.fillStyle = "#ffffff";
+      giftQrCtx.fillRect(0, 0, giftQrCanvas.width, giftQrCanvas.height);
 
-      // Hash determinista desde el texto
       let seed = 2166136261;
       for (let i = 0; i < text.length; i++) {
         seed ^= text.charCodeAt(i);
         seed = Math.imul(seed, 16777619);
       }
-
       function nextBit() {
         seed ^= seed << 13;
         seed ^= seed >>> 17;
         seed ^= seed << 5;
         return (seed >>> 0) % 2 === 0;
       }
-
       function drawFinder(ox, oy) {
         for (let y = 0; y < 7; y++) {
           for (let x = 0; x < 7; x++) {
-            const isBorder = x === 0 || x === 6 || y === 0 || y === 6;
-            const isCore = x >= 2 && x <= 4 && y >= 2 && y <= 4;
-            qrCtx.fillStyle = (isBorder || isCore) ? "#050814" : "#ffffff";
-            qrCtx.fillRect((ox + x + padding) * cell, (oy + y + padding) * cell, Math.ceil(cell), Math.ceil(cell));
+            const border = x === 0 || x === 6 || y === 0 || y === 6;
+            const core = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+            giftQrCtx.fillStyle = (border || core) ? "#050814" : "#ffffff";
+            giftQrCtx.fillRect((ox + x + pad) * cell, (oy + y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
           }
         }
       }
-
-      function inFinderZone(x, y) {
+      function inFinder(x, y) {
         return (x < 8 && y < 8) || (x >= size - 8 && y < 8) || (x < 8 && y >= size - 8);
       }
 
       for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
-          if (inFinderZone(x, y)) continue;
-          const on = (x === 6 || y === 6) ? ((x + y) % 2 === 0) : nextBit();
-          if (on) {
-            qrCtx.fillStyle = "#050814";
-            qrCtx.fillRect((x + padding) * cell, (y + padding) * cell, Math.ceil(cell), Math.ceil(cell));
+          if (inFinder(x, y)) continue;
+          const bit = (x === 6 || y === 6) ? ((x + y) % 2 === 0) : nextBit();
+          if (bit) {
+            giftQrCtx.fillStyle = "#050814";
+            giftQrCtx.fillRect((x + pad) * cell, (y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
           }
         }
       }
-
       drawFinder(0, 0);
       drawFinder(size - 7, 0);
       drawFinder(0, size - 7);
     }
 
-    function renderQrCards() {
-      qrSimList.innerHTML = qrSimulators.map((sim, idx) => `
-        <div class="sim-qr-item ${idx === selectedSimIdx ? 'selected' : ''}" onclick="selectQrSim(${idx})">
-          <div>
-            <span class="sim-shape-tag">${sim.shape}</span>
-            <h4>${sim.title}</h4>
-            <p>${sim.shortDesc}</p>
-          </div>
-          <div style="margin-top: 12px; font-size: 0.78rem; color: var(--accent-cyan); font-weight: 600;">
-            ${idx === selectedSimIdx ? '● QR Activo en Terminal' : 'Seleccionar QR →'}
-          </div>
-        </div>
-      `).join('');
+    function selectGiftSim(idx) {
+      activeGiftIdx = idx;
+      const g = giftSims[idx];
+      document.getElementById('giftShapeTag').textContent = g.tag;
+      document.getElementById('giftSimName').textContent = g.name;
+      document.getElementById('giftSimLesson').textContent = g.lesson;
+      document.getElementById('giftQrUrl').textContent = g.url;
+      document.getElementById('giftGoLink').href = g.href;
+      document.querySelectorAll('.sim-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+      renderGiftQR(g.url);
     }
 
-    window.selectQrSim = function(idx) {
-      selectedSimIdx = idx;
-      const sim = qrSimulators[idx];
-      document.getElementById('qrSelectedShape').textContent = sim.shape;
-      document.getElementById('qrSelectedTitle').textContent = sim.title;
-      document.getElementById('qrSelectedObjective').textContent = sim.objective;
-      document.getElementById('qrUrlText').textContent = sim.url;
-      drawMatrixQR(sim.url);
-      renderQrCards();
-    };
-
-    document.getElementById('downloadQrBtn').addEventListener('click', () => {
-      const sim = qrSimulators[selectedSimIdx];
-      const link = document.createElement('a');
-      link.download = `QR-MultiversoLabs-${sim.id}.png`;
-      link.href = qrCanvas.toDataURL('image/png');
-      link.click();
-    });
-
-    document.getElementById('copyUrlBtn').addEventListener('click', () => {
-      const url = qrSimulators[selectedSimIdx].url;
-      navigator.clipboard?.writeText(url);
-      const btn = document.getElementById('copyUrlBtn');
-      const orig = btn.textContent;
-      btn.textContent = "✓ Enlace Copiado";
-      setTimeout(() => btn.textContent = orig, 1800);
-    });
-
-    selectQrSim(0);
-
-    /* ==========================================================================
-       4. MODAL SANDBOX INTERACTIVO PARA CADA FORMA DE APRENDIZAJE
-       ========================================================================== */
-    const simPreviewModal = document.getElementById('simPreviewModal');
-    const miniCanvas = document.getElementById('miniSimCanvas');
-    const miniCtx = miniCanvas.getContext('2d');
-    let miniAnimId = null;
-    let pointer = { x: 250, y: 130, active: false };
-    let harmonicStep = 3;
-
-    function startMiniSim(simIndex) {
-      if (miniAnimId) cancelAnimationFrame(miniAnimId);
-      const rect = miniCanvas.parentElement.getBoundingClientRect();
-      miniCanvas.width = rect.width || 680;
-      miniCanvas.height = rect.height || 260;
-
-      let t = 0;
-      let agents = Array.from({ length: 28 }, (_, i) => ({
-        x: Math.random() * miniCanvas.width,
-        y: Math.random() * miniCanvas.height,
-        vx: (Math.random() - 0.5) * 2.2,
-        vy: (Math.random() - 0.5) * 2.2,
-        angle: (Math.PI * 2 * i) / 28,
-        r: 35 + (i % 4) * 20
-      }));
-
-      function loop() {
-        t += 0.025;
-        const w = miniCanvas.width;
-        const h = miniCanvas.height;
-        const cx = pointer.active ? pointer.x : w / 2;
-        const cy = pointer.active ? pointer.y : h / 2;
-
-        miniCtx.fillStyle = "rgba(5, 8, 20, 0.24)";
-        miniCtx.fillRect(0, 0, w, h);
-
-        if (simIndex === 0) {
-          // Orbital Sol-Tierra-Luna
-          miniCtx.beginPath();
-          miniCtx.arc(cx, cy, 12, 0, Math.PI * 2);
-          miniCtx.fillStyle = "#f59e0b";
-          miniCtx.fill();
-
-          const earthX = cx + Math.cos(t) * 85;
-          const earthY = cy + Math.sin(t) * 65;
-          miniCtx.beginPath();
-          miniCtx.arc(earthX, earthY, 6, 0, Math.PI * 2);
-          miniCtx.fillStyle = "#38bdf8";
-          miniCtx.fill();
-
-          const moonX = earthX + Math.cos(t * 4.2) * 22;
-          const moonY = earthY + Math.sin(t * 4.2) * 22;
-          miniCtx.beginPath();
-          miniCtx.arc(moonX, moonY, 3, 0, Math.PI * 2);
-          miniCtx.fillStyle = "#f8fafc";
-          miniCtx.fill();
-        } else if (simIndex === 1) {
-          // Reactor Life
-          agents.forEach((a, idx) => {
-            if (pointer.active) {
-              a.vx += (cx - a.x) * 0.0008;
-              a.vy += (cy - a.y) * 0.0008;
-            }
-            a.x += a.vx;
-            a.y += a.vy;
-            if (a.x < 10 || a.x > w - 10) a.vx *= -1;
-            if (a.y < 10 || a.y > h - 10) a.vy *= -1;
-
-            miniCtx.beginPath();
-            miniCtx.arc(a.x, a.y, 4 + Math.sin(t * 3 + idx) * 1.5, 0, Math.PI * 2);
-            miniCtx.fillStyle = idx % 2 === 0 ? "#10b981" : "#38bdf8";
-            miniCtx.fill();
-          });
-        } else if (simIndex === 2) {
-          // Enjambre Concurrente
-          agents.forEach((a, i) => {
-            a.vx += (cx - a.x) * 0.0012 + Math.cos(t + i) * 0.05;
-            a.vy += (cy - a.y) * 0.0012 + Math.sin(t + i) * 0.05;
-            a.vx *= 0.96;
-            a.vy *= 0.96;
-            a.x += a.vx;
-            a.y += a.vy;
-
-            miniCtx.beginPath();
-            miniCtx.arc(a.x, a.y, 3, 0, Math.PI * 2);
-            miniCtx.fillStyle = "#a855f7";
-            miniCtx.fill();
-          });
-        } else {
-          // Fósiles Estelares Procedurales
-          miniCtx.strokeStyle = "#38bdf8";
-          miniCtx.lineWidth = 1.4;
-          miniCtx.beginPath();
-          for (let a = 0; a <= Math.PI * 2; a += 0.03) {
-            const rad = 65 + 28 * Math.sin(harmonicStep * a + t * 2);
-            const x = w / 2 + Math.cos(a) * rad * 1.4;
-            const y = h / 2 + Math.sin(a) * rad;
-            if (a === 0) miniCtx.moveTo(x, y);
-            else miniCtx.lineTo(x, y);
-          }
-          miniCtx.closePath();
-          miniCtx.stroke();
-        }
-
-        miniAnimId = requestAnimationFrame(loop);
-      }
-      loop();
+    function openSpiralGift() {
+      selectGiftSim(activeGiftIdx);
+      spiralBackdrop.classList.add('open');
+      spiralCard.classList.remove('animating');
+      void spiralCard.offsetWidth;
+      spiralCard.classList.add('animating');
     }
 
-    miniCanvas.addEventListener('mousemove', e => {
-      const r = miniCanvas.getBoundingClientRect();
-      pointer.x = e.clientX - r.left;
-      pointer.y = e.clientY - r.top;
-      pointer.active = true;
-    });
-
-    miniCanvas.addEventListener('click', e => {
-      const r = miniCanvas.getBoundingClientRect();
-      pointer.x = e.clientX - r.left;
-      pointer.y = e.clientY - r.top;
-      pointer.active = true;
-      harmonicStep = (harmonicStep % 8) + 2;
-    });
-
-    document.getElementById('launchPreviewBtn').addEventListener('click', () => {
-      const sim = qrSimulators[selectedSimIdx];
-      document.getElementById('modalSimShape').textContent = sim.shape;
-      document.getElementById('modalSimTitle').textContent = sim.title;
-      document.getElementById('modalSimDesc').textContent = sim.shortDesc;
-      document.getElementById('miniSimHint').textContent = sim.hint;
-      pointer.active = false;
-      simPreviewModal.classList.add('open');
-      setTimeout(() => startMiniSim(selectedSimIdx), 40);
-    });
-
-    function closeSimModal() {
-      simPreviewModal.classList.remove('open');
-      if (miniAnimId) cancelAnimationFrame(miniAnimId);
+    function closeSpiralGift() {
+      spiralBackdrop.classList.remove('open');
+      spiralCard.classList.remove('animating');
     }
 
-    document.getElementById('closeSimModalBtn').addEventListener('click', closeSimModal);
-    simPreviewModal.addEventListener('click', e => {
-      if (e.target === simPreviewModal) closeSimModal();
+    document.getElementById('openSpiralGiftBtn').addEventListener('click', openSpiralGift);
+    document.getElementById('closeSpiralBtn').addEventListener('click', closeSpiralGift);
+    spiralBackdrop.addEventListener('click', e => {
+      if (e.target === spiralBackdrop) closeSpiralGift();
+    });
+
+    document.querySelectorAll('.sim-pill').forEach(pill => {
+      pill.addEventListener('click', () => selectGiftSim(parseInt(pill.dataset.gift, 10)));
+    });
+
+    document.getElementById('giftDownloadBtn').addEventListener('click', () => {
+      const g = giftSims[activeGiftIdx];
+      const a = document.createElement('a');
+      a.download = `Regalo-QR-MultiversoLabs-${g.slug}.png`;
+      a.href = giftQrCanvas.toDataURL('image/png');
+      a.click();
+    });
+
+    document.getElementById('giftCopyBtn').addEventListener('click', () => {
+      const btn = document.getElementById('giftCopyBtn');
+      navigator.clipboard?.writeText(giftSims[activeGiftIdx].url);
+      const prev = btn.textContent;
+      btn.textContent = "✓ Copiado";
+      setTimeout(() => (btn.textContent = prev), 1600);
     });
 
     /* ==========================================================================
-       5. EFECTO SPOTLIGHT EN TARJETAS DE DIVISIONES
-       ========================================================================== */
-    document.querySelectorAll('.spotlight-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-      });
-    });
-
-    /* ==========================================================================
-       6. PARTÍCULAS HOLOGRÁFICAS DE FONDO EN CANVAS
+       5. PARTÍCULAS HOLOGRÁFICAS DE FONDO EN CANVAS
        ========================================================================== */
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
