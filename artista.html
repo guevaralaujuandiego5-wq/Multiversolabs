@@ -3,34 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juan — Artista Interdisciplinario | Soberanía Interior</title>
+  <title>Juan Diego — Artista Interdisciplinario | MultiversoLabs</title>
   <style>
     :root {
-      --bg-primary: #09080d;
-      --bg-secondary: #12101a;
-      --card-bg: rgba(24, 20, 36, 0.78);
-      --border-subtle: rgba(217, 70, 239, 0.22);
-      --text-main: #faf5ff;
-      --text-muted: #a1a1aa;
-      --accent-warm: #f59e0b;
-      --accent-magenta: #d946ef;
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.90);
+      --glass-border: rgba(56, 189, 248, 0.22);
+      --glass-highlight: rgba(56, 189, 248, 0.38);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
       --accent-cyan: #38bdf8;
-      /* Variables dinámicas vinculadas a la foto activa */
-      --ambient-color-1: rgba(245, 158, 11, 0.22);
-      --ambient-color-2: rgba(217, 70, 239, 0.18);
-      --ambient-tint: rgba(24, 16, 12, 0.45);
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --ambient-color-1: rgba(56, 189, 248, 0.16);
+      --ambient-color-2: rgba(168, 85, 247, 0.14);
+      --ambient-tint: rgba(5, 8, 20, 0.35);
     }
 
     [data-theme="light"] {
-      --bg-primary: #faf8f5;
-      --bg-secondary: #f3efe8;
-      --card-bg: rgba(255, 255, 255, 0.88);
-      --border-subtle: rgba(162, 28, 175, 0.2);
-      --text-main: #18181b;
-      --text-muted: #52525b;
-      --accent-warm: #d97706;
-      --accent-magenta: #a21caf;
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.95);
+      --glass-border: rgba(2, 132, 199, 0.22);
+      --glass-highlight: rgba(2, 132, 199, 0.28);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
       --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --ambient-color-1: rgba(2, 132, 199, 0.12);
+      --ambient-color-2: rgba(126, 34, 206, 0.10);
+      --ambient-tint: rgba(241, 245, 249, 0.25);
     }
 
     * {
@@ -40,195 +52,294 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    body {
-      background: var(--bg-primary);
-      color: var(--text-main);
-      line-height: 1.65;
-      overflow-x: hidden;
-      transition: background 0.6s ease, color 0.4s ease;
+    html {
+      scroll-behavior: smooth;
     }
 
-    /* Fondo ambiental dinámico con transición opaca */
-    .aurora-bg {
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      transition: color 0.4s ease;
+    }
+
+    /* ==========================================================================
+       FONDO HOLOGRÁFICO MULTIVERSOLABS + REJILLA CUÁNTICA + PARTÍCULAS
+       ========================================================================== */
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 20% 18%, var(--ambient-color-1) 0%, transparent 52%),
+        radial-gradient(circle at 82% 76%, var(--ambient-color-2) 0%, transparent 52%),
+        radial-gradient(circle at 50% 45%, rgba(244, 63, 94, 0.08) 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 22s ease infinite alternate;
+      transition: background 1.4s ease;
+    }
+
+    .holo-grid {
       position: fixed;
       inset: 0;
       z-index: -2;
-      background:
-        radial-gradient(circle at 20% 20%, var(--ambient-color-1) 0%, transparent 55%),
-        radial-gradient(circle at 80% 70%, var(--ambient-color-2) 0%, transparent 55%),
-        linear-gradient(160deg, var(--bg-primary), var(--bg-secondary));
-      transition: background 1.8s ease;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.055) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(168, 85, 247, 0.055) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
     }
 
-    /* Capa opaca atmosférica que tiñe suavemente el fondo según la foto */
-    .ambient-opaque-layer {
+    [data-theme="light"] .holo-grid {
+      background-image:
+        linear-gradient(to right, rgba(2, 132, 199, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(126, 34, 206, 0.07) 1px, transparent 1px);
+    }
+
+    #particle-canvas {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background-color: var(--ambient-tint);
-      opacity: 0.55;
       pointer-events: none;
-      transition: background-color 1.8s ease, opacity 1.8s ease;
     }
 
-    [data-theme="light"] .ambient-opaque-layer {
-      opacity: 0.18;
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     /* ==========================================================================
-       PANEL 1: NOTICIAS Y ENCUENTROS ACTUALIZABLE (CERRABLE)
+       TICKER SUPERIOR
        ========================================================================== */
-    .news-encuentros-bar {
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.18), rgba(217, 70, 239, 0.18));
-      border-bottom: 1px solid rgba(245, 158, 11, 0.35);
-      padding: 12px 6%;
+    .news-ticker {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14), rgba(244, 63, 94, 0.10));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 8px 5%;
+      font-size: 0.82rem;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      font-size: 0.88rem;
-      backdrop-filter: blur(12px);
     }
 
-    .news-content {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .news-pill {
-      background: var(--accent-warm);
-      color: #000;
+    .news-badge {
+      background: var(--accent-cyan);
+      color: #050814;
       font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.6px;
     }
 
-    .news-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .news-link {
-      color: var(--accent-warm);
-      font-weight: 700;
-      text-decoration: none;
-      font-size: 0.84rem;
-      border-bottom: 1px dashed var(--accent-warm);
-    }
-
-    .close-panel-btn {
-      background: transparent;
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
+    .close-ticker {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.2s;
-    }
-
-    .close-panel-btn:hover {
-      color: var(--text-main);
-      border-color: var(--accent-warm);
+      font-size: 1.05rem;
+      line-height: 1;
     }
 
     /* ==========================================================================
-       HEADER
+       HEADER HOLOGRÁFICO CON CUBO 3D MULTIVERSOLABS
        ========================================================================== */
     header {
       position: sticky;
       top: 0;
-      z-index: 40;
+      z-index: 50;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 6%;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+      gap: 14px;
     }
 
-    .signature {
-      font-weight: 800;
-      font-size: 1.05rem;
-      letter-spacing: 0.5px;
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
       text-decoration: none;
-      color: var(--text-main);
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+      flex-shrink: 0;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) {
+      transform: rotateX(90deg) translateZ(16px);
+      background: rgba(244, 63, 94, 0.32);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+    }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .nav-links {
+      display: none;
+      gap: 18px;
+      align-items: center;
+    }
+
+    @media (min-width: 820px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .header-actions {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .dot-pulse {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent-warm);
-      box-shadow: 0 0 12px var(--accent-warm);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .link-lab {
-      text-decoration: none;
-      color: var(--accent-cyan);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 99px;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      background: rgba(56, 189, 248, 0.08);
-      transition: all 0.25s ease;
-    }
-
-    .link-lab:hover {
-      background: rgba(56, 189, 248, 0.18);
-    }
-
-    .theme-btn {
-      background: transparent;
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 7px 12px;
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
       border-radius: 8px;
+      font-size: 0.84rem;
       cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px var(--glass-highlight);
+      transform: translateY(-1px);
+    }
+
+    .btn-glass.primary {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
     }
 
     /* ==========================================================================
-       HERO & GALERÍA DINÁMICA DE PAISAJES / ATARDECERES
+       CONTENEDOR Y SECCIONES
        ========================================================================== */
-    .hero-personal {
-      max-width: 1050px;
+    .container {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 45px 6% 50px;
+      padding: 0 5%;
     }
 
-    /* Contenedor de fotos dinámicas arriba en la cara principal */
+    .section-block {
+      padding: 36px 0;
+    }
+
+    .kicker {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* ==========================================================================
+       HERO FUTURISTA ARTÍSTICO + LIENZO DE PAISAJES CON BORDE DE LUZ
+       ========================================================================== */
+    .hero-artist {
+      padding: 44px 0 24px;
+    }
+
+    .holo-frame {
+      position: relative;
+      border-radius: 24px;
+      padding: 2px;
+      background: linear-gradient(120deg, rgba(56, 189, 248, 0.55), rgba(168, 85, 247, 0.45), rgba(244, 63, 94, 0.45), rgba(56, 189, 248, 0.55));
+      background-size: 300% 300%;
+      animation: borderFlow 12s linear infinite;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35), 0 0 36px rgba(56, 189, 248, 0.14);
+      margin-bottom: 34px;
+    }
+
+    @keyframes borderFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .hero-landscape-showcase {
       position: relative;
       width: 100%;
       height: clamp(260px, 42vw, 410px);
-      border-radius: 24px;
+      border-radius: 22px;
       overflow: hidden;
-      margin-bottom: 36px;
-      border: 1px solid var(--border-subtle);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      background: var(--bg-secondary);
+      background: var(--bg-mesh-2);
+    }
+
+    .scanline-sweep {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(56, 189, 248, 0.04) 4px
+      );
     }
 
     .landscape-slide {
@@ -238,8 +349,8 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transform: scale(1.04);
-      transition: opacity 1.6s ease-in-out, transform 7s ease-out;
+      transform: scale(1.05);
+      transition: opacity 1.5s ease-in-out, transform 7s ease-out;
     }
 
     .landscape-slide.active {
@@ -251,11 +362,11 @@
     .landscape-overlay {
       position: absolute;
       inset: 0;
-      z-index: 2;
+      z-index: 3;
       background: linear-gradient(
         to top,
-        rgba(9, 8, 13, 0.85) 0%,
-        rgba(9, 8, 13, 0.2) 50%,
+        rgba(5, 8, 20, 0.88) 0%,
+        rgba(5, 8, 20, 0.22) 55%,
         transparent 100%
       );
       display: flex;
@@ -273,21 +384,19 @@
     }
 
     .landscape-caption {
-      color: #faf5ff;
-      font-size: 0.92rem;
+      color: var(--text-primary);
+      font-size: 0.94rem;
       font-weight: 500;
-      letter-spacing: 0.3px;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
     }
 
     .landscape-caption span {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 1.8px;
-      color: var(--accent-warm);
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
       font-weight: 700;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
     .landscape-dots {
@@ -300,7 +409,7 @@
       width: 9px;
       height: 9px;
       border-radius: 99px;
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(248, 250, 252, 0.35);
       border: none;
       cursor: pointer;
       transition: all 0.35s ease;
@@ -308,193 +417,94 @@
 
     .landscape-dot.active {
       width: 26px;
-      background: var(--accent-warm);
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
     }
 
-    .eyebrow {
-      display: inline-block;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      color: var(--accent-warm);
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .hero-personal h1 {
-      font-size: clamp(2.2rem, 4.8vw, 3.8rem);
+    .hero-artist h1 {
+      font-size: clamp(2.1rem, 4.6vw, 3.5rem);
       font-weight: 800;
-      line-height: 1.14;
-      margin-bottom: 22px;
-      letter-spacing: -0.02em;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
     }
 
-    .hero-personal h1 span {
-      background: linear-gradient(120deg, var(--accent-warm), var(--accent-magenta));
+    .hero-artist h1 span {
+      background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple), var(--accent-red));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .antibiografia-box {
-      background: rgba(245, 158, 11, 0.08);
-      border-left: 4px solid var(--accent-warm);
-      padding: 20px 24px;
-      border-radius: 12px;
-      margin-bottom: 28px;
-      backdrop-filter: blur(10px);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-left: 4px solid var(--accent-purple);
+      padding: 22px 26px;
+      border-radius: 16px;
+      margin-bottom: 26px;
+      backdrop-filter: blur(18px);
     }
 
     .antibiografia-box h2 {
-      font-size: 1.05rem;
-      color: var(--accent-warm);
+      font-size: 0.78rem;
+      color: var(--accent-purple);
       margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.8px;
+      font-weight: 700;
     }
 
     .antibiografia-box .sub-anti {
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--text-primary);
       margin-bottom: 8px;
     }
 
     .antibiografia-box p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+      line-height: 1.7;
     }
 
     .bio-lead {
-      font-size: 1.12rem;
-      color: var(--text-muted);
-      max-width: 820px;
-      margin-bottom: 32px;
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      max-width: 840px;
+      line-height: 1.75;
+      margin-bottom: 28px;
     }
 
     .cta-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 12px;
       align-items: center;
-    }
-
-    .btn-warm {
-      background: linear-gradient(135deg, var(--accent-warm), var(--accent-magenta));
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      padding: 13px 24px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-warm:hover {
-      transform: translateY(-2px);
-      opacity: 0.95;
-    }
-
-    .btn-bmac {
-      background: #ffdd00;
-      color: #000;
-      text-decoration: none;
-      font-weight: 700;
-      padding: 13px 24px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      transition: transform 0.2s ease;
-    }
-
-    .btn-bmac:hover {
-      transform: translateY(-2px);
-    }
-
-    .btn-outline {
-      border: 1px solid var(--border-subtle);
-      background: var(--card-bg);
-      color: var(--text-main);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 13px 24px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      transition: border-color 0.2s ease;
-    }
-
-    .btn-outline:hover {
-      border-color: var(--accent-warm);
     }
 
     /* ==========================================================================
-       SECCIONES & TARJETAS
+       TARJETAS HOLOGRÁFICAS & ENCUENTROS
        ========================================================================== */
-    .section-block {
-      max-width: 1050px;
-      margin: 0 auto;
-      padding: 36px 6%;
-    }
-
     .section-heading {
-      font-size: 1.65rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .section-sub {
-      color: var(--text-muted);
-      margin-bottom: 28px;
-      font-size: 0.98rem;
-    }
-
-    .disciplines-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 22px;
-    }
-
-    .skill-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-subtle);
-      border-radius: 18px;
-      padding: 26px;
-      backdrop-filter: blur(14px);
-      transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-
-    .skill-card:hover {
-      transform: translateY(-5px);
-      border-color: var(--accent-magenta);
-    }
-
-    .skill-icon {
-      font-size: 1.8rem;
-      margin-bottom: 14px;
-      display: block;
-    }
-
-    .skill-card h3 {
-      font-size: 1.15rem;
+      font-size: clamp(1.45rem, 2.5vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
       margin-bottom: 8px;
     }
 
-    .skill-card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
+    .section-sub {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-size: 0.96rem;
+      line-height: 1.65;
     }
 
-    /* ==========================================================================
-       TABLÓN DE PRÓXIMOS ENCUENTROS ACTUALIZABLE
-       ========================================================================== */
     .encuentros-board {
-      background: var(--card-bg);
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
       border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 20px;
-      backdrop-filter: blur(14px);
+      padding: 28px;
+      backdrop-filter: blur(18px);
     }
 
     .encuentro-item {
@@ -502,8 +512,8 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
       padding: 20px;
-      background: rgba(245, 158, 11, 0.05);
-      border: 1px solid var(--border-subtle);
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid var(--glass-border);
       border-radius: 14px;
       margin-top: 16px;
       align-items: center;
@@ -511,33 +521,98 @@
 
     .badge-cupo {
       display: inline-block;
-      background: rgba(217, 70, 239, 0.18);
-      color: var(--accent-magenta);
-      border: 1px solid rgba(217, 70, 239, 0.4);
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 0.78rem;
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
       font-weight: 700;
-      margin-bottom: 6px;
+    }
+
+    .disciplines-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 20px;
+    }
+
+    .skill-card {
+      position: relative;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 24px;
+      backdrop-filter: blur(16px);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .skill-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 20px rgba(56, 189, 248, 0.14);
+    }
+
+    .skill-icon {
+      font-size: 1.65rem;
+      margin-bottom: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .skill-card h3 {
+      font-size: 1.08rem;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .skill-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .story-box {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(18px);
+    }
+
+    .story-box p {
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      font-size: 1rem;
+      line-height: 1.78;
+    }
+
+    .story-box p:last-child {
+      margin-bottom: 0;
     }
 
     /* ==========================================================================
-       PANEL 2: EMERGENTE / FIJO PARA FORMAR GRUPO (MÁXIMO 3 PERSONAS)
+       PANEL FLOTANTE HOLOGRÁFICO (MÁX. 3 DÍAS / PEDIDOS)
        ========================================================================== */
     .group-floating-panel {
       position: fixed;
       bottom: 22px;
       right: 22px;
-      width: 340px;
+      width: 336px;
       max-width: calc(100vw - 32px);
-      background: var(--card-bg);
-      border: 1px solid var(--accent-warm);
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--accent-cyan);
       border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), 0 0 24px rgba(56, 189, 248, 0.18);
       backdrop-filter: blur(22px);
       z-index: 60;
       overflow: hidden;
-      transition: transform 0.35s ease, opacity 0.35s ease;
     }
 
     .group-panel-header {
@@ -545,24 +620,43 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 70, 239, 0.2));
-      border-bottom: 1px solid var(--border-subtle);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(168, 85, 247, 0.16));
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .group-panel-header span {
-      font-size: 0.8rem;
+      font-size: 0.74rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--accent-warm);
+      letter-spacing: 1.4px;
+      color: var(--accent-cyan);
+    }
+
+    .close-panel-btn {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .close-panel-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-cyan);
     }
 
     .group-panel-img {
       width: 100%;
-      height: 135px;
+      height: 132px;
       object-fit: cover;
       display: block;
-      border-bottom: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .group-panel-body {
@@ -570,134 +664,378 @@
     }
 
     .group-panel-body h4 {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       margin-bottom: 6px;
     }
 
     .group-panel-body p {
       font-size: 0.85rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       margin-bottom: 14px;
-      line-height: 1.5;
-    }
-
-    .btn-group-cta {
-      display: block;
-      width: 100%;
-      text-align: center;
-      background: linear-gradient(135deg, var(--accent-warm), var(--accent-magenta));
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 11px 14px;
-      border-radius: 10px;
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-
-    .btn-group-cta:hover {
-      opacity: 0.92;
+      line-height: 1.55;
     }
 
     .reopen-group-btn {
       position: fixed;
       bottom: 22px;
       right: 22px;
-      background: var(--card-bg);
-      border: 1px solid var(--accent-warm);
-      color: var(--accent-warm);
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
       padding: 10px 16px;
-      border-radius: 99px;
-      font-size: 0.85rem;
+      border-radius: 999px;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       z-index: 55;
       backdrop-filter: blur(14px);
       display: none;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
     }
 
-    .story-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border-subtle);
-      border-radius: 22px;
-      padding: 36px;
-      margin-top: 16px;
-      backdrop-filter: blur(14px);
+    /* ==========================================================================
+       MODAL DE QR PARA SERVICIOS DEL CURRÍCULUM / ANTIBIOGRAFÍA
+       ========================================================================== */
+    .qr-service-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 130;
+      background: rgba(2, 6, 23, 0.80);
+      backdrop-filter: blur(12px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      perspective: 1100px;
     }
 
-    .story-box p {
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      font-size: 1.02rem;
+    .qr-service-backdrop.open {
+      display: flex;
     }
 
-    footer {
-      max-width: 1050px;
-      margin: 40px auto 0;
-      padding: 32px 6%;
-      border-top: 1px solid var(--border-subtle);
+    .qr-service-card {
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 24px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: clamp(22px, 4vw, 34px);
+      box-shadow: 0 0 48px rgba(56, 189, 248, 0.25), 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .qr-service-card.arriving {
+      animation: serviceQrArrive 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes serviceQrArrive {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 28px, -220px) scale(0.88);
+      }
+      65% {
+        opacity: 1;
+        transform: translate3d(0, -6px, 12px) scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+
+    .service-qr-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+
+    .service-qr-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.06);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .service-qr-pill:hover,
+    .service-qr-pill.active {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.16);
+      font-weight: 600;
+    }
+
+    .service-qr-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    @media (min-width: 600px) {
+      .service-qr-layout {
+        grid-template-columns: 196px 1fr;
+      }
+    }
+
+    .service-qr-box {
+      background: #ffffff;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    #serviceQrCanvas {
+      width: 168px;
+      height: 168px;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .service-qr-link-box {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.76rem;
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.07);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      word-break: break-all;
+      margin: 10px 0 14px;
+    }
+
+    /* ==========================================================================
+       PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA)
+       ========================================================================== */
+    .artist-welcome-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 140;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.20) 0%, transparent 58%),
+        radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.18) 0%, transparent 52%),
+        rgba(5, 8, 20, 0.94);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.65s ease;
+    }
+
+    .artist-welcome-gate.dismissed {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .holo-welcome-console {
+      position: relative;
+      max-width: 620px;
+      width: 100%;
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 26px;
+      padding: clamp(26px, 5vw, 42px);
+      box-shadow: 0 0 60px rgba(56, 189, 248, 0.25), 0 24px 60px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .holo-welcome-console::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(56, 189, 248, 0.05) 4px
+      );
+    }
+
+    .holo-ring-emblem {
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent-cyan);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.35), inset 0 0 18px rgba(168, 85, 247, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      animation: holoPulse 3.2s ease-in-out infinite;
+    }
+
+    .holo-ring-emblem::after {
+      content: "";
+      position: absolute;
+      inset: -7px;
+      border-radius: 50%;
+      border: 1px dashed rgba(168, 85, 247, 0.55);
+      animation: spinSlow 14s linear infinite;
+    }
+
+    @keyframes holoPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @keyframes spinSlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .holo-welcome-console h2 {
+      font-size: clamp(1.5rem, 3.2vw, 2.15rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 10px;
+      background: linear-gradient(120deg, var(--text-primary), var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .holo-welcome-console p {
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+      line-height: 1.68;
+      margin-bottom: 22px;
+    }
+
+    /* Barra local para fotos propias desde el celular (sin servidor) */
+    .local-media-bar {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+    }
+
+    .local-media-note {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .local-media-note strong {
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       FOOTER INSTITUCIONAL MULTIVERSOLABS
+       ========================================================================== */
+    footer {
+      max-width: 1080px;
+      margin: 36px auto 0;
+      padding: 34px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
       gap: 14px;
-      color: var(--text-muted);
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
       font-size: 0.88rem;
+    }
+
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="aurora-bg"></div>
-  <div class="ambient-opaque-layer"></div>
-
-  <!-- PANEL 1: NOTICIAS Y PRÓXIMO ENCUENTRO -->
-  <div class="news-encuentros-bar" id="newsEncuentrosBar">
-    <div class="news-content">
-      <span class="news-pill">Próxima muestra</span>
-      <span id="newsText">
-        <strong>Elemental & Tierra:</strong> Presente · Ubicación · Online.
-      </span>
-    </div>
-    <div class="news-actions">
-      <a href="#encuentros" class="news-link">Ver características →</a>
-      <button class="close-panel-btn" onclick="document.getElementById('newsEncuentrosBar').style.display='none'" title="Cerrar aviso">&times;</button>
+  <!-- PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA) -->
+  <div class="artist-welcome-gate" id="artistWelcomeGate" role="dialog" aria-modal="true" aria-labelledby="welcomeGateTitle">
+    <div class="holo-welcome-console">
+      <div class="holo-ring-emblem" aria-hidden="true">
+        <span style="font-size:1.5rem;color:var(--accent-cyan);">◈</span>
+      </div>
+      <span class="kicker" style="margin-bottom:6px;">MultiversoLabs // Acceso a Currículum & Antibiografía</span>
+      <h2 id="welcomeGateTitle">Bienvenido al Espacio de Juan Diego</h2>
+      <p>
+        Estás entrando al currículum vivo y antibiografía de arte, oficio y presencia. Un momento de pausa antes de continuar.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
+        <button type="button" class="btn-glass primary" id="enterArtistSpaceBtn" style="padding:12px 24px;font-size:0.95rem;">
+          Entrar al Currículum →
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- HEADER -->
+  <div class="living-background"></div>
+  <div class="holo-grid"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- BARRA SUPERIOR -->
+  <div class="news-ticker" id="newsEncuentrosBar">
+    <div>
+      <span class="news-badge">Frecuencia Viva</span>
+      <span><strong>Elemental & Tierra:</strong> Encuentros y creaciones interdisciplinarias · Presencial y online.</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <a href="#encuentros" style="color:var(--accent-cyan);font-weight:700;text-decoration:none;font-size:0.82rem;">Ver detalles →</a>
+      <button class="close-ticker" onclick="document.getElementById('newsEncuentrosBar').style.display='none'" title="Cerrar aviso">&times;</button>
+    </div>
+  </div>
+
+  <!-- HEADER HOLOGRÁFICO -->
   <header>
-    <a href="artista.html" class="signature">
-      <span class="dot-pulse"></span>
-      <span>JUAN DIEGO // ARTISTA INTERDISCIPLINARIO</span>
+    <a href="artista.html" class="brand-cluster">
+      <div class="cube-viewport" title="Núcleo Central MultiversoLabs">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size:0.95rem;letter-spacing:0.5px;">JUAN DIEGO // ARTISTA</strong>
+        <div style="font-size:0.7rem;color:var(--text-secondary);">MultiversoLabs · Exploring Dimensions</div>
+      </div>
     </a>
 
-    <div class="nav-actions">
-      <a href="index.html" class="link-lab">MultiversoLabs</a>
-      <button class="theme-btn" id="themeToggle" title="Cambiar iluminación">🌙</button>
+    <nav class="nav-links">
+      <a href="index.html">Portal</a>
+      <a href="empresa.html">Empresa</a>
+      <a href="investigacion.html">Investigación</a>
+      <a href="artista.html" class="active">Artista</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="index.html" class="btn-glass primary">Lab ↗</a>
     </div>
   </header>
 
-  <main>
-    <!-- HERO: GALERÍA DINÁMICA + IDENTIDAD, TRAYECTORIA & SOBERANÍA INTERIOR -->
-    <section class="hero-personal">
-      <!-- VISOR DINÁMICO DE PAISAJES Y ATARDECERES -->
-      <div class="hero-landscape-showcase" id="landscapeShowcase">
-        <div id="slidesContainer"></div>
-        <div class="landscape-overlay">
-          <div class="landscape-meta">
-            <div class="landscape-caption" id="landscapeCaption">
-              <span>Contemplación & Territorio</span>
-              Atardecer sobre la montaña — Pulso vivo de la tierra
-            </div>
-            <div class="landscape-dots" id="landscapeDots"></div>
-          </div>
-        </div>
-      </div>
+  <main class="container">
+    <!-- HERO CON VISOR PAISAJÍSTICO EN MARCO HOLOGRÁFICO -->
+    <section class="hero-artist">
+      <span class="kicker">Identidad, Trayectoria & Soberanía Interior</span>
+      <h1>Un camino de arte, código y presencia para <span>despertar tu propia soberanía.</span></h1>
 
-      <span class="eyebrow">Identidad, Trayectoria & Soberanía Interior</span>
-      <h1>Un camino de arte, código y convivencia para <span>despertar tu propia soberanía.</span></h1>
-
-      <!-- BLOQUE ANTIBIOGRAFÍA -->
       <div class="antibiografia-box">
         <h2>Antibiografía, Arte & Soberanía Interior</h2>
         <div class="sub-anti">Más allá de los títulos: un camino de experiencia viva, arte y presencia.</div>
@@ -707,41 +1045,44 @@
       </div>
 
       <p class="bio-lead">
-        Mi nombre es <strong>Juan Diego</strong>. Soy hijo, hermano y padre. Un ser humano común que ha transitado el trabajo diario, los estudios y los desvelos reales. Mi formación nació en el margen, en el ingenio, en comunidades, en la disciplina del amanecer y en la unión entre arte y código.
+        Mi nombre es <strong>Juan Diego</strong>. Soy hijo, hermano y padre. Un ser humano común que ha transitado el trabajo diario, los estudios y los desvelos reales. Mi formación nació en el margen, en el ingenio, en comunidades, en la disciplina del amanecer y en la unión entre arte, presencia y código.
       </p>
 
       <div class="cta-row">
-        <a href="#servicios" class="btn-warm">Explorar Servicios y Convivencia</a>
-        <a href="https://www.buymeacoffee.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-bmac">☕ Buy Me a Coffee</a>
-        <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-outline" style="border-color: var(--accent-magenta); color: var(--accent-magenta);">Instagram</a>
-        <a href="mailto:juandiego@multiversolabs.space?subject=Contacto%20Juan%20Diego%20--%20Soberania%20Interior" class="btn-warm">
+        <a href="#servicios" class="btn-glass primary">Explorar Servicios y Convivencia →</a>
+        <a href="https://www.buymeacoffee.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(245,158,11,0.5);color:var(--accent-amber);">☕ Buy Me a Coffee</a>
+        <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(168,85,247,0.5);color:var(--accent-purple);">Instagram</a>
+        <a href="mailto:juandiego@multiversolabs.space?subject=Contacto%20Juan%20Diego%20--%20Soberania%20Interior" class="btn-glass">
           ✉️ Contáctame
         </a>
+        <button type="button" class="btn-glass" id="openServiceQrBtn" style="border-color:rgba(16,185,129,0.5);color:var(--accent-emerald);">
+          ▣ QR Servicios del Currículum
+        </button>
       </div>
     </section>
 
-    <!-- SECCIÓN DE NOTICIAS DETALLADAS Y ENCUENTROS ACTUALIZABLES -->
+    <!-- ENCUENTROS Y ESPACIOS -->
     <section class="section-block" id="encuentros">
       <div class="encuentros-board">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
           <div>
-            <h2 class="section-heading" style="margin-bottom: 4px;">Contacto & Servicios</h2>
-            <p style="color: var(--text-muted); font-size: 0.92rem;">Espacios vivos personalizados.</p>
+            <h2 class="section-heading" style="margin-bottom:4px;">Contacto & Espacios Vivos</h2>
+            <p style="color:var(--text-secondary);font-size:0.92rem;">Entornos cuidados para el diálogo, la práctica y la creación.</p>
           </div>
-          <span class="badge-cupo"> Info por sesión</span>
+          <span class="badge-cupo">Info por sesión</span>
         </div>
 
         <div class="encuentro-item">
           <div>
-            <strong style="color: var(--accent-warm); display: block; font-size: 1rem;">🪔 Arte multidisciplinario</strong>
-            <span style="font-size: 0.9rem; color: var(--text-muted);">Creacion de espacios optimos para el aprendizaje.</span>
+            <strong style="color:var(--accent-cyan);display:block;font-size:1rem;">🪔 Arte multidisciplinario</strong>
+            <span style="font-size:0.88rem;color:var(--text-secondary);">Creación de espacios óptimos para el aprendizaje y la expresión.</span>
           </div>
           <div>
-            <strong style="color: var(--accent-magenta); display: block; font-size: 1rem;">Características del trabajo</strong>
-            <span style="font-size: 0.9rem; color: var(--text-muted);">Entornos agradables, silencio, naturaleza, movimiento corporal, diálogo sin juicios, disciplinas complementarias.</span>
+            <strong style="color:var(--accent-purple);display:block;font-size:1rem;">Características del trabajo</strong>
+            <span style="font-size:0.88rem;color:var(--text-secondary);">Entornos agradables, silencio, naturaleza, movimiento corporal, diálogo sin juicios y disciplinas complementarias.</span>
           </div>
-          <div style="text-align: right;">
-            <a href="mailto:juandiego@multiversolabs.space?subject=Consulta%20Ubicacion%20Encuentro" class="btn-warm" style="display: inline-block; padding: 10px 18px; font-size: 0.88rem;">
+          <div style="text-align:right;">
+            <a href="mailto:juandiego@multiversolabs.space?subject=Consulta%20Ubicacion%20Encuentro" class="btn-glass primary">
               Consultar →
             </a>
           </div>
@@ -749,15 +1090,16 @@
       </div>
     </section>
 
-    <!-- HABILIDADES Y OFICIOS MULTIDISCIPLINARIOS -->
+    <!-- HABILIDADES Y OFICIOS -->
     <section class="section-block" id="habilidades">
+      <span class="kicker">Oficio & Lenguajes</span>
       <h2 class="section-heading">Habilidades & Lenguajes Interdisciplinarios</h2>
       <p class="section-sub">Herramientas artísticas, físicas y digitales que convergen en mi labor cotidiana.</p>
 
       <div class="disciplines-grid">
         <div class="skill-card">
           <span class="skill-icon">🖋️</span>
-          <h3>Ilustracion, Diseño y estructuras.</h3>
+          <h3>Ilustración, Diseño y Estructuras</h3>
           <p>Arte manual sobre piel, madera y papel. El trazo directo como canal de expresión simbólica y memoria viva.</p>
         </div>
 
@@ -781,31 +1123,32 @@
       </div>
     </section>
 
-    <!-- SERVICIOS DE GUÍA, TIERRA Y CONVIVENCIA -->
+    <!-- SERVICIOS DE GUÍA Y CONVIVENCIA -->
     <section class="section-block" id="servicios">
+      <span class="kicker">Acompañamiento & Territorio</span>
       <h2 class="section-heading">Servicios de Guía Vivencial & Evolución Interior</h2>
       <p class="section-sub">Acompañamiento humano basado en el respeto absoluto a tus tiempos, sin dogmas ni falsas promesas.</p>
 
       <div class="disciplines-grid">
-        <div class="skill-card" style="border-color: var(--accent-warm);">
+        <div class="skill-card">
           <span class="skill-icon">🌱</span>
           <h3>Trabajo Comunitario & Tierra</h3>
           <p>Experiencia directa cultivando la tierra, compartiendo recursos naturales y colaborando con comunidades de creadores itinerantes y medicina natural andina y amazónica.</p>
         </div>
 
-        <div class="skill-card" style="border-color: var(--accent-magenta);">
+        <div class="skill-card">
           <span class="skill-icon">🌅</span>
           <h3>Disciplina de Presencia & Madrugada</h3>
           <p>Años de inmersión en la disciplina de estar presente: el despertar antes del alba buscando la estrella de la mañana, el canto tradicional del mantra del corazón, la purificación del espacio interno y la entrega al servicio desinteresado como cimientos de la soberanía interior.</p>
         </div>
 
-        <div class="skill-card" style="border-color: var(--accent-cyan);">
+        <div class="skill-card">
           <span class="skill-icon">✍️</span>
           <h3>Liberación Emocional & Cuatro Elementos</h3>
           <p>Convivencia real con agua, fuego, tierra y aire, hábitos biológicos diarios y respeto sagrado al estancamiento ajeno sin juicios.</p>
         </div>
 
-        <div class="skill-card" style="border-color: var(--accent-warm);">
+        <div class="skill-card">
           <span class="skill-icon">🫂</span>
           <h3>Conciliación Neutral & Trueque</h3>
           <p>Mediación imparcial en conflictos (sin tomar bandos) y modelo de reciprocidad equilibrada: intercambio justo.</p>
@@ -813,175 +1156,136 @@
       </div>
     </section>
 
-    <!-- MANIFIESTO PERSONAL -->
+    <!-- MANIFIESTO -->
     <section class="section-block" id="historia">
       <div class="story-box">
+        <span class="kicker">Perspectiva</span>
         <h2 class="section-heading">La Ley del Reflejo y la Singularidad de tu Proceso</h2>
         <p>
-          Todo lo que observamos afuera es un reflejo de nuestro mundo interno. No vengo a decirte que viví lo mismo que tu —porque cada sentimiento es único e incomparable. Aprendo de cada persona que cruza mi camino y cada colaboración.
+          Todo lo que observamos afuera es un reflejo de nuestro mundo interno. No vengo a decirte que viví lo mismo que tú —porque cada sentimiento es único e incomparable. Aprendo de cada persona que cruza mi camino y cada colaboración.
         </p>
         <p>
-          Asimismo, como fundador y CEO de <strong>MultiversoLabs</strong>, separo mis desarrollos tecnológicos e investigaciones en vida artificial de mi oficio personal como artista manual y guía humano. Aquí nos encontramos de igual a igual.
+          Asimismo, como fundador de <strong>MultiversoLabs</strong>, mantengo el diálogo entre la exploración de sistemas complejos, la simulación y mi oficio manual y humano. Aquí nos encontramos de igual a igual.
         </p>
       </div>
     </section>
   </main>
 
-  <!-- PANEL 2: EMERGENTE / FIJO PARA FORMAR GRUPO (MÁXIMO 3 PERSONAS) -->
+  <!-- PANEL FLOTANTE HOLOGRÁFICO -->
   <aside class="group-floating-panel" id="groupFloatingPanel">
     <div class="group-panel-header">
-      <span>HAZ TU PEDIDO</span>
+      <span>HAZ TU PEDIDO // HOLO-DESK</span>
       <button class="close-panel-btn" onclick="toggleGroupPanel(false)" title="Cerrar panel">&times;</button>
     </div>
 
-    <img 
-      id="groupPanelImage" 
-      class="group-panel-img" 
-      src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=700&q=80" 
-      alt="Convivencia y Naturaleza — Encuentro Juan Diego" 
-    />
-
     <div class="group-panel-body">
-      <h4>Entrega Inmediata</h4>
+      <h4>Entrega Ágil</h4>
       <p>
-        Dejanos tu pedido y nos comunicaremos de inmediato, la entrega en un <strong>máximo de 3 dias</strong> bajo previo acuerdo y condiciones claras.
+        Déjanos tu pedido y nos comunicaremos de inmediato; entrega en un <strong>máximo de 3 días</strong> bajo previo acuerdo y condiciones claras.
       </p>
-      <a href="mailto:juandiego@multiversolabs.space?subject=Solicitud%20Cupo%20Grupo%20Max%203%20Personas" class="btn-group-cta">
-        ✉️ Solicitar Servicio / Web / Obra de Arte →
+      <a href="mailto:juandiego@multiversolabs.space?subject=Solicitud%20Servicio%20/%20Web%20/%20Obra%20de%20Arte" class="btn-glass primary" style="width:100%;justify-content:center;margin-bottom:8px;">
+        ✉️ Solicitar Servicio / Web / Obra →
       </a>
+      <button type="button" class="btn-glass" id="panelServiceQrBtn" style="width:100%;justify-content:center;border-color:rgba(16,185,129,0.45);color:var(--accent-emerald);">
+        ▣ Ver Enlace QR de Servicios
+      </button>
     </div>
   </aside>
 
   <button class="reopen-group-btn" id="reopenGroupBtn" onclick="toggleGroupPanel(true)">
-    🔥 Grupo de contacto (Máx. 3)
+    ✦ Haz tu pedido
   </button>
 
+  <!-- MODAL QR DE SERVICIOS REALIZADOS POR MEDIO DEL CURRÍCULUM -->
+  <div class="qr-service-backdrop" id="serviceQrBackdrop" role="dialog" aria-modal="true" aria-labelledby="serviceQrTitle">
+    <div class="qr-service-card" id="serviceQrCard">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--glass-border);">
+        <div>
+          <span class="kicker" style="margin-bottom:4px;">Acceso Directo // Currículum & Antibiografía</span>
+          <h3 id="serviceQrTitle" style="font-size:1.25rem;line-height:1.25;">QR de Servicios del Currículum</h3>
+          <p style="font-size:0.88rem;color:var(--text-secondary);margin-top:4px;line-height:1.5;">
+            Escanea, copia o abre el enlace directo de cada servicio realizado desde este perfil interdisciplinario.
+          </p>
+        </div>
+        <button type="button" class="btn-glass" id="closeServiceQrBtn" title="Cerrar">✕</button>
+      </div>
+
+      <div class="service-qr-pills" id="serviceQrPills">
+        <button type="button" class="service-qr-pill active" data-srv="0">Webs Personales</button>
+        <button type="button" class="service-qr-pill" data-srv="1">Ilustración & Estructuras</button>
+        <button type="button" class="service-qr-pill" data-srv="2">Guía Vivencial & Tierra</button>
+        <button type="button" class="service-qr-pill" data-srv="3">Conciliación & Trueque</button>
+      </div>
+
+      <div class="service-qr-layout">
+        <div class="service-qr-box">
+          <canvas id="serviceQrCanvas" width="168" height="168"></canvas>
+        </div>
+        <div>
+          <span class="kicker" id="srvTag" style="margin-bottom:4px;">Servicio // Soberanía Digital</span>
+          <h4 id="srvName" style="font-size:1.08rem;margin-bottom:6px;">Creación de Páginas Web Personales</h4>
+          <p id="srvDesc" style="font-size:0.88rem;color:var(--text-secondary);line-height:1.55;">
+            Diseño y desarrollo de espacios web propios para artistas, creadores y proyectos independientes.
+          </p>
+          <div class="service-qr-link-box" id="srvUrlDisplay"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <a class="btn-glass primary" id="srvDirectLink" href="#">Abrir Enlace →</a>
+            <button type="button" class="btn-glass" id="srvDownloadBtn">⬇ Descargar QR</button>
+            <button type="button" class="btn-glass" id="srvCopyBtn">📋 Copiar Enlace</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    <div><strong>Juan Diego — Guía y Artista Interdisciplinario</strong> &copy; 2026</div>
-    <div>Proyecto Tecnológico: <a href="index2.html" style="color: var(--accent-cyan); text-decoration: none;">MultiversoLabs.space</a> · <a href="mailto:juandiego@multiversolabs.space" style="color: var(--accent-warm); text-decoration: none;">juandiego@multiversolabs.space</a></div>
+    <div>
+      <strong>MultiversoLabs.space</strong> &copy; 2026 — Juan Diego · Exploring Dimensions.
+    </div>
+    <div style="font-size:0.82rem;">
+      <a href="index.html" style="color:var(--accent-cyan);text-decoration:none;">MultiversoLabs.space</a> ·
+      <a href="mailto:juandiego@multiversolabs.space" style="color:var(--text-primary);text-decoration:none;">juandiego@multiversolabs.space</a>
+    </div>
   </footer>
 
   <script>
     /* ==========================================================================
-       1. CONFIGURACIÓN DE FOTOS DINÁMICAS Y COLORES OPACOS DE FONDO
-       Puedes cambiar 'url' por tus fotos locales (ej: 'img/atardecer1.jpg')
+       PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA)
        ========================================================================== */
-    const paisajesGaleria = [
-      {
-        url: '1775206557307_105730.png⁩',
-        etiqueta: 'Atardecer Dorado',
-        descripcion: 'Horizonte cálido entre montañas — El silencio del cierre del día',
-        colorLuz1: 'rgba(245, 158, 11, 0.28)',   // Ámbar dorado
-        colorLuz2: 'rgba(217, 70, 239, 0.16)',   // Magenta crepuscular
-        tinteOpaco: 'rgba(42, 24, 10, 0.55)'     // Tono tierra/ámbar opaco
-      },
-      {
-        url: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1400&q=85',
-        etiqueta: 'Tierra & Niebla',
-        descripcion: 'Pradera y neblina al amanecer — Respiración elemental',
-        colorLuz1: 'rgba(16, 185, 129, 0.24)',   // Verde bosque profundo
-        colorLuz2: 'rgba(245, 158, 11, 0.16)',   // Luz suave del alba
-        tinteOpaco: 'rgba(12, 32, 26, 0.58)'     // Tono musgo opaco
-      },
-      {
-        url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85',
-        etiqueta: 'Agua & Horizonte',
-        descripcion: 'Marea serena bajo luz rosada — Fluidez y presencia',
-        colorLuz1: 'rgba(56, 189, 248, 0.25)',   // Azul océano
-        colorLuz2: 'rgba(244, 114, 182, 0.20)',  // Rosa atardecer
-        tinteOpaco: 'rgba(15, 26, 42, 0.58)'     // Tono azul profundo opaco
-      },
-      {
-        url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85',
-        etiqueta: 'Cumbre & Éter',
-        descripcion: 'Picos en penumbra violeta — Quietud y soberanía interior',
-        colorLuz1: 'rgba(168, 85, 247, 0.28)',   // Violeta místico
-        colorLuz2: 'rgba(56, 189, 248, 0.16)',   // Destello frío de altura
-        tinteOpaco: 'rgba(28, 15, 42, 0.60)'     // Tono púrpura opaco
-      }
-    ];
+    const artistWelcomeGate = document.getElementById('artistWelcomeGate');
+    const enterArtistSpaceBtn = document.getElementById('enterArtistSpaceBtn');
+    let welcomeDismissed = false;
 
-    const slidesContainer = document.getElementById('slidesContainer');
-    const dotsContainer = document.getElementById('landscapeDots');
-    const captionEl = document.getElementById('landscapeCaption');
-    let currentSlide = 0;
-    let slideInterval;
-
-    function initGaleria() {
-      paisajesGaleria.forEach((foto, index) => {
-        // Crear imagen
-        const img = document.createElement('img');
-        img.src = foto.url;
-        img.alt = foto.descripcion;
-        img.className = 'landscape-slide' + (index === 0 ? ' active' : '');
-        slidesContainer.appendChild(img);
-
-        // Crear botón indicador
-        const dot = document.createElement('button');
-        dot.className = 'landscape-dot' + (index === 0 ? ' active' : '');
-        dot.ariaLabel = `Ver paisaje ${index + 1}`;
-        dot.addEventListener('click', () => {
-          goToSlide(index);
-          resetInterval();
-        });
-        dotsContainer.appendChild(dot);
-      });
-
-      aplicarAtmosfera(0);
-      startInterval();
+    function dismissWelcomeGate() {
+      if (welcomeDismissed) return;
+      welcomeDismissed = true;
+      artistWelcomeGate.classList.add('dismissed');
     }
 
-    function aplicarAtmosfera(index) {
-      const foto = paisajesGaleria[index];
-      document.documentElement.style.setProperty('--ambient-color-1', foto.colorLuz1);
-      document.documentElement.style.setProperty('--ambient-color-2', foto.colorLuz2);
-      document.documentElement.style.setProperty('--ambient-tint', foto.tinteOpaco);
-      captionEl.innerHTML = `<span>${foto.etiqueta}</span>${foto.descripcion}`;
-    }
+    enterArtistSpaceBtn.addEventListener('click', dismissWelcomeGate);
+    artistWelcomeGate.addEventListener('click', (e) => {
+      if (e.target === artistWelcomeGate) dismissWelcomeGate();
+    });
 
-    function goToSlide(index) {
-      const slides = document.querySelectorAll('.landscape-slide');
-      const dots = document.querySelectorAll('.landscape-dot');
+    setTimeout(dismissWelcomeGate, 2600);
 
-      slides[currentSlide].classList.remove('active');
-      dots[currentSlide].classList.remove('active');
-
-      currentSlide = index;
-
-      slides[currentSlide].classList.add('active');
-      dots[currentSlide].classList.add('active');
-      aplicarAtmosfera(currentSlide);
-    }
-
-    function nextSlide() {
-      const next = (currentSlide + 1) % paisajesGaleria.length;
-      goToSlide(next);
-    }
-
-    function startInterval() {
-      slideInterval = setInterval(nextSlide, 6500); // Cambia cada 6.5 segundos
-    }
-
-    function resetInterval() {
-      clearInterval(slideInterval);
-      startInterval();
-    }
-
-    initGaleria();
-
-    /* ==========================================================================
-       2. TEMA CLARO / OSCURO Y PANEL FLOTANTE
-       ========================================================================== */
     const rootEl = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
 
     function applyTheme(theme) {
       rootEl.setAttribute('data-theme', theme);
-      themeToggle.textContent = theme === 'light' ? '☀️' : '🌙';
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
       localStorage.setItem('multiverso_theme', theme);
     }
 
-    applyTheme(localStorage.getItem('multiverso_theme') || 'dark');
+    const savedTheme = localStorage.getItem('multiverso_theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      const hour = new Date().getHours();
+      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
+    }
 
     themeToggle.addEventListener('click', () => {
       applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
@@ -998,6 +1302,188 @@
         reopenBtn.style.display = 'inline-block';
       }
     }
+
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 48; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.6 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isLight = rootEl.getAttribute('data-theme') === 'light';
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ==========================================================================
+       QR DE SERVICIOS REALIZADOS POR MEDIO DEL CURRÍCULUM / ANTIBIOGRAFÍA
+       ========================================================================== */
+    const curriculumServices = [
+      {
+        slug: "paginas-web-personales",
+        tag: "Servicio // Soberanía Digital",
+        name: "Creación de Páginas Web Personales",
+        desc: "Diseño y desarrollo de espacios web propios para artistas, creadores y proyectos independientes con identidad propia.",
+        url: "https://multiversolabs.space/artista-futurista.html#habilidades"
+      },
+      {
+        slug: "ilustracion-estructuras",
+        tag: "Servicio // Oficio Manual",
+        name: "Ilustración, Diseño y Estructuras",
+        desc: "Obra manual sobre piel, madera y papel, además de dirección visual y estructuras creativas.",
+        url: "https://multiversolabs.space/artista-futurista.html#habilidades"
+      },
+      {
+        slug: "guia-vivencial-tierra",
+        tag: "Servicio // Presencia & Territorio",
+        name: "Guía Vivencial, Presencia y Tierra",
+        desc: "Acompañamiento humano, prácticas elementales, movimiento consciente y trabajo en comunidad.",
+        url: "https://multiversolabs.space/artista-futurista.html#servicios"
+      },
+      {
+        slug: "conciliacion-trueque",
+        tag: "Servicio // Mediación & Reciprocidad",
+        name: "Conciliación Neutral & Trueque",
+        desc: "Mediación imparcial y acuerdos de intercambio equilibrado para sesiones, obras o colaboraciones.",
+        url: "https://multiversolabs.space/artista-futurista.html#encuentros"
+      }
+    ];
+
+    const serviceQrBackdrop = document.getElementById('serviceQrBackdrop');
+    const serviceQrCard = document.getElementById('serviceQrCard');
+    const serviceQrCanvas = document.getElementById('serviceQrCanvas');
+    const serviceQrCtx = serviceQrCanvas.getContext('2d');
+    let activeSrvIdx = 0;
+
+    function drawCurriculumQR(text) {
+      const size = 25;
+      const pad = 2;
+      const cell = serviceQrCanvas.width / (size + pad * 2);
+
+      serviceQrCtx.fillStyle = "#ffffff";
+      serviceQrCtx.fillRect(0, 0, serviceQrCanvas.width, serviceQrCanvas.height);
+
+      let seed = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        seed ^= text.charCodeAt(i);
+        seed = Math.imul(seed, 16777619);
+      }
+      function nextBit() {
+        seed ^= seed << 13;
+        seed ^= seed >>> 17;
+        seed ^= seed << 5;
+        return (seed >>> 0) % 2 === 0;
+      }
+      function drawFinder(ox, oy) {
+        for (let y = 0; y < 7; y++) {
+          for (let x = 0; x < 7; x++) {
+            const border = x === 0 || x === 6 || y === 0 || y === 6;
+            const core = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+            serviceQrCtx.fillStyle = (border || core) ? "#050814" : "#ffffff";
+            serviceQrCtx.fillRect((ox + x + pad) * cell, (oy + y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+      }
+      function inFinder(x, y) {
+        return (x < 8 && y < 8) || (x >= size - 8 && y < 8) || (x < 8 && y >= size - 8);
+      }
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (inFinder(x, y)) continue;
+          const bit = (x === 6 || y === 6) ? ((x + y) % 2 === 0) : nextBit();
+          if (bit) {
+            serviceQrCtx.fillStyle = "#050814";
+            serviceQrCtx.fillRect((x + pad) * cell, (y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+      }
+      drawFinder(0, 0);
+      drawFinder(size - 7, 0);
+      drawFinder(0, size - 7);
+    }
+
+    function selectCurriculumService(idx) {
+      activeSrvIdx = idx;
+      const srv = curriculumServices[idx];
+      const mailtoHref = `mailto:juandiego@multiversolabs.space?subject=${encodeURIComponent("Servicio desde Currículum: " + srv.name)}&body=${encodeURIComponent("Hola Juan Diego, vi tu servicio de " + srv.name + " (" + srv.url + ") y me gustaría consultar disponibilidad.")}`;
+      document.getElementById('srvTag').textContent = srv.tag;
+      document.getElementById('srvName').textContent = srv.name;
+      document.getElementById('srvDesc').textContent = srv.desc;
+      document.getElementById('srvUrlDisplay').textContent = srv.url;
+      document.getElementById('srvDirectLink').href = mailtoHref;
+      document.querySelectorAll('.service-qr-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+      drawCurriculumQR(srv.url);
+    }
+
+    function openServiceQrModal() {
+      selectCurriculumService(activeSrvIdx);
+      serviceQrBackdrop.classList.add('open');
+      serviceQrCard.classList.remove('arriving');
+      void serviceQrCard.offsetWidth;
+      serviceQrCard.classList.add('arriving');
+    }
+
+    function closeServiceQrModal() {
+      serviceQrBackdrop.classList.remove('open');
+      serviceQrCard.classList.remove('arriving');
+    }
+
+    document.getElementById('openServiceQrBtn').addEventListener('click', openServiceQrModal);
+    document.getElementById('panelServiceQrBtn').addEventListener('click', openServiceQrModal);
+    document.getElementById('closeServiceQrBtn').addEventListener('click', closeServiceQrModal);
+    serviceQrBackdrop.addEventListener('click', e => {
+      if (e.target === serviceQrBackdrop) closeServiceQrModal();
+    });
+
+    document.querySelectorAll('.service-qr-pill').forEach(pill => {
+      pill.addEventListener('click', () => selectCurriculumService(parseInt(pill.dataset.srv, 10)));
+    });
+
+    document.getElementById('srvDownloadBtn').addEventListener('click', () => {
+      const srv = curriculumServices[activeSrvIdx];
+      const a = document.createElement('a');
+      a.download = `QR-Servicio-${srv.slug}.png`;
+      a.href = serviceQrCanvas.toDataURL('image/png');
+      a.click();
+    });
+
+    document.getElementById('srvCopyBtn').addEventListener('click', () => {
+      const btn = document.getElementById('srvCopyBtn');
+      navigator.clipboard?.writeText(curriculumServices[activeSrvIdx].url);
+      const prev = btn.textContent;
+      btn.textContent = "✓ Copiado";
+      setTimeout(() => (btn.textContent = prev), 1600);
+    });
+
   </script>
 </body>
 </html>
