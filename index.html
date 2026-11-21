@@ -20,6 +20,8 @@
       --accent-cyan: #38bdf8;
       --accent-red: #f43f5e;
       --accent-purple: #a855f7;
+      --accent-green: #10b981;
+      --accent-gold: #fbbf24;
     }
 
     [data-theme="light"] {
@@ -34,6 +36,8 @@
       --accent-cyan: #0284c7;
       --accent-red: #e11d48;
       --accent-purple: #7e22ce;
+      --accent-green: #059669;
+      --accent-gold: #d97706;
     }
 
     * {
@@ -135,7 +139,6 @@
       color: var(--text-primary);
     }
 
-    /* Simulador Cubo 3D / Núcleo Central Animado */
     .cube-viewport {
       width: 32px;
       height: 32px;
@@ -215,13 +218,193 @@
       transform: translateY(-1px);
     }
 
+    .btn-glass.active {
+      border-color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.16);
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
     /* ==========================================================================
-       HERO SECTION (PRINCIPAL)
+       PORTADA PRINCIPAL GRANDE ARRIBA (HURACÁN 3D + INDICADORES + GRÁFICO)
+       ========================================================================== */
+    .main-cover-wrap {
+      max-width: 1200px;
+      margin: 28px auto 0;
+      padding: 0 5%;
+    }
+
+    .main-cover-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      overflow: hidden;
+      backdrop-filter: blur(22px);
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(290px, 0.9fr);
+      min-height: 410px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    }
+
+    @media (max-width: 920px) {
+      .main-cover-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cover-viewport {
+      position: relative;
+      min-height: 360px;
+      background: #040711;
+      border-right: 1px solid var(--glass-border);
+    }
+
+    @media (max-width: 920px) {
+      .cover-viewport {
+        border-right: none;
+        border-bottom: 1px solid var(--glass-border);
+        min-height: 300px;
+      }
+    }
+
+    #coverHurricaneCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 360px;
+    }
+
+    .cover-hud-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .cover-chip {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(5, 8, 20, 0.78);
+      border: 1px solid var(--glass-border);
+      color: var(--accent-cyan);
+    }
+
+    .cover-chip.live {
+      color: var(--accent-green);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .cover-telemetry-side {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .cover-brief-tag {
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .cover-brief-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-top: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .cover-brief-sub {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .live-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .kpi-cell {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(2, 6, 23, 0.45);
+      border: 1px solid var(--glass-border);
+    }
+
+    [data-theme="light"] .kpi-cell {
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .kpi-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size: 0.98rem;
+      font-weight: 700;
+      margin-top: 2px;
+      color: var(--accent-cyan);
+    }
+
+    .chart-box {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(2, 6, 23, 0.5);
+      border: 1px solid var(--glass-border);
+    }
+
+    [data-theme="light"] .chart-box {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    #telemetryChartCanvas {
+      display: block;
+      width: 100%;
+      height: 82px;
+    }
+
+    .cover-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       HERO SECTION (TÍTULOS)
        ========================================================================== */
     .hero {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 80px 5% 60px;
+      padding: 64px 5% 56px;
       text-align: center;
     }
 
@@ -343,7 +526,7 @@
     }
 
     /* ==========================================================================
-       BLOQUE INSTITUCIONAL Y TESIS (ÉTICA DE IA Y CREATIVIDAD HUMANA)
+       BLOQUE INSTITUCIONAL Y TESIS
        ========================================================================== */
     .manifesto-section {
       max-width: 1200px;
@@ -414,9 +597,9 @@
       }
     }
   </style>
-  <link rel="manifest" href="manifest.json">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
-  
 <body>
 
   <!-- Fondo vivo holográfico y partículas -->
@@ -457,11 +640,65 @@
       <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
         <span id="themeIcon">🌙</span>
       </button>
-      <a href="en-desarrollo3.html" class="btn-glass">🔒 Admin</a>
+      <a href="admin.html" class="btn-glass">🔒 Admin</a>
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Portada principal grande arriba antes de los títulos -->
+  <section class="main-cover-wrap" aria-label="Portada Principal MultiversoLabs">
+    <div class="main-cover-panel">
+      <div class="cover-viewport" id="coverViewport">
+        <div class="cover-hud-top">
+          <span class="cover-chip" id="coverStateChip">VISUAL // VÓRTICE 3D</span>
+          <span class="cover-chip" id="coverPhenomenonChip">HURACÁN</span>
+        </div>
+        <canvas id="coverHurricaneCanvas"></canvas>
+      </div>
+
+      <div class="cover-telemetry-side">
+        <div>
+          <span class="cover-brief-tag">MultiversoLabs.space</span>
+          <h2 class="cover-brief-title">Simulación Atmosférica & Enjambres</h2>
+          <p class="cover-brief-sub">Laboratorio de sistemas complejos, vida artificial y arte generativo.</p>
+        </div>
+
+        <div class="live-kpis">
+          <div class="kpi-cell">
+            <div class="kpi-label">Giro</div>
+            <div class="kpi-value" id="kpiGiro">1.4 rad/s</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-label">Mar / Tierra</div>
+            <div class="kpi-value" id="kpiTemp" style="color:var(--accent-gold);">29°C / 21°C</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-label">Pulso</div>
+            <div class="kpi-value" id="kpiPulso">75 BPM</div>
+          </div>
+          <div class="kpi-cell">
+            <div class="kpi-label">Nodos Activos</div>
+            <div class="kpi-value" id="kpiNodos" style="color:var(--accent-green);">520</div>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <div class="chart-head">
+            <span>Energía del vórtice</span>
+            <span id="chartPeakLabel" style="color:var(--accent-cyan);">TIEMPO REAL</span>
+          </div>
+          <canvas id="telemetryChartCanvas" width="320" height="82"></canvas>
+        </div>
+
+        <div class="cover-actions-row">
+          <button class="btn-glass" id="btnToggleInteractive" type="button">Entrar a interactivo</button>
+          <button class="btn-glass" id="btnPulse" type="button">⚡ Rayo</button>
+          <button class="btn-glass" id="btnCycle" type="button">🌀 Vórtice</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Section (Títulos) -->
   <section class="hero">
     <span class="hero-tag">Ecosistema Tecnológico & Artístico</span>
     <h1>Un universo de ideas, tecnología y creación.</h1>
@@ -486,7 +723,7 @@
       </a>
 
       <!-- Acceso 2: Tesis e Investigación -->
-      <a href="en-desarrollo3.html" class="command-card">
+      <a href="investigacion.html" class="command-card">
         <div>
           <span class="card-meta">Sector 03 // Académico</span>
           <h3>Investigación & Tesis</h3>
@@ -496,7 +733,7 @@
       </a>
 
       <!-- Acceso 3: Proyectos Potenciales y Arte Multidisciplinario -->
-      <a href="investigacion.html" class="command-card">
+      <a href="proyectos.html" class="command-card">
         <div>
           <span class="card-meta">Sector 04 // Innovación</span>
           <h3>Arte Multidisciplinario & Enjambres</h3>
@@ -508,7 +745,7 @@
     </div>
   </section>
 
-  <!-- Bloque Institucional y Manifiesto (Tesis de la Empresa) -->
+  <!-- Bloque Institucional y Manifiesto -->
   <section class="manifesto-section">
     <div class="manifesto-box">
       <h2>Filosofía y Estructura Organizacional</h2>
@@ -614,6 +851,313 @@
       requestAnimationFrame(animateParticles);
     }
     animateParticles();
+
+    /* ==========================================================================
+       4. PORTADA PRINCIPAL DE HURACÁN 3D + INDICADORES + GRÁFICO EN TIEMPO REAL
+       ========================================================================== */
+    const coverViewport = document.getElementById('coverViewport');
+    const coverCanvas = document.getElementById('coverHurricaneCanvas');
+    const btnToggleInteractive = document.getElementById('btnToggleInteractive');
+    const btnPulse = document.getElementById('btnPulse');
+    const btnCycle = document.getElementById('btnCycle');
+    const coverStateChip = document.getElementById('coverStateChip');
+    const coverPhenomenonChip = document.getElementById('coverPhenomenonChip');
+
+    const chartCanvas = document.getElementById('telemetryChartCanvas');
+    const chartCtx = chartCanvas.getContext('2d');
+    const energySeries = new Array(48).fill(0.45);
+    let sampleTimer = 0;
+
+    let interactiveMode = false;
+    const simParams = {
+      fenomeno: 'huracan',
+      radioEspacio: 16,
+      aperturaOjo: 2.6,
+      velocidadGiro: 1.4,
+      tempMar: 29,
+      tempTierra: 21,
+      acopleLatido: true,
+      bpm: 75,
+      numParticulas: 520
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x040711, 0.02);
+
+    const w0 = coverViewport.clientWidth || 680;
+    const h0 = coverViewport.clientHeight || 380;
+    const camera = new THREE.PerspectiveCamera(55, w0 / h0, 0.1, 1000);
+    camera.position.set(14, 12, 18);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: coverCanvas, antialias: true, alpha: true });
+    renderer.setSize(w0, h0);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enabled = false;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+    const flashLight = new THREE.PointLight(0x38bdf8, 0, 35);
+    flashLight.position.set(0, 5, 0);
+    scene.add(flashLight);
+
+    const grupoTormenta = new THREE.Group();
+    scene.add(grupoTormenta);
+
+    const baseMar = new THREE.Mesh(
+      new THREE.CircleGeometry(simParams.radioEspacio, 64),
+      new THREE.MeshPhongMaterial({ color: 0x0369a1, transparent: true, opacity: 0.55, side: THREE.DoubleSide })
+    );
+    baseMar.rotation.x = -Math.PI / 2;
+    baseMar.position.y = -3.5;
+    grupoTormenta.add(baseMar);
+
+    const masaTierra = new THREE.Mesh(
+      new THREE.CylinderGeometry(5.5, 6.2, 0.4, 24),
+      new THREE.MeshPhongMaterial({ color: 0x5c4033, transparent: true, opacity: 0.75 })
+    );
+    masaTierra.position.set(5.2, -3.4, 3.5);
+    grupoTormenta.add(masaTierra);
+
+    let cubosVortice = [];
+    function construirSubCubos() {
+      cubosVortice.forEach(c => grupoTormenta.remove(c.mesh));
+      cubosVortice = [];
+      const count = 48;
+      for (let i = 0; i < count; i++) {
+        const t = i / count;
+        const ang = t * Math.PI * 8;
+        const r = simParams.aperturaOjo + t * (simParams.radioEspacio * 0.65);
+        const y = -2.8 + t * 8.5;
+        const geo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
+        const mat = new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x1d4ed8, emissiveIntensity: 0.25 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(Math.cos(ang) * r, y, Math.sin(ang) * r);
+        grupoTormenta.add(mesh);
+        cubosVortice.push({ mesh, t, ang, y });
+      }
+    }
+
+    let meshAire, datosAire = [];
+    const dummy = new THREE.Object3D();
+    const colTemp = new THREE.Color();
+
+    function construirAire() {
+      if (meshAire) grupoTormenta.remove(meshAire);
+      datosAire = [];
+      const geo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      meshAire = new THREE.InstancedMesh(geo, mat, simParams.numParticulas);
+      grupoTormenta.add(meshAire);
+
+      for (let i = 0; i < simParams.numParticulas; i++) {
+        datosAire.push({
+          angulo: Math.random() * Math.PI * 2,
+          radioFrac: Math.random(),
+          altFrac: Math.random()
+        });
+      }
+      document.getElementById('kpiNodos').textContent = String(simParams.numParticulas);
+    }
+
+    let rayos = [];
+    function dispararRayo() {
+      const pts = [];
+      const rInicio = simParams.aperturaOjo + Math.random() * 6;
+      const ang = Math.random() * Math.PI * 2;
+      let x = Math.cos(ang) * rInicio, y = 5.5, z = Math.sin(ang) * rInicio;
+      for (let s = 0; s <= 10; s++) {
+        pts.push(new THREE.Vector3(x, y, z));
+        x += (Math.random() - 0.5) * 1.2;
+        y -= 0.9;
+        z += (Math.random() - 0.5) * 1.2;
+      }
+      const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 1 })
+      );
+      grupoTormenta.add(line);
+      rayos.push({ line, vida: 1.0 });
+      flashLight.intensity = 4.5;
+    }
+
+    function setFenomeno(tipo) {
+      simParams.fenomeno = tipo;
+      if (tipo === 'tornado') {
+        simParams.aperturaOjo = 0.8;
+        simParams.velocidadGiro = 2.6;
+        simParams.tempTierra = 26;
+      } else if (tipo === 'huracan') {
+        simParams.aperturaOjo = 2.6;
+        simParams.velocidadGiro = 1.4;
+        simParams.tempMar = 29;
+      } else {
+        simParams.aperturaOjo = 1.5;
+        simParams.velocidadGiro = 1.8;
+        simParams.tempTierra = 17;
+      }
+      coverPhenomenonChip.textContent = tipo.toUpperCase();
+      document.getElementById('kpiGiro').textContent = `${simParams.velocidadGiro.toFixed(1)} rad/s`;
+      construirSubCubos();
+    }
+
+    function setInteractive(active) {
+      interactiveMode = active;
+      controls.enabled = active;
+      if (active) {
+        btnToggleInteractive.textContent = 'Salir de interactivo';
+        btnToggleInteractive.classList.add('active');
+        coverStateChip.textContent = 'INTERACTIVO // ÓRBITA 3D';
+        coverStateChip.classList.add('live');
+      } else {
+        btnToggleInteractive.textContent = 'Entrar a interactivo';
+        btnToggleInteractive.classList.remove('active');
+        coverStateChip.textContent = 'VISUAL // VÓRTICE 3D';
+        coverStateChip.classList.remove('live');
+      }
+    }
+
+    btnToggleInteractive.addEventListener('click', () => setInteractive(!interactiveMode));
+    btnPulse.addEventListener('click', dispararRayo);
+    btnCycle.addEventListener('click', () => {
+      const orden = ['huracan', 'tornado', 'tormenta'];
+      const next = orden[(orden.indexOf(simParams.fenomeno) + 1) % orden.length];
+      setFenomeno(next);
+    });
+
+    function drawTelemetryChart(currentEnergy) {
+      const cw = chartCanvas.width;
+      const ch = chartCanvas.height;
+      chartCtx.clearRect(0, 0, cw, ch);
+
+      const isLight = rootEl.getAttribute('data-theme') === 'light';
+      chartCtx.strokeStyle = isLight ? 'rgba(2, 132, 199, 0.16)' : 'rgba(56, 189, 248, 0.14)';
+      chartCtx.lineWidth = 1;
+      for (let g = 1; g <= 3; g++) {
+        const gy = (ch / 4) * g;
+        chartCtx.beginPath();
+        chartCtx.moveTo(0, gy);
+        chartCtx.lineTo(cw, gy);
+        chartCtx.stroke();
+      }
+
+      const grad = chartCtx.createLinearGradient(0, 0, cw, 0);
+      grad.addColorStop(0, '#38bdf8');
+      grad.addColorStop(0.6, '#a855f7');
+      grad.addColorStop(1, '#f43f5e');
+
+      chartCtx.strokeStyle = grad;
+      chartCtx.lineWidth = 2;
+      chartCtx.beginPath();
+
+      energySeries.forEach((val, idx) => {
+        const x = (idx / (energySeries.length - 1)) * cw;
+        const clamped = Math.max(0.06, Math.min(0.96, val));
+        const y = ch - clamped * (ch - 10) - 5;
+        if (idx === 0) chartCtx.moveTo(x, y);
+        else chartCtx.lineTo(x, y);
+      });
+      chartCtx.stroke();
+
+      document.getElementById('chartPeakLabel').textContent = `${Math.round(currentEnergy * 100)}%`;
+    }
+
+    let fasePulso = 0, disparoPrev = false;
+    function actualizarTormenta(dt) {
+      fasePulso = (fasePulso + dt * (simParams.bpm / 60)) % 1.0;
+      const latido = fasePulso < 0.25 ? Math.sin((fasePulso / 0.25) * Math.PI) : 0;
+      if (simParams.acopleLatido && latido > 0.85 && !disparoPrev) {
+        dispararRayo();
+        disparoPrev = true;
+      } else if (latido <= 0.2) disparoPrev = false;
+
+      if (!interactiveMode) {
+        const tCam = performance.now() * 0.00024;
+        camera.position.x = Math.cos(tCam) * 19;
+        camera.position.z = Math.sin(tCam) * 19;
+        camera.position.y = 11.5;
+        camera.lookAt(0, 0.5, 0);
+      }
+
+      const difTermica = (simParams.tempMar - simParams.tempTierra) * 0.01;
+      const tempEfectivaTierra = (simParams.tempTierra + difTermica * Math.sin(performance.now() * 0.001)).toFixed(1);
+      baseMar.material.color.setHex(simParams.tempMar > 26 ? 0x0369a1 : 0x1e3a8a);
+      masaTierra.material.color.setHex(tempEfectivaTierra < 19 ? 0x475569 : 0x5c4033);
+
+      const giroMod = simParams.velocidadGiro * (1 + latido * 0.25);
+      cubosVortice.forEach(c => {
+        c.ang += dt * giroMod * (1.4 - c.t * 0.5);
+        const perfilEmbudo = simParams.fenomeno === 'tornado' ? (0.4 + c.t * 1.4) : (0.85 + Math.sin(c.t * Math.PI) * 0.35);
+        const rAct = (simParams.aperturaOjo + c.t * (simParams.radioEspacio * 0.6)) * perfilEmbudo;
+        c.mesh.position.set(Math.cos(c.ang) * rAct, c.y, Math.sin(c.ang) * rAct);
+      });
+
+      datosAire.forEach((p, i) => {
+        p.angulo += dt * giroMod * (1.8 - p.radioFrac * 0.8);
+        p.altFrac = (p.altFrac + dt * 0.28 * (1 - p.radioFrac * 0.4)) % 1.0;
+
+        const r = simParams.aperturaOjo + p.radioFrac * (simParams.radioEspacio * 0.72);
+        const y = -3.0 + p.altFrac * 9.5;
+        dummy.position.set(Math.cos(p.angulo) * r, y, Math.sin(p.angulo) * r);
+        dummy.updateMatrix();
+        meshAire.setMatrixAt(i, dummy.matrix);
+
+        const calor = Math.max(0, Math.min(1, (1 - p.altFrac * 0.85) * (simParams.tempMar / 32)));
+        if (calor > 0.65) colTemp.setHex(0xf43f5e).lerp(new THREE.Color(0xfbbf24), (1 - calor) * 2);
+        else if (calor > 0.35) colTemp.setHex(0xfbbf24).lerp(new THREE.Color(0x38bdf8), (0.65 - calor) * 3);
+        else colTemp.setHex(0x38bdf8).lerp(new THREE.Color(0x2563eb), (0.35 - calor) * 2.5);
+        meshAire.setColorAt(i, colTemp);
+      });
+      meshAire.instanceMatrix.needsUpdate = true;
+      if (meshAire.instanceColor) meshAire.instanceColor.needsUpdate = true;
+
+      flashLight.intensity = Math.max(0, flashLight.intensity - dt * 16);
+      for (let i = rayos.length - 1; i >= 0; i--) {
+        rayos[i].vida -= dt * 3.5;
+        rayos[i].line.material.opacity = Math.max(0, rayos[i].vida);
+        if (rayos[i].vida <= 0) {
+          grupoTormenta.remove(rayos[i].line);
+          rayos.splice(i, 1);
+        }
+      }
+
+      document.getElementById('kpiTemp').textContent = `${simParams.tempMar}°C / ${tempEfectivaTierra}°C`;
+      document.getElementById('kpiPulso').textContent = `${simParams.bpm} BPM`;
+
+      sampleTimer += dt;
+      if (sampleTimer >= 0.14) {
+        sampleTimer = 0;
+        const baseEnergy = Math.min(0.95, 0.25 + (simParams.velocidadGiro / 3.2) * 0.45 + latido * 0.22 + (flashLight.intensity > 0.5 ? 0.18 : 0));
+        energySeries.push(baseEnergy);
+        energySeries.shift();
+        drawTelemetryChart(baseEnergy);
+      }
+    }
+
+    construirSubCubos();
+    construirAire();
+    setInteractive(false);
+    drawTelemetryChart(0.45);
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dt = Math.min((now - prevT) / 1000, 0.05);
+      prevT = now;
+      actualizarTormenta(dt);
+      if (interactiveMode) controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    function resizeCover() {
+      const w = coverViewport.clientWidth || 680;
+      const h = coverViewport.clientHeight || 360;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', resizeCover);
   </script>
 </body>
 </html>
