@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoEdu — Simulador Cardioneuronal 3D</title>
+  <style>
+    :root {
+      --bg-dark: #050814;
+      --glass-bg: rgba(15, 23, 42, 0.78);
+      --glass-border: rgba(56, 189, 248, 0.25);
+      --accent-cyan: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-gold: #fbbf24;
+      --accent-crimson: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+    }
+
+    /* HEADER INSTITUCIONAL */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 150;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-main);
+    }
+
+    .cube-viewport {
+      width: 28px;
+      height: 28px;
+      perspective: 200px;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(14px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(14px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(14px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(14px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(14px); border-color: var(--accent-crimson); background: rgba(244, 63, 94, 0.3); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(14px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    /* MARCO DE PRESENTACIÓN Y PANEL DESPLEGABLE EDUCATIVO */
+    .edu-wrapper {
+      position: fixed;
+      top: 74px;
+      left: 20px;
+      z-index: 110;
+      width: 340px;
+      max-width: calc(100vw - 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #btn-toggle-guide {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+      color: var(--text-main);
+      border: 1px solid var(--accent-cyan);
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: all 0.25s ease;
+    }
+
+    #btn-toggle-guide:hover {
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+    }
+
+    #edu-drawer {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      padding: 0 18px;
+      transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, padding 0.3s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+
+    #edu-drawer.open {
+      max-height: 460px;
+      opacity: 1;
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .edu-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      background: rgba(168, 85, 247, 0.2);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    #edu-drawer h4 {
+      font-size: 1rem;
+      color: var(--accent-cyan);
+      margin-bottom: 8px;
+    }
+
+    #edu-drawer p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .legend-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .legend-list li {
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-main);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .code-note {
+      background: rgba(5, 8, 20, 0.75);
+      border-left: 3px solid var(--accent-gold);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      font-family: monospace;
+    }
+
+    /* PANEL DE TELEMETRÍA CARDIONEURONAL (Movido abajo izquierda) */
+    #telemetry-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 100;
+      background: var(--glass-bg);
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      width: 280px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    #telemetry-panel h3 {
+      font-size: 0.86rem;
+      color: var(--accent-cyan);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.76rem;
+      margin-bottom: 5px;
+      color: var(--text-muted);
+    }
+
+    .metric-val {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    #bio-wave-canvas {
+      width: 100%;
+      height: 46px;
+      background: rgba(5, 8, 20, 0.7);
+      border-radius: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      margin-top: 6px;
+    }
+
+    /* PANEL INFERIOR DE CONTROLES DE ESCENARIO */
+    #presentation-deck {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 120;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      padding: 16px 20px;
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      max-width: 480px;
+      width: calc(100vw - 340px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    #presentation-deck h2 {
+      font-size: 0.96rem;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+    }
+
+    #presentation-deck p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background: rgba(30, 41, 59, 0.85);
+      color: var(--text-main);
+      border: 1px solid var(--glass-border);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border: none;
+      color: #fff;
+    }
+
+    .btn-pulse {
+      background: linear-gradient(135deg, #e11d48, #9f1239);
+      border: none;
+      color: #fff;
+    }
+
+    /* Lil-GUI estilizado */
+    .lil-gui {
+      top: 74px !important;
+      right: 20px !important;
+      --background-color: rgba(15, 23, 42, 0.88) !important;
+      --text-color: var(--text-main) !important;
+      --title-background-color: rgba(15, 23, 42, 0.98) !important;
+      border: 1px solid var(--glass-border) !important;
+      border-radius: 12px !important;
+      backdrop-filter: blur(12px);
+    }
+
+    @media (max-width: 820px) {
+      #telemetry-panel { display: none; }
+      #presentation-deck {
+        left: 20px;
+        width: calc(100vw - 40px);
+        max-width: none;
+      }
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+<body>
+
+  <!-- Header Institucional -->
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size: 0.92rem; letter-spacing: 0.5px;">MULTIVERSO EDU</strong>
+        <div style="font-size: 0.68rem; color: var(--text-muted);">Carta QR #01 // Bio-Simulación 3D</div>
+      </div>
+    </a>
+    <a href="index.html" class="btn-action">← Portal MultiversoLabs</a>
+  </header>
+
+  <!-- MARCO EDUCATIVO CON BOTÓN DESPLEGABLE -->
+  <div class="edu-wrapper">
+    <button id="btn-toggle-guide" onclick="toggleEduDrawer()">
+      <span>📖 ¿Qué estás viendo? (Guía de Estudio)</span>
+      <span id="drawer-arrow">▼</span>
+    </button>
+
+    <div id="edu-drawer" class="open">
+      <span class="edu-badge" id="edu-card-tag">Carta #01 • Anatomía Cardioneuronal</span>
+      <h4 id="edu-title">Acoplamiento Mecánico-Eléctrico</h4>
+      <p id="edu-body">
+        Estás observando una neurona construida mediante <strong>sub-cubos modulares</strong>. Cada latido sistólico del corazón genera una onda mecánica que expande el soma y dispara un potencial de acción (+40 mV) a lo largo del axón.
+      </p>
+
+      <ul class="legend-list">
+        <li><span class="dot" style="background:#fbbf24;"></span><strong>Soma & Nodos de Ranvier:</strong> Núcleo y saltos eléctricos.</li>
+        <li><span class="dot" style="background:#a855f7;"></span><strong>Dendritas:</strong> Ramificaciones receptoras de señales.</li>
+        <li><span class="dot" style="background:#38bdf8;"></span><strong>Mielina & Neurotransmisores:</strong> Conducción aislada.</li>
+        <li><span class="dot" style="background:#10b981;"></span><strong>Terminales Sinápticos:</strong> Liberación química final.</li>
+      </ul>
+
+      <div class="code-note" id="edu-code-insight">
+        <strong>Lógica del código:</strong> Cuando <code>pulsoCorazon > 0.85</code>, se inserta un objeto en <code>pulsosActivos[]</code> que ilumina cada sub-cubo según su <code>orden</code> espacial.
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Telemetría en Tiempo Real -->
+  <div id="telemetry-panel">
+    <h3>
+      <span>⚡ Eje Cardioneuronal</span>
+      <span style="font-size:0.65rem; background:rgba(56,189,248,0.2); padding:2px 8px; border-radius:99px;">EN VIVO</span>
+    </h3>
+    <div class="metric-row">
+      <span>Marcapasos:</span>
+      <span class="metric-val" id="val-bpm" style="color:#f43f5e;">72 BPM</span>
+    </div>
+    <div class="metric-row">
+      <span>Membrana:</span>
+      <span class="metric-val" id="val-mv" style="color:#38bdf8;">-70 mV</span>
+    </div>
+    <div class="metric-row">
+      <span>Geometría:</span>
+      <span class="metric-val" id="val-nodos">0 sub-cubos</span>
+    </div>
+    <canvas id="bio-wave-canvas" width="240" height="46"></canvas>
+  </div>
+
+  <!-- Controles de Escenario -->
+  <div id="presentation-deck">
+    <h2 id="slide-title">Escenario Base: Sincronía Cardioneuronal (72 BPM)</h2>
+    <p id="slide-desc">
+      Rota la cámara con el ratón o activa un escenario para actualizar la guía de estudio superior.
+    </p>
+    <div class="btn-group">
+      <button class="btn-action btn-pulse" onclick="dispararEstimuloManual()">⚡ Estimular</button>
+      <button class="btn-action" onclick="simularEstado('reposo')">🧘 Reposo (60)</button>
+      <button class="btn-action" onclick="simularEstado('alta')">🔥 Alta (138)</button>
+      <button class="btn-action btn-primary" onclick="simularEstado('apoptosis')">🧬 Apoptosis</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 0. CONTROL DEL DESPLEGABLE EDUCATIVO Y PARÁMETROS QR (URL)
+    // =========================================================================
+    function toggleEduDrawer() {
+      const drawer = document.getElementById('edu-drawer');
+      const arrow = document.getElementById('drawer-arrow');
+      drawer.classList.toggle('open');
+      arrow.textContent = drawer.classList.contains('open') ? '▲' : '▼';
+    }
+
+    // =========================================================================
+    // 1. PARÁMETROS CONTROLABLES
+    // =========================================================================
+    const params = {
+      acoplamientoCardiaco: true,
+      bpm: 72,
+      intensidadLatido: 0.35,
+      ramasDendriticas: 6,
+      longitudAxon: 12,
+      velocidadImpulso: 1.4,
+      densidadNeurotransmisores: 160,
+      nivelApoptosis: 0.0,
+      rotacionAutomatica: 0.004,
+      mostrarAuraSagrada: true
+    };
+
+    // =========================================================================
+    // 2. ESCENA THREE.JS
+    // =========================================================================
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050814, 0.032);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 16);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.3);
+    dirLight.position.set(10, 15, 12);
+    scene.add(dirLight);
+
+    const crimsonLight = new THREE.PointLight(0xf43f5e, 2.2, 18);
+    crimsonLight.position.set(-4, 0, 2);
+    scene.add(crimsonLight);
+
+    const grupoNeurona = new THREE.Group();
+    scene.add(grupoNeurona);
+
+    let nodosNeurona = [];
+    let conexionesNeurona = [];
+    let pulsosActivos = [];
+
+    // =========================================================================
+    // 3. CONSTRUCCIÓN DE LA NEURONA CON SUB-CUBOS
+    // =========================================================================
+    function construirNeurona() {
+      while (grupoNeurona.children.length > 0) {
+        grupoNeurona.remove(grupoNeurona.children[0]);
+      }
+      nodosNeurona = [];
+      conexionesNeurona = [];
+
+      const agregarSubCubo = (pos, tipo, orden, tamano, colorHex) => {
+        const geo = new THREE.BoxGeometry(tamano, tamano, tamano);
+        const mat = new THREE.MeshPhongMaterial({
+          color: colorHex,
+          emissive: colorHex,
+          emissiveIntensity: tipo === 'soma' ? 0.35 : 0.15,
+          transparent: true,
+          opacity: 0.92
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.copy(pos);
+
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: 0x050814, transparent: true, opacity: 0.6 })
+        );
+        mesh.add(edges);
+
+        if (tipo === 'soma' && orden === 0 && params.mostrarAuraSagrada) {
+          const icoGeo = new THREE.IcosahedronGeometry(2.4, 1);
+          const icoMat = new THREE.MeshBasicMaterial({
+            color: 0xa855f7,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.18
+          });
+          mesh.add(new THREE.Mesh(icoGeo, icoMat));
+        }
+
+        grupoNeurona.add(mesh);
+        const idx = nodosNeurona.length;
+        nodosNeurona.push({
+          idx,
+          mesh,
+          material: mat,
+          posBase: pos.clone(),
+          tipo,
+          orden,
+          escalaBase: 1.0
+        });
+        return idx;
+      };
+
+      const conectarNodos = (idxA, idxB, colorHex = 0x38bdf8) => {
+        const pA = nodosNeurona[idxA].posBase;
+        const pB = nodosNeurona[idxB].posBase;
+        const geo = new THREE.BufferGeometry().setFromPoints([pA, pB]);
+        const mat = new THREE.LineBasicMaterial({
+          color: colorHex,
+          transparent: true,
+          opacity: 0.45
+        });
+        const line = new THREE.Line(geo, mat);
+        grupoNeurona.add(line);
+        conexionesNeurona.push({ idxA, idxB, line });
+      };
+
+      // A. SOMA
+      const idxCentro = agregarSubCubo(new THREE.Vector3(-3.5, 0, 0), 'soma', 0, 0.55, 0xfbbf24);
+      const verticesSoma = [
+        [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1],
+        [0.7, 0.7, 0], [-0.7, 0.7, 0], [0.7, -0.7, 0], [-0.7, -0.7, 0],
+        [0, 0.7, 0.7], [0, -0.7, -0.7]
+      ];
+      const indicesSoma = [idxCentro];
+      verticesSoma.forEach(v => {
+        const pos = new THREE.Vector3(v[0], v[1], v[2]).multiplyScalar(0.95).add(new THREE.Vector3(-3.5, 0, 0));
+        const idx = agregarSubCubo(pos, 'soma', 0, 0.34, 0xf43f5e);
+        conectarNodos(idxCentro, idx, 0xf43f5e);
+        indicesSoma.push(idx);
+      });
+
+      // B. DENDRITAS
+      for (let r = 0; r < params.ramasDendriticas; r++) {
+        const anguloY = (r / params.ramasDendriticas) * Math.PI * 2;
+        const dirBase = new THREE.Vector3(-0.85, Math.cos(anguloY) * 0.85, Math.sin(anguloY) * 0.85).normalize();
+        let padreIdx = indicesSoma[1 + (r % (indicesSoma.length - 1))];
+        let posActual = nodosNeurona[padreIdx].posBase.clone();
+
+        for (let paso = 1; paso <= 3; paso++) {
+          posActual = posActual.clone().add(dirBase.clone().multiplyScalar(0.95));
+          const idxDend = agregarSubCubo(posActual, 'dendrita', -paso, 0.24 - paso * 0.03, 0xa855f7);
+          conectarNodos(padreIdx, idxDend, 0xa855f7);
+
+          if (paso === 2) {
+            const subDir = dirBase.clone().add(new THREE.Vector3(0, 0.5, -0.5)).normalize();
+            const posSub = posActual.clone().add(subDir.multiplyScalar(0.85));
+            const idxSub = agregarSubCubo(posSub, 'dendrita', -3, 0.16, 0xc084fc);
+            conectarNodos(idxDend, idxSub, 0xc084fc);
+          }
+          padreIdx = idxDend;
+        }
+      }
+
+      // C. AXÓN
+      let prevAxonIdx = idxCentro;
+      let posAxon = new THREE.Vector3(-2.5, 0, 0);
+      for (let s = 1; s <= params.longitudAxon; s++) {
+        const ondaY = Math.sin(s * 0.45) * 0.35;
+        const ondaZ = Math.cos(s * 0.35) * 0.35;
+        posAxon = new THREE.Vector3(-2.5 + s * 0.82, ondaY, ondaZ);
+
+        const esMielina = s % 2 === 0;
+        const tam = esMielina ? 0.34 : 0.20;
+        const col = esMielina ? 0x38bdf8 : 0xfbbf24;
+
+        const idxAxon = agregarSubCubo(posAxon, 'axon', s, tam, col);
+        conectarNodos(prevAxonIdx, idxAxon, 0x38bdf8);
+        prevAxonIdx = idxAxon;
+      }
+
+      // D. TERMINALES SINÁPTICOS
+      for (let t = 0; t < 5; t++) {
+        const ang = (t / 5) * Math.PI * 2;
+        const dirTerm = new THREE.Vector3(0.9, Math.cos(ang) * 0.75, Math.sin(ang) * 0.75).normalize();
+        const posMid = posAxon.clone().add(dirTerm.clone().multiplyScalar(0.95));
+        const idxMid = agregarSubCubo(posMid, 'terminal', params.longitudAxon + 1, 0.22, 0x38bdf8);
+        conectarNodos(prevAxonIdx, idxMid, 0x38bdf8);
+
+        const posFin = posMid.clone().add(dirTerm.clone().multiplyScalar(0.85));
+        const idxFin = agregarSubCubo(posFin, 'terminal', params.longitudAxon + 2, 0.26, 0x10b981);
+        conectarNodos(idxMid, idxFin, 0x10b981);
+      }
+
+      document.getElementById('val-nodos').innerText = `${nodosNeurona.length} sub-cubos`;
+      inicializarNeurotransmisores();
+    }
+
+    // =========================================================================
+    // 4. NEUROTRANSMISORES (InstancedMesh)
+    // =========================================================================
+    let meshTransmisores;
+    let particulasData = [];
+    const dummy = new THREE.Object3D();
+
+    function inicializarNeurotransmisores() {
+      if (meshTransmisores) grupoNeurona.remove(meshTransmisores);
+      particulasData = [];
+
+      const count = params.densidadNeurotransmisores;
+      const geo = new THREE.OctahedronGeometry(0.06, 0);
+      const mat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      meshTransmisores = new THREE.InstancedMesh(geo, mat, count);
+      grupoNeurona.add(meshTransmisores);
+
+      for (let i = 0; i < count; i++) {
+        const con = conexionesNeurona[Math.floor(Math.random() * conexionesNeurona.length)];
+        particulasData.push({
+          con,
+          progreso: Math.random(),
+          vel: 0.008 + Math.random() * 0.012
+        });
+      }
+    }
+
+    // =========================================================================
+    // 5. MOTOR BIOFÍSICO EN TIEMPO REAL
+    // =========================================================================
+    let faseCardiaca = 0;
+    let ultimoDisparoSistolico = false;
+    const historialOnda = new Array(90).fill(0);
+
+    function dispararEstimuloManual() {
+      pulsosActivos.push({ progresoOrden: -3, intensidad: 1.5 });
+    }
+
+    function actualizarAcoplamientoBio(delta) {
+      const freqHz = params.bpm / 60;
+      faseCardiaca = (faseCardiaca + delta * freqHz) % 1.0;
+
+      let pulsoCorazon = 0;
+      let esSistole = false;
+
+      if (faseCardiaca < 0.28) {
+        pulsoCorazon = Math.sin((faseCardiaca / 0.28) * Math.PI);
+        esSistole = true;
+      } else if (faseCardiaca < 0.42) {
+        pulsoCorazon = Math.sin(((faseCardiaca - 0.28) / 0.14) * Math.PI) * 0.25;
+      }
+
+      if (params.acoplamientoCardiaco) {
+        if (esSistole && pulsoCorazon > 0.85 && !ultimoDisparoSistolico) {
+          pulsosActivos.push({ progresoOrden: -3, intensidad: 1.0 });
+          ultimoDisparoSistolico = true;
+        } else if (!esSistole) {
+          ultimoDisparoSistolico = false;
+        }
+      }
+
+      const ordenMax = params.longitudAxon + 3;
+      for (let i = pulsosActivos.length - 1; i >= 0; i--) {
+        pulsosActivos[i].progresoOrden += delta * 14 * params.velocidadImpulso;
+        if (pulsosActivos[i].progresoOrden > ordenMax + 2) {
+          pulsosActivos.splice(i, 1);
+        }
+      }
+
+      let voltajeActual = -70;
+      nodosNeurona.forEach(n => {
+        const factorLatido = params.acoplamientoCardiaco ? pulsoCorazon * params.intensidadLatido : 0;
+        if (n.tipo === 'soma') {
+          const escala = 1 + factorLatido * 0.45;
+          n.mesh.scale.set(escala, escala, escala);
+        }
+
+        const distanciaExtremo = Math.abs(n.orden) / (params.longitudAxon + 2);
+        const visiblePorApoptosis = distanciaExtremo <= (1.02 - params.nivelApoptosis * 0.85);
+        n.mesh.visible = visiblePorApoptosis;
+
+        let excitacion = 0;
+        pulsosActivos.forEach(p => {
+          const dist = Math.abs(n.orden - p.progresoOrden);
+          if (dist < 1.8) {
+            excitacion = Math.max(excitacion, (1 - dist / 1.8) * p.intensidad);
+          }
+        });
+
+        if (excitacion > 0.05) {
+          n.material.emissiveIntensity = 0.25 + excitacion * 1.8;
+          n.material.color.setHex(0xffffff);
+          voltajeActual = Math.max(voltajeActual, Math.round(-70 + excitacion * 110));
+        } else {
+          n.material.emissiveIntensity = n.tipo === 'soma' ? 0.35 + factorLatido : 0.15;
+          const baseCol = n.tipo === 'soma' ? (n.orden === 0 ? 0xfbbf24 : 0xf43f5e)
+                        : n.tipo === 'dendrita' ? 0xa855f7
+                        : n.tipo === 'terminal' ? 0x10b981 : 0x38bdf8;
+          n.material.color.setHex(baseCol);
+        }
+      });
+
+      const boostVel = 1 + (pulsosActivos.length * 1.5);
+      particulasData.forEach((p, idx) => {
+        p.progreso += p.vel * boostVel;
+        if (p.progreso >= 1) p.progreso = 0;
+
+        const nodoA = nodosNeurona[p.con.idxA];
+        const nodoB = nodosNeurona[p.con.idxB];
+        if (!nodoA.mesh.visible || !nodoB.mesh.visible) {
+          dummy.scale.set(0, 0, 0);
+        } else {
+          dummy.scale.set(1, 1, 1);
+          dummy.position.lerpVectors(nodoA.mesh.position, nodoB.mesh.position, p.progreso);
+        }
+        dummy.updateMatrix();
+        meshTransmisores.setMatrixAt(idx, dummy.matrix);
+      });
+      meshTransmisores.instanceMatrix.needsUpdate = true;
+
+      document.getElementById('val-bpm').innerText = `${params.bpm} BPM (${esSistole ? 'Sístole' : 'Diástole'})`;
+      document.getElementById('val-mv').innerText = `${voltajeActual > 0 ? '+' + voltajeActual : voltajeActual} mV`;
+      dibujarOsciloscopio(pulsoCorazon, (voltajeActual + 70) / 110);
+    }
+
+    const waveCanvas = document.getElementById('bio-wave-canvas');
+    const waveCtx = waveCanvas.getContext('2d');
+    function dibujarOsciloscopio(valCorazon, valNeurona) {
+      historialOnda.push({ c: valCorazon, n: valNeurona });
+      historialOnda.shift();
+
+      waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      const stepX = waveCanvas.width / historialOnda.length;
+
+      waveCtx.beginPath();
+      waveCtx.strokeStyle = '#f43f5e';
+      waveCtx.lineWidth = 1.8;
+      historialOnda.forEach((pt, i) => {
+        const y = 38 - pt.c * 28;
+        if (i === 0) waveCtx.moveTo(0, y);
+        else waveCtx.lineTo(i * stepX, y);
+      });
+      waveCtx.stroke();
+
+      waveCtx.beginPath();
+      waveCtx.strokeStyle = '#38bdf8';
+      waveCtx.lineWidth = 1.8;
+      historialOnda.forEach((pt, i) => {
+        const y = 38 - pt.n * 30;
+        if (i === 0) waveCtx.moveTo(0, y);
+        else waveCtx.lineTo(i * stepX, y);
+      });
+      waveCtx.stroke();
+    }
+
+    // =========================================================================
+    // 6. ESCENARIOS EDUCATIVOS SINCRONIZADOS CON LA GUÍA
+    // =========================================================================
+    function simularEstado(modo) {
+      const title = document.getElementById('slide-title');
+      const desc = document.getElementById('slide-desc');
+      const eduTag = document.getElementById('edu-card-tag');
+      const eduTitle = document.getElementById('edu-title');
+      const eduBody = document.getElementById('edu-body');
+      const eduCode = document.getElementById('edu-code-insight');
+
+      if (modo === 'reposo') {
+        params.bpm = 60;
+        params.nivelApoptosis = 0.0;
+        params.velocidadImpulso = 1.1;
+        title.innerText = '01. Homeostasis & Sincronía Basal (60 BPM)';
+        desc.innerText = 'Ritmo cardíaco coherente de 1 Hz con disparos sinápticos estables.';
+        eduTag.innerText = 'Carta #01-A • Coherencia Cardíaca';
+        eduTitle.innerText = 'Estado Parasimpático (60 BPM)';
+        eduBody.innerText = 'A 60 latidos por minuto (1 Hz), la onda de presión sistólica llega de forma espaciada, permitiendo que la membrana neuronal recupere completamente su potencial de reposo (-70 mV) entre impulsos.';
+        eduCode.innerHTML = '<strong>Comportamiento:</strong> <code>freqHz = 60 / 60 = 1.0</code>. Solo un pulso activo viaja a la vez por el arreglo <code>pulsosActivos</code>.';
+      } else if (modo === 'alta') {
+        params.bpm = 138;
+        params.nivelApoptosis = 0.0;
+        params.velocidadImpulso = 2.2;
+        title.innerText = '02. Respuesta Simpática (138 BPM)';
+        desc.innerText = 'Alta frecuencia de disparo y aceleración de neurotransmisores.';
+        eduTag.innerText = 'Carta #01-B • Excitación Sináptica';
+        eduTitle.innerText = 'Descarga Adrenérgica (138 BPM)';
+        eduBody.innerText = 'Al aumentar la frecuencia cardíaca y la velocidad de conducción, múltiples ondas de despolarización coexisten simultáneamente a lo largo del axón, multiplicando el transporte vesicular.';
+        eduCode.innerHTML = '<strong>Comportamiento:</strong> <code>boostVel = 1 + (pulsosActivos.length * 1.5)</code> acelera las instancias en <code>InstancedMesh</code>.';
+      } else if (modo === 'apoptosis') {
+        params.bpm = 75;
+        params.nivelApoptosis = 0.65;
+        title.innerText = '03. Poda Sináptica & Apoptosis Controlada';
+        desc.innerText = 'Retracción ordenada de sub-cubos periféricos preservando el soma.';
+        eduTag.innerText = 'Carta #01-C • Neuroplasticidad';
+        eduTitle.innerText = 'Poda Sináptica y Apoptosis';
+        eduBody.innerText = 'Durante el aprendizaje o la remodelación celular, las conexiones periféricas menos activas se retraen de forma programada desde los extremos hacia el núcleo sin destruir la neurona.';
+        eduCode.innerHTML = '<strong>Comportamiento:</strong> Evalúa <code>Math.abs(n.orden) / maxOrden</code> y oculta los sub-cubos cuya distancia supera el umbral de <code>nivelApoptosis</code>.';
+      }
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    // =========================================================================
+    // 7. PANEL LIL-GUI Y LECTURA DE QR POR URL (?modo=...)
+    // =========================================================================
+    const gui = new lil.GUI({ title: 'Laboratorio 3D' });
+    const fCorazon = gui.addFolder('❤️ Acoplamiento Cardíaco');
+    fCorazon.add(params, 'acoplamientoCardiaco').name('Sincronizar Latido');
+    fCorazon.add(params, 'bpm', 40, 180, 1).name('Ritmo (BPM)');
+    fCorazon.add(params, 'intensidadLatido', 0, 1, 0.05).name('Fuerza Mecánica');
+
+    const fNeurona = gui.addFolder('🧠 Morfología & Sinapsis');
+    fNeurona.add(params, 'ramasDendriticas', 3, 12, 1).name('Dendritas').onChange(construirNeurona);
+    fNeurona.add(params, 'longitudAxon', 6, 20, 1).name('Longitud Axón').onChange(construirNeurona);
+    fNeurona.add(params, 'velocidadImpulso', 0.4, 3.0, 0.1).name('Vel. Impulso');
+    fNeurona.add(params, 'nivelApoptosis', 0.0, 0.9, 0.05).name('Nivel Apoptosis');
+
+    const fVisual = gui.addFolder('🌌 Geometría & Vista');
+    fVisual.add(params, 'mostrarAuraSagrada').name('Geometría Sagrada').onChange(construirNeurona);
+    fVisual.add(params, 'rotacionAutomatica', 0, 0.02, 0.001).name('Rotación 3D');
+
+    construirNeurona();
+
+    // Detectar parámetro QR en la URL (ej. index2.html?modo=apoptosis)
+    const urlParams = new URLSearchParams(window.location.search);
+    const modoQR = urlParams.get('modo');
+    if (modoQR) simularEstado(modoQR);
+
+    let lastTime = performance.now();
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      const delta = (now - lastTime) / 1000;
+      lastTime = now;
+
+      if (params.rotacionAutomatica > 0) {
+        grupoNeurona.rotation.y += params.rotacionAutomatica;
+      }
+
+      actualizarAcoplamientoBio(delta);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
