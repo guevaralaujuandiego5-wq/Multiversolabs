@@ -963,9 +963,277 @@
         text-align: left;
       }
     }
+
+    /* ==========================================================================
+       FONDO 3D MANDALA / TORMENTA EN TIEMPO REAL + MODO SIMULADOR
+       ========================================================================== */
+    #mandala-bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.78;
+      display: block;
+      transition: opacity 0.4s ease;
+    }
+
+    body.sim-fullscreen {
+      overflow: hidden !important;
+    }
+
+    body.sim-fullscreen #mandala-bg-canvas {
+      z-index: 2;
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    body:not(.sim-fullscreen) #sim-hud,
+    body:not(.sim-fullscreen) #sim-deck,
+    body:not(.sim-fullscreen) .lil-gui {
+      display: none !important;
+    }
+
+    body.sim-fullscreen main,
+    body.sim-fullscreen footer,
+    body.sim-fullscreen .news-ticker,
+    body.sim-fullscreen .group-floating-panel,
+    body.sim-fullscreen #reopenGroupBtn,
+    body:sim-fullscreen .living-background,
+    body.sim-fullscreen .holo-grid,
+    body.sim-fullscreen #particle-canvas {
+      display: none !important;
+    }
+
+    #sim-hud {
+      position: fixed;
+      top: 76px;
+      left: 20px;
+      z-index: 100;
+      width: 310px;
+      max-width: calc(100vw - 40px);
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 15px;
+      backdrop-filter: blur(14px);
+      color: var(--text-primary);
+    }
+
+    #sim-hud h3 {
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      margin-bottom: 10px;
+    }
+
+    .sim-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .sim-val {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sim-grad-bar {
+      height: 8px;
+      border-radius: 99px;
+      margin-top: 8px;
+      background: linear-gradient(90deg, #2563eb, #38bdf8, #fbbf24, #ef4444);
+    }
+
+    #sim-deck {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 14px 20px;
+      max-width: 720px;
+      width: calc(100% - 32px);
+      text-align: center;
+      backdrop-filter: blur(16px);
+      color: var(--text-primary);
+    }
+
+    #sim-deck p {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      margin: 6px 0 12px;
+    }
+
+    .sim-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .sim-btn-rayo {
+      background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+      border: none !important;
+      color: #ffffff !important;
+    }
+
+    .lil-gui {
+      top: 76px !important;
+      right: 20px !important;
+      z-index: 105 !important;
+      --background-color: rgba(15, 23, 42, 0.92) !important;
+    }
+
+    /* ==========================================================================
+       WIDGET FLOTANTE COMPACTO, DESPLEGABLE Y MOVIBLE
+       ========================================================================== */
+    .mandala-float-widget {
+      position: fixed;
+      top: 84px;
+      right: 20px;
+      z-index: 95;
+      width: fit-content;
+      background: var(--glass-bg-elevated);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    .mfw-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+    }
+
+    .mfw-drag {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: grab;
+      font-size: 0.95rem;
+      padding: 4px 6px;
+      border-radius: 8px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .mfw-drag:active {
+      cursor: grabbing;
+      color: var(--accent-cyan);
+    }
+
+    .mfw-main-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.84rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .mfw-drawer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px 10px 10px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .mfw-drawer[hidden] {
+      display: none;
+    }
+
+    .mfw-action-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .mfw-action-btn:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .mfw-action-btn.primary {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .mfw-action-btn.active-state {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+    }
+
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
 </head>
 <body>
+
+  <!-- LIENZO 3D MANDALA / MAR MOLECULAR COMO FONDO EN TIEMPO REAL -->
+  <canvas id="mandala-bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- PLANTILLA COMPACTA, FLOTANTE, DESPLEGABLE Y MOVIBLE -->
+  <aside id="mandalaFloatWidget" class="mandala-float-widget" aria-label="Control flotante del Mandala 3D">
+    <div class="mfw-bar">
+      <button type="button" id="mfwDragHandle" class="mfw-drag" title="Arrastrar control" aria-label="Arrastrar control">⠿</button>
+      <button type="button" id="mfwToggleBtn" class="mfw-main-btn" aria-expanded="false" aria-controls="mfwDrawer">
+        <span>◈ Mandala</span>
+        <span id="mfwArrow">▾</span>
+      </button>
+    </div>
+    <div id="mfwDrawer" class="mfw-drawer" hidden>
+      <button type="button" id="mfwInteractBtn" class="mfw-action-btn" aria-pressed="false">
+        Activar interacción
+      </button>
+      <button type="button" id="mfwSimBtn" class="mfw-action-btn primary" aria-pressed="false">
+        Entrar al simulador
+      </button>
+    </div>
+  </aside>
+
+  <!-- HUD Y DECK DEL SIMULADOR (VISIBLES EN MODO SIMULADOR COMPLETO) -->
+  <div id="sim-hud">
+    <h3>🌪️ Telemetría Atmosférica &amp; Oceánica</h3>
+    <div class="sim-row"><span>Fenómeno:</span><span class="sim-val" id="m-fen">HURACÁN</span></div>
+    <div class="sim-row"><span>Temp. Mar / Marea:</span><span class="sim-val" id="m-temp" style="color:#fbbf24;">28°C · +0.00 m</span></div>
+    <div class="sim-row"><span>Moléculas / Rayos:</span><span class="sim-val" id="m-rayo" style="color:#38bdf8;">4,624 · 75 BPM</span></div>
+    <div class="sim-grad-bar"></div>
+  </div>
+
+  <div id="sim-deck">
+    <h2 id="d-title" style="color:var(--accent-cyan);font-size:1.02rem;">Vórtice sobre Mar Molecular Abierto</h2>
+    <p id="d-desc">Sin isla central: el mar molecular completo responde al oleaje, la marea, el calor y las descargas del vórtice.</p>
+    <div class="sim-btns">
+      <button type="button" class="btn-glass sim-btn-rayo" onclick="dispararRayo()">⚡ Descarga Eléctrica</button>
+      <button type="button" class="btn-glass" onclick="setFenomeno('huracan')">🌀 Huracán</button>
+      <button type="button" class="btn-glass" onclick="setFenomeno('tornado')">🌪️ Tornado</button>
+      <button type="button" class="btn-glass" onclick="setFenomeno('tormenta')">⛈️ Tormenta Fuerte</button>
+    </div>
+  </div>
+
   <!-- PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA) -->
   <div class="artist-welcome-gate" id="artistWelcomeGate" role="dialog" aria-modal="true" aria-labelledby="welcomeGateTitle">
     <div class="holo-welcome-console">
@@ -1482,6 +1750,404 @@
       const prev = btn.textContent;
       btn.textContent = "✓ Copiado";
       setTimeout(() => (btn.textContent = prev), 1600);
+    });
+
+  
+    /* ==========================================================================
+       MOTOR 3D DEL MANDALA / HURACÁN & MAR MOLECULAR DENSO (TIEMPO REAL)
+       ========================================================================== */
+    const mandalaParams = {
+      fenomeno: 'huracan',
+      radioEspacio: 16,
+      aperturaOjo: 2.6,
+      velocidadGiro: 1.4,
+      tempMar: 28,
+      amplitudMarea: 0.65,
+      oleajeMolecular: 0.75,
+      acopleLatido: true,
+      bpm: 75,
+      numParticulas: 650
+    };
+
+    const mandalaCanvas = document.getElementById('mandala-bg-canvas');
+    const simScene = new THREE.Scene();
+    simScene.fog = new THREE.FogExp2(0x040711, 0.018);
+
+    const simCamera = new THREE.PerspectiveCamera(
+      55,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    simCamera.position.set(14, 11, 19);
+
+    const simRenderer = new THREE.WebGLRenderer({
+      canvas: mandalaCanvas,
+      antialias: true,
+      alpha: true
+    });
+    simRenderer.setSize(window.innerWidth, window.innerHeight);
+    simRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const simControls = new THREE.OrbitControls(simCamera, simRenderer.domElement);
+    simControls.enableDamping = true;
+    simControls.target.set(0, -1.0, 0);
+    simControls.enabled = false;
+
+    simScene.add(new THREE.AmbientLight(0x93c5fd, 0.55));
+    const simDirLuz = new THREE.DirectionalLight(0xe0f2fe, 1.2);
+    simDirLuz.position.set(12, 18, 10);
+    simScene.add(simDirLuz);
+
+    const simFlashLight = new THREE.PointLight(0x38bdf8, 0, 38);
+    simFlashLight.position.set(0, 5, 0);
+    simScene.add(simFlashLight);
+
+    const grupoTormenta = new THREE.Group();
+    simScene.add(grupoTormenta);
+
+    const espejoMarMesh = new THREE.Mesh(
+      new THREE.CircleGeometry(36, 72),
+      new THREE.MeshStandardMaterial({
+        color: 0x071d36,
+        roughness: 0.18,
+        metalness: 0.78
+      })
+    );
+    espejoMarMesh.rotation.x = -Math.PI / 2;
+    espejoMarMesh.position.y = -3.45;
+    simScene.add(espejoMarMesh);
+
+    const GRID_X = 68;
+    const GRID_Z = 68;
+    const ESPACIO_MOL = 0.56;
+    const TOTAL_MOL = GRID_X * GRID_Z;
+    const dummyMol = new THREE.Object3D();
+    const colMol = new THREE.Color();
+
+    const meshMoleculasAgua = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.22, 0.12, 0.22),
+      new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0x0c4a6e,
+        emissiveIntensity: 0.3,
+        roughness: 0.2,
+        metalness: 0.65
+      }),
+      TOTAL_MOL
+    );
+    meshMoleculasAgua.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    simScene.add(meshMoleculasAgua);
+
+    const COL_AGUA_PROFUNDA = new THREE.Color(0x0369a1);
+    const COL_AGUA_CRESTA = new THREE.Color(0x38bdf8);
+
+    let cubosVortice = [];
+    function construirSubCubos() {
+      cubosVortice.forEach(c => grupoTormenta.remove(c.mesh));
+      cubosVortice = [];
+      const count = 48;
+      for (let i = 0; i < count; i++) {
+        const t = i / count;
+        const ang = t * Math.PI * 8;
+        const r = mandalaParams.aperturaOjo + t * (mandalaParams.radioEspacio * 0.65);
+        const y = -2.6 + t * 8.5;
+        const geo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
+        const mat = new THREE.MeshPhongMaterial({
+          color: 0x38bdf8,
+          emissive: 0x1d4ed8,
+          emissiveIntensity: 0.25
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(Math.cos(ang) * r, y, Math.sin(ang) * r);
+        grupoTormenta.add(mesh);
+        cubosVortice.push({ mesh, mat, t, ang, r, y });
+      }
+    }
+
+    let meshAire, datosAire = [];
+    const dummyAire = new THREE.Object3D();
+    const colTemp = new THREE.Color();
+
+    function construirAire() {
+      if (meshAire) grupoTormenta.remove(meshAire);
+      datosAire = [];
+      const geo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
+      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      meshAire = new THREE.InstancedMesh(geo, mat, mandalaParams.numParticulas);
+      grupoTormenta.add(meshAire);
+
+      for (let i = 0; i < mandalaParams.numParticulas; i++) {
+        datosAire.push({
+          angulo: Math.random() * Math.PI * 2,
+          radioFrac: Math.random(),
+          altFrac: Math.random(),
+          velAng: 0.8 + Math.random() * 1.4
+        });
+      }
+    }
+
+    let rayos = [];
+    function dispararRayo() {
+      const pts = [];
+      const rInicio = mandalaParams.aperturaOjo + Math.random() * 6;
+      const ang = Math.random() * Math.PI * 2;
+      let x = Math.cos(ang) * rInicio;
+      let y = 5.5;
+      let z = Math.sin(ang) * rInicio;
+      for (let s = 0; s <= 10; s++) {
+        pts.push(new THREE.Vector3(x, y, z));
+        x += (Math.random() - 0.5) * 1.2;
+        y -= 0.9;
+        z += (Math.random() - 0.5) * 1.2;
+      }
+      const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 1 })
+      );
+      grupoTormenta.add(line);
+      rayos.push({ line, vida: 1.0 });
+      simFlashLight.intensity = 4.5;
+    }
+
+    const simGui = new lil.GUI({ title: 'Controles Tormenta & Mar' });
+    simGui.add(mandalaParams, 'aperturaOjo', 0.4, 5.0, 0.1).name('Apertura Ojo').onChange(construirSubCubos);
+    simGui.add(mandalaParams, 'velocidadGiro', 0.2, 3.5, 0.1).name('Giro Circular');
+    simGui.add(mandalaParams, 'tempMar', 12, 34, 1).name('Temp. Mar (°C)');
+    simGui.add(mandalaParams, 'amplitudMarea', 0.0, 1.5, 0.05).name('Amplitud Marea');
+    simGui.add(mandalaParams, 'oleajeMolecular', 0.1, 1.6, 0.05).name('Oleaje Molecular');
+    simGui.add(mandalaParams, 'acopleLatido').name('Rayos x Latido');
+    simGui.add(mandalaParams, 'bpm', 45, 160, 1).name('Ritmo (BPM)');
+
+    function setFenomeno(tipo) {
+      mandalaParams.fenomeno = tipo;
+      if (tipo === 'tornado') {
+        mandalaParams.aperturaOjo = 0.8;
+        mandalaParams.velocidadGiro = 2.6;
+      } else if (tipo === 'huracan') {
+        mandalaParams.aperturaOjo = 2.6;
+        mandalaParams.velocidadGiro = 1.4;
+        mandalaParams.tempMar = 29;
+      } else {
+        mandalaParams.aperturaOjo = 1.5;
+        mandalaParams.velocidadGiro = 1.8;
+      }
+      const fenEl = document.getElementById('m-fen');
+      if (fenEl) fenEl.innerText = tipo.toUpperCase();
+      simGui.controllersRecursive().forEach(c => c.updateDisplay());
+      construirSubCubos();
+    }
+
+    let fasePulso = 0;
+    let disparoPrev = false;
+
+    function actualizarTormenta(dt, tSeg) {
+      fasePulso = (fasePulso + dt * (mandalaParams.bpm / 60)) % 1.0;
+      const latido = fasePulso < 0.25 ? Math.sin((fasePulso / 0.25) * Math.PI) : 0;
+      if (mandalaParams.acopleLatido && latido > 0.85 && !disparoPrev) {
+        dispararRayo();
+        disparoPrev = true;
+      } else if (latido <= 0.2) {
+        disparoPrev = false;
+      }
+
+      const nivelMarea = Math.sin(tSeg * 0.75) * mandalaParams.amplitudMarea;
+      const baseAguaY = -3.45 + nivelMarea;
+      espejoMarMesh.position.y = baseAguaY - 0.04;
+
+      const giroMod = mandalaParams.velocidadGiro * (1 + latido * 0.25);
+      cubosVortice.forEach(c => {
+        c.ang += dt * giroMod * (1.4 - c.t * 0.5);
+        const perfilEmbudo = mandalaParams.fenomeno === 'tornado'
+          ? (0.4 + c.t * 1.4)
+          : (0.85 + Math.sin(c.t * Math.PI) * 0.35);
+        const rAct = (mandalaParams.aperturaOjo + c.t * (mandalaParams.radioEspacio * 0.6)) * perfilEmbudo;
+        c.mesh.position.set(Math.cos(c.ang) * rAct, c.y, Math.sin(c.ang) * rAct);
+      });
+
+      datosAire.forEach((p, i) => {
+        p.angulo += dt * giroMod * (1.8 - p.radioFrac * 0.8);
+        p.altFrac = (p.altFrac + dt * 0.28 * (1 - p.radioFrac * 0.4)) % 1.0;
+
+        const r = mandalaParams.aperturaOjo + p.radioFrac * (mandalaParams.radioEspacio * 0.72);
+        const y = -2.8 + p.altFrac * 9.5;
+        dummyAire.position.set(Math.cos(p.angulo) * r, y, Math.sin(p.angulo) * r);
+        dummyAire.updateMatrix();
+        meshAire.setMatrixAt(i, dummyAire.matrix);
+
+        const calor = Math.max(0, Math.min(1, (1 - p.altFrac * 0.85) * (mandalaParams.tempMar / 32)));
+        if (calor > 0.65) colTemp.setHex(0xf43f5e).lerp(new THREE.Color(0xfbbf24), (1 - calor) * 2);
+        else if (calor > 0.35) colTemp.setHex(0xfbbf24).lerp(new THREE.Color(0x38bdf8), (0.65 - calor) * 3);
+        else colTemp.setHex(0x38bdf8).lerp(new THREE.Color(0x2563eb), (0.35 - calor) * 2.5);
+        meshAire.setColorAt(i, colTemp);
+      });
+      meshAire.instanceMatrix.needsUpdate = true;
+      if (meshAire.instanceColor) meshAire.instanceColor.needsUpdate = true;
+
+      let idx = 0;
+      const halfX = (GRID_X - 1) * 0.5;
+      const halfZ = (GRID_Z - 1) * 0.5;
+      for (let iz = 0; iz < GRID_Z; iz++) {
+        for (let ix = 0; ix < GRID_X; ix++) {
+          const wx = (ix - halfX) * ESPACIO_MOL;
+          const wz = (iz - halfZ) * ESPACIO_MOL;
+          const distCentro = Math.hypot(wx, wz);
+
+          const ola =
+            Math.sin(wx * 0.45 + tSeg * 1.9) * Math.cos(wz * 0.42 - tSeg * 1.5) * 0.24 * mandalaParams.oleajeMolecular +
+            Math.sin(distCentro * 0.7 - tSeg * 2.5) * 0.16 * mandalaParams.oleajeMolecular;
+
+          dummyMol.position.set(wx, baseAguaY + ola, wz);
+          dummyMol.rotation.set(ola * 0.8, 0, Math.cos(wx * 0.45 + tSeg * 1.9) * 0.25);
+          const escMol = 0.8 + Math.max(0, ola) * 1.35;
+          dummyMol.scale.set(escMol, escMol, escMol);
+          dummyMol.updateMatrix();
+          meshMoleculasAgua.setMatrixAt(idx, dummyMol.matrix);
+
+          colMol.copy(COL_AGUA_PROFUNDA).lerp(COL_AGUA_CRESTA, THREE.MathUtils.clamp(ola * 2.2 + 0.45, 0, 1));
+          meshMoleculasAgua.setColorAt(idx, colMol);
+          idx++;
+        }
+      }
+      meshMoleculasAgua.instanceMatrix.needsUpdate = true;
+      if (meshMoleculasAgua.instanceColor) meshMoleculasAgua.instanceColor.needsUpdate = true;
+
+      simFlashLight.intensity = Math.max(0, simFlashLight.intensity - dt * 16);
+      for (let i = rayos.length - 1; i >= 0; i--) {
+        rayos[i].vida -= dt * 3.5;
+        rayos[i].line.material.opacity = Math.max(0, rayos[i].vida);
+        if (rayos[i].vida <= 0) {
+          grupoTormenta.remove(rayos[i].line);
+          rayos.splice(i, 1);
+        }
+      }
+
+      const signo = nivelMarea >= 0 ? '+' : '';
+      const tempEl = document.getElementById('m-temp');
+      const rayoEl = document.getElementById('m-rayo');
+      if (tempEl) tempEl.innerText = `${mandalaParams.tempMar}°C · ${signo}${nivelMarea.toFixed(2)} m`;
+      if (rayoEl) rayoEl.innerText = `${TOTAL_MOL.toLocaleString()} · ${mandalaParams.bpm} BPM`;
+    }
+
+    construirSubCubos();
+    construirAire();
+
+    let prevSimT = performance.now();
+    const inicioSimT = prevSimT;
+    (function loopSim() {
+      requestAnimationFrame(loopSim);
+      const now = performance.now();
+      const dt = Math.min((now - prevSimT) / 1000, 0.05);
+      const tSeg = (now - inicioSimT) / 1000;
+      prevSimT = now;
+      actualizarTormenta(dt, tSeg);
+      simControls.update();
+      simRenderer.render(simScene, simCamera);
+    })();
+
+    /* ==========================================================================
+       WIDGET FLOTANTE COMPACTO, DESPLEGABLE Y MOVIBLE + ESTADOS DE INTERACCIÓN
+       ========================================================================== */
+    const mfwWidget = document.getElementById('mandalaFloatWidget');
+    const mfwDragHandle = document.getElementById('mfwDragHandle');
+    const mfwToggleBtn = document.getElementById('mfwToggleBtn');
+    const mfwDrawer = document.getElementById('mfwDrawer');
+    const mfwArrow = document.getElementById('mfwArrow');
+    const mfwInteractBtn = document.getElementById('mfwInteractBtn');
+    const mfwSimBtn = document.getElementById('mfwSimBtn');
+
+    let isInteracting = false;
+    let isSimFull = false;
+
+    mfwToggleBtn.addEventListener('click', () => {
+      const willOpen = mfwDrawer.hidden;
+      mfwDrawer.hidden = !willOpen;
+      mfwToggleBtn.setAttribute('aria-expanded', String(willOpen));
+      mfwArrow.textContent = willOpen ? '▴' : '▾';
+      clampWidgetInsideViewport();
+    });
+
+    function syncMandalaModes() {
+      const canInteract = isInteracting || isSimFull;
+      simControls.enabled = canInteract;
+      mandalaCanvas.style.pointerEvents = canInteract ? 'auto' : 'none';
+      document.body.classList.toggle('sim-fullscreen', isSimFull);
+
+      mfwInteractBtn.setAttribute('aria-pressed', String(isInteracting));
+      mfwInteractBtn.textContent = isInteracting ? 'Desactivar interacción' : 'Activar interacción';
+      mfwInteractBtn.classList.toggle('active-state', isInteracting);
+
+      mfwSimBtn.setAttribute('aria-pressed', String(isSimFull));
+      mfwSimBtn.textContent = isSimFull ? 'Salir del simulador' : 'Entrar al simulador';
+      mfwSimBtn.classList.toggle('active-state', isSimFull);
+
+      simCamera.aspect = window.innerWidth / window.innerHeight;
+      simCamera.updateProjectionMatrix();
+      simRenderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    mfwInteractBtn.addEventListener('click', () => {
+      isInteracting = !isInteracting;
+      syncMandalaModes();
+    });
+
+    mfwSimBtn.addEventListener('click', () => {
+      isSimFull = !isSimFull;
+      syncMandalaModes();
+    });
+
+    let mfwDragging = false;
+    let mfwOffsetX = 0;
+    let mfwOffsetY = 0;
+
+    function clampWidgetInsideViewport() {
+      if (!mfwWidget.style.left && !mfwWidget.style.top) return;
+      const maxX = Math.max(8, window.innerWidth - mfwWidget.offsetWidth - 8);
+      const maxY = Math.max(8, window.innerHeight - mfwWidget.offsetHeight - 8);
+      const curLeft = parseFloat(mfwWidget.style.left) || 8;
+      const curTop = parseFloat(mfwWidget.style.top) || 8;
+      mfwWidget.style.left = `${Math.min(maxX, Math.max(8, curLeft))}px`;
+      mfwWidget.style.top = `${Math.min(maxY, Math.max(8, curTop))}px`;
+    }
+
+    mfwDragHandle.addEventListener('pointerdown', (e) => {
+      mfwDragging = true;
+      const rect = mfwWidget.getBoundingClientRect();
+      mfwOffsetX = e.clientX - rect.left;
+      mfwOffsetY = e.clientY - rect.top;
+      mfwWidget.style.left = `${rect.left}px`;
+      mfwWidget.style.top = `${rect.top}px`;
+      mfwWidget.style.right = 'auto';
+      mfwWidget.style.bottom = 'auto';
+      mfwDragHandle.setPointerCapture(e.pointerId);
+    });
+
+    mfwDragHandle.addEventListener('pointermove', (e) => {
+      if (!mfwDragging) return;
+      const maxX = Math.max(8, window.innerWidth - mfwWidget.offsetWidth - 8);
+      const maxY = Math.max(8, window.innerHeight - mfwWidget.offsetHeight - 8);
+      const nextLeft = Math.min(maxX, Math.max(8, e.clientX - mfwOffsetX));
+      const nextTop = Math.min(maxY, Math.max(8, e.clientY - mfwOffsetY));
+      mfwWidget.style.left = `${nextLeft}px`;
+      mfwWidget.style.top = `${nextTop}px`;
+    });
+
+    function stopMfwDrag(e) {
+      if (!mfwDragging) return;
+      mfwDragging = false;
+      if (e && mfwDragHandle.hasPointerCapture(e.pointerId)) {
+        mfwDragHandle.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    mfwDragHandle.addEventListener('pointerup', stopMfwDrag);
+    mfwDragHandle.addEventListener('pointercancel', stopMfwDrag);
+
+    window.addEventListener('resize', () => {
+      simCamera.aspect = window.innerWidth / window.innerHeight;
+      simCamera.updateProjectionMatrix();
+      simRenderer.setSize(window.innerWidth, window.innerHeight);
+      clampWidgetInsideViewport();
     });
 
   </script>
