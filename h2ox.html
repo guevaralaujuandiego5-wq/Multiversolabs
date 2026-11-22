@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoLabs — Sistema Multigota Molecular en 0G</title>
+  <style>
+    :root {
+      --bg-dark: #040712;
+      --glass-bg: rgba(15, 23, 42, 0.78);
+      --glass-border: rgba(56, 189, 248, 0.28);
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-gold: #fbbf24;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { overflow: hidden; background: var(--bg-dark); color: var(--text-main); touch-action: none; }
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 24px; background: var(--glass-bg); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .brand-cluster { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); }
+    .cube-viewport { width: 28px; height: 28px; perspective: 200px; }
+    .cube-sim { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: rotC 10s linear infinite; }
+    .cube-sim span { position: absolute; inset: 0; border: 1.5px solid var(--accent-cyan); background: rgba(56, 189, 248, 0.15); }
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(14px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(14px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(14px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(14px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(14px); border-color: var(--accent-red); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(14px); }
+    @keyframes rotC { to { transform: rotateX(360deg) rotateY(360deg); } }
+
+    #hud {
+      position: absolute; top: 74px; left: 20px; z-index: 100; width: 325px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 14px; padding: 16px; backdrop-filter: blur(14px);
+    }
+    #hud h3 { font-size: 0.92rem; color: var(--accent-cyan); margin-bottom: 10px; }
+    .row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-muted); }
+    .val { font-weight: 700; color: var(--text-main); }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.73rem; margin-top: 8px; color: var(--text-muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+    #deck {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 120;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 14px 20px; max-width: 820px; width: 94%; text-align: center; backdrop-filter: blur(16px);
+    }
+    #deck p { font-size: 0.82rem; color: var(--text-muted); margin: 5px 0 11px; }
+    .btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      background: rgba(30, 41, 59, 0.92); color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 8px 13px; border-radius: 9px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent-cyan); }
+    .btn-split { background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; }
+    .btn-spawn { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; }
+    .btn-fuse { background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; color: #fff; }
+    .btn-grav-on { background: linear-gradient(135deg, #d97706, #fbbf24); border: none; color: #040712; }
+    .lil-gui { top: 74px !important; right: 20px !important; --background-color: rgba(15, 23, 42, 0.9) !important; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport"><div class="cube-sim"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div><strong>MULTIVERSOLABS</strong><div style="font-size:0.68rem;color:var(--text-muted);">Multigota Molecular & Fricción en 0G</div></div>
+    </a>
+    <a href="index.html" class="btn">← Portal</a>
+  </header>
+
+  <div id="hud">
+    <h3>💧 Gotas & Cristales en 0G</h3>
+    <div class="row"><span>Estado de Fase:</span><span class="val" id="m-fase" style="color:#38bdf8;">Líquido</span></div>
+    <div class="row"><span>Gotas / Copos:</span><span class="val" id="m-gotas" style="color:#38bdf8;">0 gotas</span></div>
+    <div class="row"><span>Total Moléculas:</span><span class="val" id="m-mol">0</span></div>
+    <div class="row"><span>Giro Medio (Fricción 0G):</span><span class="val" id="m-giro" style="color:#fbbf24;">0.0 rad/s</span></div>
+    <div class="legend">
+      <span><i class="dot" style="background:#ef4444;"></i>O (H₂O / CO₂)</span>
+      <span><i class="dot" style="background:#f8fafc;"></i>H</span>
+      <span><i class="dot" style="background:#38bdf8;"></i>N (NH₃)</span>
+      <span><i class="dot" style="background:#64748b;"></i>C (CO₂ / CH₄)</span>
+    </div>
+  </div>
+
+  <div id="deck">
+    <h2 style="color:var(--accent-cyan);font-size:1rem;">Transición Líquido–Copo de Nieve, Simetría Hexagonal y Giro en 0G</h2>
+    <p>Baja la temperatura por debajo de 273 K para cristalizar en copos hexagonales; arrastra o usa los botones para interactuar.</p>
+    <div class="btns">
+      <button class="btn btn-split" onclick="separarGota()">✂️ Separar Gota</button>
+      <button class="btn btn-spawn" onclick="generarNuevaGota()">💧 Generar Nueva Gota</button>
+      <button class="btn btn-fuse" onclick="fusionarGotas()">🧲 Fusionar Gotas</button>
+      <button class="btn" onclick="aplicarFriccionGlobal()">🌀 Fricción / Giro 0G</button>
+      <button class="btn" id="btn-gravedad" onclick="alternarGravedad()">🌍 Gravedad: OFF</button>
+    </div>
+  </div>
+
+  <script>
+    const params = {
+      moleculasPorGota: 48,
+      proporcionOtrasMoleculas: 0.25,
+      tensionSuperficial: 3.1,
+      cohesionPuentes: 1.35,
+      friccionRotacional: 0.985,
+      temperaturaK: 295,
+      tempCongelacionK: 273,
+      atraccionEntreGotas: 0.25,
+      gravedadActiva: false,
+      gravedadG: 9.81
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x040712, 0.018);
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.set(0, 5.5, 15.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+    const dirLight = new THREE.DirectionalLight(0xe0f2fe, 1.3);
+    dirLight.position.set(10, 14, 12);
+    scene.add(dirLight);
+
+    const grupoMundo = new THREE.Group();
+    scene.add(grupoMundo);
+
+    const TIPOS_OTROS = ['CO2', 'NH3', 'CH4'];
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.23;
+
+    let gotas = [];
+    let siguienteIdGota = 1;
+
+    let meshCentro, meshSatelites, meshEnlaces;
+    let lineasPuentesH;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const MAX_MOLECULAS = 420;
+    const MAX_SATELITES = MAX_MOLECULAS * 4;
+    const MAX_ENLACES = MAX_MOLECULAS * 4;
+    const MAX_PUENTES_VERTS = MAX_MOLECULAS * 12;
+
+    let gui;
+
+    function gradoSolidez() {
+      // 0 = líquido puro, 1 = cristal de copo de nieve sólido
+      const rango = 10;
+      const t = (params.tempCongelacionK - params.temperaturaK) / rango;
+      return Math.max(0, Math.min(1, t));
+    }
+
+    function calcularOffsetHexagonalCopo(idx, total, radio) {
+      // Simetría hexagonal de 6 ramas + ramificaciones dendríticas sutiles en plano XZ con relieve Y
+      const ramas = 6;
+      const ramaIdx = idx % ramas;
+      const anillo = Math.floor(idx / ramas);
+      const maxAnillos = Math.max(1, Math.ceil(total / ramas));
+      const frac = (anillo + 0.5) / maxAnillos;
+
+      const angBase = (ramaIdx / ramas) * Math.PI * 2;
+      const subRama = (anillo % 2 === 0 ? 1 : -1) * 0.14 * frac;
+      const ang = angBase + subRama;
+
+      const r = radio * (0.18 + 0.92 * frac);
+      const yRelieve = Math.sin(frac * Math.PI * 2) * 0.12 * radio * ((anillo % 3) - 1);
+
+      return new THREE.Vector3(
+        Math.cos(ang) * r,
+        yRelieve,
+        Math.sin(ang) * r
+      );
+    }
+
+    function sincronizarBotonGravedad() {
+      const btn = document.getElementById('btn-gravedad');
+      if (!btn) return;
+      btn.textContent = params.gravedadActiva ? '🌍 Gravedad: ON' : '🌍 Gravedad: OFF';
+      btn.classList.toggle('btn-grav-on', params.gravedadActiva);
+    }
+
+    function alternarGravedad() {
+      params.gravedadActiva = !params.gravedadActiva;
+      sincronizarBotonGravedad();
+      if (gui) gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function inicializarBuffers() {
+      const geoC = new THREE.SphereGeometry(0.105, 10, 10);
+      const matC = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x1e293b, emissiveIntensity: 0.25 });
+      meshCentro = new THREE.InstancedMesh(geoC, matC, MAX_MOLECULAS);
+      meshCentro.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoS = new THREE.SphereGeometry(0.066, 8, 8);
+      const matS = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x38bdf8, emissiveIntensity: 0.12 });
+      meshSatelites = new THREE.InstancedMesh(geoS, matS, MAX_SATELITES);
+      meshSatelites.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoE = new THREE.CylinderGeometry(0.022, 0.022, LONG_ENLACE, 5);
+      const matE = new THREE.MeshBasicMaterial({ color: 0x94a3b8 });
+      meshEnlaces = new THREE.InstancedMesh(geoE, matE, MAX_ENLACES);
+      meshEnlaces.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const posBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+      const geoP = new THREE.BufferGeometry();
+      geoP.setAttribute('position', new THREE.BufferAttribute(posBuffer, 3));
+      lineasPuentesH = new THREE.LineSegments(
+        geoP,
+        new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.28 })
+      );
+
+      grupoMundo.add(meshCentro, meshSatelites, meshEnlaces, lineasPuentesH);
+    }
+
+    function crearMolecula(tipo, offsetLocal, radioGota, idx, total) {
+      return {
+        tipo,
+        posLocal: offsetLocal.clone(),
+        velLocal: new THREE.Vector3(),
+        offsetLiquido: offsetLocal.clone(),
+        offsetSolido: calcularOffsetHexagonalCopo(idx, total, radioGota),
+        offsetEquilibrio: offsetLocal.clone(),
+        radioGota,
+        eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+        velAngularPropia: new THREE.Vector3(
+          (Math.random() - 0.5) * 2.2,
+          (Math.random() - 0.5) * 2.2,
+          (Math.random() - 0.5) * 2.2
+        )
+      };
+    }
+
+    function crearGota(centroPos, velInicial, numMoleculas, radio = 2.35) {
+      const moleculas = [];
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
+      for (let i = 0; i < numMoleculas; i++) {
+        const frac = 0.3 + 0.7 * Math.cbrt((i + 0.5) / numMoleculas);
+        const r = radio * frac;
+        const theta = (2 * Math.PI * i) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (i + 0.5)) / numMoleculas);
+
+        const rel = new THREE.Vector3(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.cos(phi),
+          r * Math.sin(phi) * Math.sin(theta)
+        );
+
+        const esOtra = Math.random() < params.proporcionOtrasMoleculas;
+        const tipo = esOtra ? TIPOS_OTROS[i % TIPOS_OTROS.length] : 'H2O';
+        moleculas.push(crearMolecula(tipo, rel, radio, i, numMoleculas));
+      }
+
+      return {
+        id: siguienteIdGota++,
+        centro: centroPos.clone(),
+        vel: velInicial.clone(),
+        radio,
+        velAngularGota: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6
+        ),
+        moleculas
+      };
+    }
+
+    function reiniciarSistemaMultigota() {
+      gotas = [];
+      siguienteIdGota = 1;
+      gotas.push(crearGota(new THREE.Vector3(-3.2, 0.4, 0), new THREE.Vector3(0.45, 0.1, 0.15), params.moleculasPorGota, 2.35));
+      gotas.push(crearGota(new THREE.Vector3(3.2, -0.4, 0.5), new THREE.Vector3(-0.45, -0.1, -0.15), params.moleculasPorGota, 2.35));
+    }
+
+    function separarGota() {
+      if (gotas.length === 0) return;
+      let idxMayor = 0;
+      for (let i = 1; i < gotas.length; i++) {
+        if (gotas[i].moleculas.length > gotas[idxMayor].moleculas.length) idxMayor = i;
+      }
+      const origen = gotas[idxMayor];
+      if (origen.moleculas.length < 14) {
+        generarNuevaGota();
+        return;
+      }
+
+      const mitad = Math.floor(origen.moleculas.length / 2);
+      const movidas = origen.moleculas.splice(mitad);
+      const dirSeparacion = new THREE.Vector3(
+        (Math.random() - 0.5) * 2,
+        0.5 + (Math.random() - 0.5),
+        (Math.random() - 0.5) * 2
+      ).normalize();
+
+      const nuevoRadio = Math.max(1.5, origen.radio * 0.84);
+      origen.radio = nuevoRadio;
+      origen.vel.addScaledVector(dirSeparacion, -1.2);
+      origen.velAngularGota.y += 0.9;
+
+      origen.moleculas.forEach((m, idx) => {
+        m.radioGota = nuevoRadio;
+        m.offsetLiquido.multiplyScalar(0.84);
+        m.offsetSolido.copy(calcularOffsetHexagonalCopo(idx, origen.moleculas.length, nuevoRadio));
+      });
+
+      const nuevaGota = {
+        id: siguienteIdGota++,
+        centro: origen.centro.clone().addScaledVector(dirSeparacion, nuevoRadio * 1.45),
+        vel: origen.vel.clone().addScaledVector(dirSeparacion, 2.4),
+        radio: nuevoRadio,
+        velAngularGota: new THREE.Vector3(
+          (Math.random() - 0.5) * 1.4,
+          1.2,
+          (Math.random() - 0.5) * 1.4
+        ),
+        moleculas: movidas.map((m, idx) => {
+          m.radioGota = nuevoRadio;
+          m.offsetLiquido.multiplyScalar(0.84);
+          m.offsetSolido.copy(calcularOffsetHexagonalCopo(idx, movidas.length, nuevoRadio));
+          m.velAngularPropia.x += (Math.random() - 0.5) * 3.0;
+          return m;
+        })
+      };
+
+      gotas.push(nuevaGota);
+    }
+
+    function generarNuevaGota() {
+      if (gotas.length >= 7) return;
+      const totalActual = gotas.reduce((acc, g) => acc + g.moleculas.length, 0);
+      const cupoDisponible = MAX_MOLECULAS - totalActual;
+      if (cupoDisponible < 12) return;
+
+      const cantidad = Math.min(cupoDisponible, Math.max(24, Math.floor(params.moleculasPorGota * 0.75)));
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 4.2 + Math.random() * 2.2;
+      const pos = new THREE.Vector3(Math.cos(ang) * dist, (Math.random() - 0.5) * 3.0, Math.sin(ang) * dist);
+      const vel = new THREE.Vector3(-Math.cos(ang) * 0.6, (Math.random() - 0.5) * 0.4, -Math.sin(ang) * 0.6);
+      gotas.push(crearGota(pos, vel, cantidad, 1.9));
+    }
+
+    function fusionarGotas() {
+      if (gotas.length < 2) return;
+      let mejorA = 0, mejorB = 1, menorDist = Infinity;
+      for (let i = 0; i < gotas.length; i++) {
+        for (let j = i + 1; j < gotas.length; j++) {
+          const d = gotas[i].centro.distanceTo(gotas[j].centro);
+          if (d < menorDist) { menorDist = d; mejorA = i; mejorB = j; }
+        }
+      }
+      const gA = gotas[mejorA];
+      const gB = gotas[mejorB];
+      const otrasGotasMol = gotas.reduce((acc, g, idx) => (idx === mejorA || idx === mejorB) ? acc : acc + g.moleculas.length, 0);
+      const maxParaFusion = Math.max(0, MAX_MOLECULAS - otrasGotasMol);
+
+      const combinadas = gA.moleculas.concat(gB.moleculas).slice(0, maxParaFusion);
+      const radioFusion = Math.min(3.6, Math.cbrt(Math.pow(gA.radio, 3) + Math.pow(gB.radio, 3)));
+
+      gA.centro.lerp(gB.centro, 0.5);
+      gA.vel.multiplyScalar(0.5).addScaledVector(gB.vel, 0.5);
+      gA.radio = radioFusion;
+      gA.velAngularGota.addScaledVector(gB.velAngularGota, 0.4);
+
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      combinadas.forEach((m, idx) => {
+        const frac = 0.3 + 0.7 * Math.cbrt((idx + 0.5) / Math.max(1, combinadas.length));
+        const r = radioFusion * frac;
+        const theta = (2 * Math.PI * idx) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (idx + 0.5)) / Math.max(1, combinadas.length));
+        m.offsetLiquido.set(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+        m.offsetSolido.copy(calcularOffsetHexagonalCopo(idx, combinadas.length, radioFusion));
+        m.radioGota = radioFusion;
+      });
+      gA.moleculas = combinadas;
+      gotas.splice(mejorB, 1);
+    }
+
+    function aplicarFriccionGlobal() {
+      gotas.forEach(g => {
+        g.velAngularGota.x += (Math.random() - 0.5) * 2.5;
+        g.velAngularGota.y += (Math.random() - 0.5) * 2.5;
+        g.velAngularGota.z += (Math.random() - 0.5) * 2.5;
+        g.moleculas.forEach(m => {
+          m.velAngularPropia.x += (Math.random() - 0.5) * 4.5;
+          m.velAngularPropia.y += (Math.random() - 0.5) * 4.5;
+          m.velAngularPropia.z += (Math.random() - 0.5) * 4.5;
+        });
+      });
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let gotaSeleccionada = null;
+    let ultimoPunto = new THREE.Vector3();
+    const planoArrastre = new THREE.Plane();
+
+    function setPointer(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+    }
+
+    function aplicarFriccionYEmpuje(gota, puntoMundo, deltaToque) {
+      const rigidez = 1 - gradoSolidez() * 0.75;
+      gota.vel.addScaledVector(deltaToque, 3.2);
+      const radioVec = new THREE.Vector3().subVectors(puntoMundo, gota.centro);
+      const torque = new THREE.Vector3().crossVectors(radioVec, deltaToque).multiplyScalar(0.85);
+      gota.velAngularGota.add(torque);
+
+      gota.moleculas.forEach(m => {
+        const posMundo = new THREE.Vector3().copy(gota.centro).add(m.posLocal);
+        const dist = posMundo.distanceTo(puntoMundo);
+        const infl = Math.exp(-(dist * dist) / (gota.radio * 1.35)) * rigidez;
+        m.velLocal.addScaledVector(deltaToque, infl * 2.6);
+        m.velAngularPropia.x += (deltaToque.y - deltaToque.z) * infl * 14;
+        m.velAngularPropia.y += (deltaToque.z - deltaToque.x) * infl * 14;
+        m.velAngularPropia.z += (deltaToque.x - deltaToque.y) * infl * 14;
+      });
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      setPointer(e);
+      let encontrada = null;
+      let hitPt = new THREE.Vector3();
+      for (const g of gotas) {
+        const esf = new THREE.Sphere(g.centro, g.radio * 1.25);
+        if (raycaster.ray.intersectSphere(esf, hitPt)) {
+          encontrada = g;
+          break;
+        }
+      }
+      if (encontrada) {
+        gotaSeleccionada = encontrada;
+        controls.enabled = false;
+        ultimoPunto.copy(hitPt);
+        const camDir = new THREE.Vector3();
+        camera.getWorldDirection(camDir);
+        planoArrastre.setFromNormalAndCoplanarPoint(camDir, hitPt);
+        aplicarFriccionYEmpuje(encontrada, hitPt, camDir.multiplyScalar(0.35));
+      } else {
+        controls.enabled = true;
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!gotaSeleccionada) return;
+      setPointer(e);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planoArrastre, pt)) {
+        const delta = new THREE.Vector3().subVectors(pt, ultimoPunto);
+        aplicarFriccionYEmpuje(gotaSeleccionada, pt, delta);
+        ultimoPunto.copy(pt);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      gotaSeleccionada = null;
+      controls.enabled = true;
+    });
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlace(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatelites.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlaces.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarSistema(dt) {
+      const solidez = gradoSolidez();
+      const agitacion = Math.max(0, (params.temperaturaK - params.tempCongelacionK) * 0.022);
+      const puenteCoords = lineasPuentesH.geometry.attributes.position.array;
+      let idxPuente = 0;
+      let idxCentro = 0;
+      let idxSat = 0;
+      let idxEnl = 0;
+      let sumaGiro = 0;
+      let totalMol = 0;
+
+      for (let i = 0; i < gotas.length; i++) {
+        const gA = gotas[i];
+        totalMol += gA.moleculas.length;
+        sumaGiro += gA.velAngularGota.length();
+
+        for (let j = i + 1; j < gotas.length; j++) {
+          const gB = gotas[j];
+          const diff = new THREE.Vector3().subVectors(gB.centro, gA.centro);
+          const dist = diff.length();
+          if (dist < 0.001) continue;
+          const dir = diff.clone().divideScalar(dist);
+          const sumaRadios = gA.radio + gB.radio;
+
+          if (dist < sumaRadios * 0.92) {
+            const sep = (sumaRadios * 0.92 - dist) * 2.5;
+            gA.vel.addScaledVector(dir, -sep * dt);
+            gB.vel.addScaledVector(dir, sep * dt);
+            const tang = new THREE.Vector3(-dir.z, 0, dir.x).multiplyScalar(0.6 * dt);
+            gA.velAngularGota.add(tang);
+            gB.velAngularGota.sub(tang);
+          } else if (dist < 11.0 && params.atraccionEntreGotas > 0) {
+            const atr = params.atraccionEntreGotas * 1.4;
+            gA.vel.addScaledVector(dir, atr * dt);
+            gB.vel.addScaledVector(dir, -atr * dt);
+          }
+        }
+
+        if (params.gravedadActiva) {
+          // Los copos sólidos caen algo más lento por mayor arrastre aerodinámico
+          const factorArrastre = 1 - solidez * 0.35;
+          gA.vel.y -= params.gravedadG * 0.35 * factorArrastre * dt;
+          const pisoY = -5.5 + gA.radio * 0.6;
+          if (gA.centro.y < pisoY) {
+            gA.centro.y = pisoY;
+            if (gA.vel.y < 0) gA.vel.y *= solidez > 0.5 ? -0.15 : -0.45;
+          }
+        } else if (gA.centro.length() > 7.5) {
+          gA.vel.addScaledVector(gA.centro, -0.45 * dt);
+        }
+
+        gA.centro.addScaledVector(gA.vel, dt);
+        gA.vel.multiplyScalar(0.988);
+        gA.velAngularGota.multiplyScalar(params.friccionRotacional);
+
+        const rotGotaEuler = new THREE.Euler(
+          gA.velAngularGota.x * dt,
+          gA.velAngularGota.y * dt,
+          gA.velAngularGota.z * dt
+        );
+
+        const tensionEfectiva = params.tensionSuperficial * (1 + solidez * 3.5);
+        const amortiguamientoMol = 0.955 - solidez * 0.25;
+
+        const mList = gA.moleculas;
+        for (let a = 0; a < mList.length && idxCentro < MAX_MOLECULAS; a++) {
+          const mol = mList[a];
+          mol.offsetLiquido.applyEuler(rotGotaEuler);
+          mol.offsetSolido.applyEuler(rotGotaEuler);
+          mol.offsetEquilibrio.lerpVectors(mol.offsetLiquido, mol.offsetSolido, solidez);
+
+          const fuerzaLocal = new THREE.Vector3().subVectors(mol.offsetEquilibrio, mol.posLocal).multiplyScalar(tensionEfectiva);
+
+          for (let b = a + 1; b < mList.length; b++) {
+            const molB = mList[b];
+            const dVec = new THREE.Vector3().subVectors(molB.posLocal, mol.posLocal);
+            const dist = dVec.length();
+            if (dist < 0.001) continue;
+            const dir = dVec.clone().divideScalar(dist);
+
+            if (dist < 0.52) {
+              const rep = ((0.52 - dist) / 0.52) * 4.2 * (1 - solidez * 0.6);
+              fuerzaLocal.addScaledVector(dir, -rep);
+              molB.velLocal.addScaledVector(dir, rep * dt);
+            } else if (dist < 1.25 && (mol.tipo === 'H2O' || mol.tipo === 'NH3')) {
+              const atr = ((1.25 - dist) / 1.25) * params.cohesionPuentes * (1 + solidez * 0.8);
+              mol.velLocal.addScaledVector(dir, atr * dt);
+              molB.velLocal.addScaledVector(dir, -atr * dt);
+
+              if (idxPuente + 6 < MAX_PUENTES_VERTS * 3) {
+                const p1 = new THREE.Vector3().copy(gA.centro).add(mol.posLocal);
+                const p2 = new THREE.Vector3().copy(gA.centro).add(molB.posLocal);
+                puenteCoords[idxPuente++] = p1.x; puenteCoords[idxPuente++] = p1.y; puenteCoords[idxPuente++] = p1.z;
+                puenteCoords[idxPuente++] = p2.x; puenteCoords[idxPuente++] = p2.y; puenteCoords[idxPuente++] = p2.z;
+              }
+            }
+          }
+
+          if (agitacion > 0.01) {
+            mol.velLocal.x += (Math.random() - 0.5) * agitacion * dt * 10;
+            mol.velLocal.y += (Math.random() - 0.5) * agitacion * dt * 10;
+            mol.velLocal.z += (Math.random() - 0.5) * agitacion * dt * 10;
+          }
+
+          mol.velLocal.addScaledVector(fuerzaLocal, dt);
+          mol.velLocal.multiplyScalar(amortiguamientoMol);
+          mol.posLocal.addScaledVector(mol.velLocal, dt);
+
+          mol.eulerPropia.x += mol.velAngularPropia.x * dt * (1 - solidez * 0.7);
+          mol.eulerPropia.y += mol.velAngularPropia.y * dt * (1 - solidez * 0.7);
+          mol.eulerPropia.z += mol.velAngularPropia.z * dt * (1 - solidez * 0.7);
+          mol.velAngularPropia.multiplyScalar(params.friccionRotacional);
+
+          const posAtomoCentral = new THREE.Vector3().copy(gA.centro).add(mol.posLocal);
+
+          if (mol.tipo === 'H2O') colTmp.setHex(solidez > 0.5 ? 0xbae6fd : 0xef4444);
+          else if (mol.tipo === 'NH3') colTmp.setHex(0x38bdf8);
+          else colTmp.setHex(0x64748b);
+
+          meshCentro.setColorAt(idxCentro, colTmp);
+          dummy.position.copy(posAtomoCentral);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+          meshCentro.setMatrixAt(idxCentro, dummy.matrix);
+
+          if (mol.tipo === 'H2O') {
+            const mAng = ANGULO_HOH * 0.5;
+            colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+            colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+          } else if (mol.tipo === 'CO2') {
+            colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(1, 0, 0), mol.eulerPropia);
+            colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(-1, 0, 0), mol.eulerPropia);
+          } else if (mol.tipo === 'NH3') {
+            for (let k = 0; k < 3; k++) {
+              const ang = (k / 3) * Math.PI * 2;
+              colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(Math.cos(ang) * 0.9, -0.45, Math.sin(ang) * 0.9).normalize(), mol.eulerPropia);
+            }
+          } else if (mol.tipo === 'CH4') {
+            const dirs = [[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]];
+            dirs.forEach(d => colocarSateliteYEnlace(idxSat++, idxEnl++, posAtomoCentral, new THREE.Vector3(d[0], d[1], d[2]).normalize(), mol.eulerPropia));
+          }
+
+          idxCentro++;
+        }
+      }
+
+      meshCentro.count = idxCentro;
+      meshSatelites.count = idxSat;
+      meshEnlaces.count = idxEnl;
+      meshCentro.instanceMatrix.needsUpdate = true;
+      if (meshCentro.instanceColor) meshCentro.instanceColor.needsUpdate = true;
+      meshSatelites.instanceMatrix.needsUpdate = true;
+      meshEnlaces.instanceMatrix.needsUpdate = true;
+
+      lineasPuentesH.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesH.geometry.setDrawRange(0, idxPuente / 3);
+
+      const faseEl = document.getElementById('m-fase');
+      if (solidez >= 0.85) {
+        faseEl.innerText = 'Sólido (Copo de Nieve)';
+        faseEl.style.color = '#bae6fd';
+      } else if (solidez > 0.05) {
+        faseEl.innerText = `Cristalizando (${Math.round(solidez * 100)}%)`;
+        faseEl.style.color = '#38bdf8';
+      } else {
+        faseEl.innerText = 'Líquido';
+        faseEl.style.color = '#fbbf24';
+      }
+
+      document.getElementById('m-gotas').innerText = `${gotas.length} ${solidez > 0.5 ? 'copos' : 'gotas'}`;
+      document.getElementById('m-mol').innerText = `${totalMol} moléculas`;
+      document.getElementById('m-giro').innerText = `${(sumaGiro / Math.max(1, gotas.length)).toFixed(2)} rad/s`;
+    }
+
+    gui = new lil.GUI({ title: 'Controles Multigota 0G' });
+    gui.add(params, 'moleculasPorGota', 24, 90, 4).name('Mol/Gota').onChange(reiniciarSistemaMultigota);
+    gui.add(params, 'proporcionOtrasMoleculas', 0.0, 0.85, 0.05).name('Otras Moléculas');
+    gui.add(params, 'tensionSuperficial', 0.8, 6.0, 0.1).name('Tensión Sup.');
+    gui.add(params, 'friccionRotacional', 0.94, 0.999, 0.002).name('Conservación Giro');
+    gui.add(params, 'atraccionEntreGotas', 0.0, 1.0, 0.05).name('Atracción Gotas');
+    gui.add(params, 'temperaturaK', 250, 350, 1).name('Temp. (K)');
+    gui.add(params, 'gravedadActiva').name('Gravedad').onChange(sincronizarBotonGravedad);
+    gui.add(params, 'gravedadG', 0.5, 25.0, 0.5).name('Gravedad (m/s²)');
+
+    inicializarBuffers();
+    reiniciarSistemaMultigota();
+    sincronizarBotonGravedad();
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dt = Math.min((now - prevT) / 1000, 0.05);
+      prevT = now;
+      actualizarSistema(dt);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
