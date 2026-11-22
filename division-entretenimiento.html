@@ -12,7 +12,7 @@
       --bg-mesh-1: #050814;
       --bg-mesh-2: #0b1120;
       --bg-mesh-3: #111827;
-      --glass-bg: rgba(15, 23, 42, 0.65);
+      --glass-bg: rgba(15, 23, 42, 0.54);
       --glass-border: rgba(56, 189, 248, 0.18);
       --glass-highlight: rgba(56, 189, 248, 0.35);
       --text-primary: #f8fafc;
@@ -28,7 +28,7 @@
       --bg-mesh-1: #f1f5f9;
       --bg-mesh-2: #e2e8f0;
       --bg-mesh-3: #cbd5e1;
-      --glass-bg: rgba(255, 255, 255, 0.75);
+      --glass-bg: rgba(255, 255, 255, 0.68);
       --glass-border: rgba(2, 132, 199, 0.2);
       --glass-highlight: rgba(2, 132, 199, 0.3);
       --text-primary: #0f172a;
@@ -63,8 +63,8 @@
       inset: 0;
       z-index: -2;
       background: 
-        radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 50% 45%, rgba(249, 115, 22, 0.14) 0%, transparent 55%),
+        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
         linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
       background-size: 200% 200%;
       animation: meshShift 20s ease infinite alternate;
@@ -466,9 +466,317 @@
         text-align: left;
       }
     }
+
+    /* ==========================================================================
+       FONDO 3D FUEGO / CICLO DE COMBUSTIÓN EN TIEMPO REAL + MODO SIMULADOR
+       ========================================================================== */
+    #fuego-bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.92;
+      display: block;
+      transition: opacity 0.4s ease;
+    }
+
+    body.sim-fullscreen {
+      overflow: hidden !important;
+    }
+
+    body.sim-fullscreen #fuego-bg-canvas {
+      z-index: 2;
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    body:not(.sim-fullscreen) #sim-hud,
+    body:not(.sim-fullscreen) #sim-deck,
+    body:not(.sim-fullscreen) .lil-gui {
+      display: none !important;
+    }
+
+    body.sim-fullscreen main,
+    body.sim-fullscreen footer,
+    body.sim-fullscreen .news-ticker,
+    body.sim-fullscreen .living-background,
+    body.sim-fullscreen #particle-canvas {
+      display: none !important;
+    }
+
+    #sim-hud {
+      position: fixed;
+      top: 76px;
+      left: 20px;
+      z-index: 100;
+      width: 325px;
+      max-width: calc(100vw - 40px);
+      background: var(--glass-bg);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 14px;
+      padding: 16px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+      color: var(--text-primary);
+    }
+
+    #sim-hud h3 {
+      font-size: 0.92rem;
+      color: #fbbf24;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sim-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .sim-val {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sim-flame-bar {
+      height: 7px;
+      border-radius: 99px;
+      margin-top: 8px;
+      background: linear-gradient(90deg, #38bdf8, #ef4444, #f97316, #fde047, #ffffff, #1e293b);
+    }
+
+    .sim-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.72rem;
+      margin-top: 9px;
+      color: var(--text-secondary);
+    }
+
+    .sim-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    #sim-deck {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 120;
+      background: var(--glass-bg);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      border-radius: 16px;
+      padding: 15px 22px;
+      max-width: 760px;
+      width: calc(100% - 32px);
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      color: var(--text-primary);
+    }
+
+    #sim-deck h2 {
+      font-size: 1.02rem;
+      color: #fbbf24;
+      margin-bottom: 5px;
+    }
+
+    #sim-deck p {
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .sim-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .sim-btn-blast {
+      background: linear-gradient(135deg, #f97316, #dc2626) !important;
+      border: none !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+    }
+
+    .lil-gui {
+      top: 76px !important;
+      right: 20px !important;
+      z-index: 105 !important;
+      --background-color: rgba(15, 23, 42, 0.92) !important;
+    }
+
+    /* ==========================================================================
+       WIDGET FLOTANTE COMPACTO, DESPLEGABLE Y MOVIBLE
+       ========================================================================== */
+    .fuego-float-widget {
+      position: fixed;
+      top: 84px;
+      right: 20px;
+      z-index: 95;
+      width: fit-content;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(251, 191, 36, 0.38);
+      border-radius: 14px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="light"] .fuego-float-widget {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .ffw-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+    }
+
+    .ffw-drag {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: grab;
+      font-size: 0.95rem;
+      padding: 4px 6px;
+      border-radius: 8px;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .ffw-drag:active {
+      cursor: grabbing;
+      color: #fbbf24;
+    }
+
+    .ffw-main-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 0.84rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .ffw-drawer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .ffw-drawer[hidden] {
+      display: none;
+    }
+
+    .ffw-action-btn {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .ffw-action-btn:hover {
+      border-color: #fbbf24;
+    }
+
+    .ffw-action-btn.primary {
+      background: rgba(249, 115, 22, 0.18);
+      border-color: #f97316;
+      color: #fbbf24;
+    }
+
+    .ffw-action-btn.active-state {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+    }
+
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
 </head>
 <body>
+
+  <!-- LIENZO 3D FUEGO / COMBUSTIÓN COMO FONDO VISIBLE EN TIEMPO REAL -->
+  <canvas id="fuego-bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- PLANTILLA COMPACTA, FLOTANTE, DESPLEGABLE Y MOVIBLE -->
+  <aside id="fuegoFloatWidget" class="fuego-float-widget" aria-label="Control flotante del Fuego 3D">
+    <div class="ffw-bar">
+      <button type="button" id="ffwDragHandle" class="ffw-drag" title="Arrastrar control" aria-label="Arrastrar control">⠿</button>
+      <button type="button" id="ffwToggleBtn" class="ffw-main-btn" aria-expanded="false" aria-controls="ffwDrawer">
+        <span>🔥 Fuego 3D</span>
+        <span id="ffwArrow">▾</span>
+      </button>
+    </div>
+    <div id="ffwDrawer" class="ffw-drawer" hidden>
+      <button type="button" id="ffwInteractBtn" class="ffw-action-btn" aria-pressed="false">
+        Activar interacción
+      </button>
+      <button type="button" id="ffwSimBtn" class="ffw-action-btn primary" aria-pressed="false">
+        Entrar al simulador
+      </button>
+    </div>
+  </aside>
+
+  <!-- HUD Y DECK DEL SIMULADOR DE FUEGO (VISIBLES EN MODO SIMULADOR COMPLETO) -->
+  <div id="sim-hud">
+    <h3>
+      <span>🔥 Etapas de Existencia</span>
+      <span id="badge-regimen" style="font-size:0.68rem; background:rgba(251,191,36,0.2); color:#fbbf24; padding:2px 8px; border-radius:99px;">HD ACTIVA</span>
+    </h3>
+    <div class="sim-row"><span>Intensidad Combustión:</span><span class="sim-val" id="m-intensidad" style="color:#fbbf24;">100% · Viva</span></div>
+    <div class="sim-row"><span>Temp. Núcleo / Ambiente:</span><span class="sim-val" id="m-temp" style="color:#ef4444;">1220 K / 296 K</span></div>
+    <div class="sim-row"><span>Brisa Ciclónica Leve:</span><span class="sim-val" id="m-brisa" style="color:#38bdf8;">0.45 m/s · Tarde Calma</span></div>
+    <div class="sim-flame-bar"></div>
+    <div class="sim-legend">
+      <span><i class="sim-dot" style="background:#38bdf8;"></i>0.0–0.22 Inicio/O₂</span>
+      <span><i class="sim-dot" style="background:#f97316;"></i>0.22–0.55 Llama</span>
+      <span><i class="sim-dot" style="background:#ffffff;"></i>0.55–0.80 Pico/Blanco</span>
+      <span><i class="sim-dot" style="background:#1e293b;"></i>0.80–1.0 Fin/Extinción</span>
+    </div>
+  </div>
+
+  <div id="sim-deck">
+    <h2 id="d-title">Color Progresivo por Tiempo de Combustión hasta su Extinción</h2>
+    <p id="d-desc">Cada cubo cambia de color según su avance de existencia en la combustión (de 0 a 1) y se reduce de tamaño al apagarse en las aberturas superiores.</p>
+    <div class="sim-btns">
+      <button type="button" class="btn-glass sim-btn-blast" onclick="estallarCombustion()">💥 Estallido (Brillo Blanco)</button>
+      <button type="button" class="btn-glass" onclick="setIntensidadCombustion(0.45)">🕯️ Combustión Suave</button>
+      <button type="button" class="btn-glass" onclick="setIntensidadCombustion(1.65)">🔥 Combustión Intensa</button>
+      <button type="button" class="btn-glass" onclick="setPerfilFuego('premezcla')">🔵 Base Azul (Alto O₂)</button>
+    </div>
+  </div>
+
 
   <!-- Fondo vivo holográfico y partículas -->
   <div class="living-background"></div>
@@ -725,6 +1033,500 @@
       requestAnimationFrame(animateParticles);
     }
     animateParticles();
+  
+    /* ==========================================================================
+       6. MOTOR 3D DE FUEGO / CICLO DE COMBUSTIÓN (FONDO VISIBLE EN TIEMPO REAL)
+       ========================================================================== */
+    const fuegoParams = {
+      radioPlataforma: 11.5,
+      numAgentes: 820,
+      intensidadCombustion: 1.0,
+      aperturaLlama: 0.65,
+      reduccionExtincion: 0.88,
+      oxigenoPct: 24,
+      gravedad: 1.0,
+      flujoTermico: 1.35,
+      concentracion: 0.55,
+      intensidadBrisa: 0.35,
+      anguloBrisaDeg: 35,
+      exposicionHD: 1.18,
+      rotacionEscena: 0.0015
+    };
+
+    const fuegoCanvas = document.getElementById('fuego-bg-canvas');
+    const fireScene = new THREE.Scene();
+    fireScene.fog = new THREE.FogExp2(0x05060d, 0.016);
+
+    const fireCamera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    fireCamera.position.set(10.5, 7.2, 13.8);
+
+    const fireRenderer = new THREE.WebGLRenderer({
+      canvas: fuegoCanvas,
+      antialias: true,
+      alpha: true
+    });
+    fireRenderer.setSize(window.innerWidth, window.innerHeight);
+    fireRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    fireRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    fireRenderer.toneMappingExposure = fuegoParams.exposicionHD;
+
+    const fireControls = new THREE.OrbitControls(fireCamera, fireRenderer.domElement);
+    fireControls.enableDamping = true;
+    fireControls.target.set(0, 0.4, 0);
+    fireControls.enabled = false;
+
+    fireScene.add(new THREE.AmbientLight(0xdbeafe, 0.38));
+
+    const fireLight = new THREE.PointLight(0xff8c1a, 5.2, 36);
+    fireLight.position.set(0, 1.6, 0);
+    fireScene.add(fireLight);
+
+    const blueLight = new THREE.PointLight(0x38bdf8, 1.8, 18);
+    blueLight.position.set(0, -1.1, 0);
+    fireScene.add(blueLight);
+
+    const blastLight = new THREE.PointLight(0xffffff, 0, 50);
+    blastLight.position.set(0, 1.2, 0);
+    fireScene.add(blastLight);
+
+    const grupoEscenaFuego = new THREE.Group();
+    fireScene.add(grupoEscenaFuego);
+
+    let plataformaMesh, anilloMesh, focoBaseMesh, ondaEstallidoMesh;
+    let cubosAnillo = [];
+
+    function construirPlataformaCircular() {
+      if (plataformaMesh) grupoEscenaFuego.remove(plataformaMesh);
+      if (anilloMesh) grupoEscenaFuego.remove(anilloMesh);
+      if (focoBaseMesh) grupoEscenaFuego.remove(focoBaseMesh);
+      cubosAnillo.forEach(c => grupoEscenaFuego.remove(c));
+      cubosAnillo = [];
+
+      const r = fuegoParams.radioPlataforma;
+
+      plataformaMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(r, r * 1.04, 0.45, 64),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.45, metalness: 0.25 })
+      );
+      plataformaMesh.position.y = -2.2;
+      grupoEscenaFuego.add(plataformaMesh);
+
+      anilloMesh = new THREE.Mesh(
+        new THREE.RingGeometry(r - 0.12, r + 0.08, 72),
+        new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide, transparent: true, opacity: 0.45 })
+      );
+      anilloMesh.rotation.x = -Math.PI / 2;
+      anilloMesh.position.y = -1.96;
+      grupoEscenaFuego.add(anilloMesh);
+
+      const numCubosBorde = 36;
+      for (let i = 0; i < numCubosBorde; i++) {
+        const ang = (i / numCubosBorde) * Math.PI * 2;
+        const geo = new THREE.BoxGeometry(0.28, 0.28, 0.28);
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x1e293b,
+          emissive: 0x7c2d12,
+          emissiveIntensity: 0.35,
+          roughness: 0.4
+        });
+        const cubo = new THREE.Mesh(geo, mat);
+        cubo.position.set(Math.cos(ang) * r, -1.92, Math.sin(ang) * r);
+        cubo.lookAt(0, -1.92, 0);
+        grupoEscenaFuego.add(cubo);
+        cubosAnillo.push(cubo);
+      }
+
+      focoBaseMesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(2.1, 2.5, 0.22, 32),
+        new THREE.MeshStandardMaterial({
+          color: 0x7c2d12,
+          emissive: 0xf97316,
+          emissiveIntensity: 0.9,
+          roughness: 0.3
+        })
+      );
+      focoBaseMesh.position.y = -1.92;
+      grupoEscenaFuego.add(focoBaseMesh);
+    }
+
+    ondaEstallidoMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 28, 20),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0 })
+    );
+    ondaEstallidoMesh.position.y = 0.5;
+    grupoEscenaFuego.add(ondaEstallidoMesh);
+
+    let meshAgentes;
+    let agentes = [];
+    const dummyAgente = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const COL_BLANCO_HD   = new THREE.Color(0xffffff);
+    const COL_AZUL_HD     = new THREE.Color(0x38bdf8);
+    const COL_AZUL_PROFUN = new THREE.Color(0x2563eb);
+    const COL_AMARILLO_HD = new THREE.Color(0xfde047);
+    const COL_NARANJA_HD  = new THREE.Color(0xf97316);
+    const COL_ROJO_HD     = new THREE.Color(0xdc2626);
+    const COL_HOLLIN_HD   = new THREE.Color(0x1e293b);
+
+    function construirAgentesCombustion() {
+      if (meshAgentes) grupoEscenaFuego.remove(meshAgentes);
+      agentes = [];
+
+      const count = fuegoParams.numAgentes;
+      const geo = new THREE.BoxGeometry(0.18, 0.18, 0.18);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0xff6a00,
+        emissiveIntensity: 0.85,
+        roughness: 0.26,
+        metalness: 0.08
+      });
+      meshAgentes = new THREE.InstancedMesh(geo, mat, count);
+      meshAgentes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      grupoEscenaFuego.add(meshAgentes);
+
+      for (let i = 0; i < count; i++) {
+        const canal = i % 7;
+        const anguloCanal = (canal / 7) * Math.PI * 2 + (Math.random() - 0.5) * 0.45;
+        agentes.push({
+          angulo: Math.random() * Math.PI * 2,
+          anguloCanal,
+          radioNorm: Math.pow(Math.random(), 0.65),
+          cicloVida: Math.random(),
+          velCiclo: 0.35 + Math.random() * 0.65,
+          velGiro: (Math.random() - 0.5) * 2.0,
+          fase: Math.random() * Math.PI * 2,
+          esProductoDenso: i % 5 === 0,
+          impulsoRadial: 0
+        });
+      }
+    }
+
+    let energiaEstallido = 0;
+
+    function estallarCombustion() {
+      energiaEstallido = 1.0;
+      blastLight.intensity = 10.0;
+      ondaEstallidoMesh.scale.set(1, 1, 1);
+      ondaEstallidoMesh.material.opacity = 0.9;
+
+      agentes.forEach((a, idx) => {
+        a.impulsoRadial = 1.4 + Math.random() * 1.5;
+        if (idx % 3 === 0) {
+          a.cicloVida = Math.min(0.95, a.cicloVida + 0.2);
+        }
+      });
+    }
+
+    const fireGui = new lil.GUI({ title: 'Controles Combustión HD' });
+    fireGui.add(fuegoParams, 'intensidadCombustion', 0.2, 2.2, 0.05).name('Intensidad Comb.');
+    fireGui.add(fuegoParams, 'aperturaLlama', 0.0, 1.5, 0.05).name('Aberturas Flama');
+    fireGui.add(fuegoParams, 'reduccionExtincion', 0.2, 1.0, 0.02).name('Reducción al Fin');
+    fireGui.add(fuegoParams, 'oxigenoPct', 8, 50, 1).name('Oxígeno O₂ (%)');
+    fireGui.add(fuegoParams, 'flujoTermico', 0.4, 2.8, 0.05).name('Flujo Térmico');
+    fireGui.add(fuegoParams, 'concentracion', 0.1, 1.0, 0.05).name('Concentración');
+    fireGui.add(fuegoParams, 'intensidadBrisa', 0.0, 1.0, 0.02).name('Brisa Leve');
+    fireGui.add(fuegoParams, 'anguloBrisaDeg', 0, 360, 5).name('Dir. Brisa (°)');
+    fireGui.add(fuegoParams, 'gravedad', 0.1, 2.5, 0.1).name('Gravedad');
+    fireGui.add(fuegoParams, 'exposicionHD', 0.7, 1.8, 0.05).name('Exposición HD');
+    fireGui.add(fuegoParams, 'numAgentes', 300, 1400, 50).name('Agentes Mol.').onChange(construirAgentesCombustion);
+    fireGui.add(fuegoParams, 'radioPlataforma', 7.0, 18.0, 0.5).name('Radio Plataforma').onChange(construirPlataformaCircular);
+
+    function setIntensidadCombustion(valor) {
+      fuegoParams.intensidadCombustion = valor;
+      fuegoParams.flujoTermico = 0.7 + valor * 0.65;
+      fireGui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function setPerfilFuego(perfil) {
+      if (perfil === 'premezcla') {
+        fuegoParams.oxigenoPct = 44;
+        fuegoParams.intensidadCombustion = 1.35;
+        fuegoParams.flujoTermico = 1.65;
+        fuegoParams.concentracion = 0.75;
+      } else {
+        fuegoParams.oxigenoPct = 24;
+        fuegoParams.intensidadCombustion = 1.0;
+        fuegoParams.flujoTermico = 1.35;
+        fuegoParams.concentracion = 0.55;
+      }
+      fireGui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function calcularColorPorEtapaCombustion(t, ratioO2, esProductoDenso, radioNorm, estallido, outColor) {
+      if (estallido > 0.35 && radioNorm < 0.72) {
+        outColor.copy(COL_BLANCO_HD).lerp(COL_AMARILLO_HD, (1 - estallido) * 1.3);
+        return;
+      }
+      if (estallido > 0.08 && radioNorm < 0.85) {
+        outColor.copy(COL_AMARILLO_HD).lerp(COL_NARANJA_HD, 1 - estallido);
+        return;
+      }
+
+      if (t < 0.22) {
+        const k = t / 0.22;
+        if (ratioO2 > 0.42) {
+          outColor.copy(COL_AZUL_PROFUN).lerp(COL_AZUL_HD, Math.min(1, ratioO2 * 1.25));
+          outColor.lerp(COL_AMARILLO_HD, Math.max(0, (k - 0.55) / 0.45));
+        } else {
+          outColor.copy(COL_ROJO_HD).lerp(COL_NARANJA_HD, k * 0.65);
+        }
+        return;
+      }
+
+      if (t < 0.55) {
+        const k = (t - 0.22) / 0.33;
+        outColor.copy(COL_ROJO_HD).lerp(COL_NARANJA_HD, k);
+        return;
+      }
+
+      if (t < 0.80) {
+        const k = (t - 0.55) / 0.25;
+        outColor.copy(COL_NARANJA_HD).lerp(COL_AMARILLO_HD, k);
+        if (k > 0.65 && ratioO2 > 0.5) {
+          outColor.lerp(COL_BLANCO_HD, (k - 0.65) * 1.2);
+        }
+        return;
+      }
+
+      const kFin = (t - 0.80) / 0.20;
+      if (esProductoDenso || ratioO2 < 0.28) {
+        outColor.copy(COL_ROJO_HD).lerp(COL_HOLLIN_HD, Math.min(1, kFin * 1.15));
+      } else {
+        outColor.copy(COL_AMARILLO_HD).lerp(COL_ROJO_HD, Math.min(1, kFin * 1.35));
+      }
+    }
+
+    function actualizarCombustion(dt, tiempoSeg) {
+      fireRenderer.toneMappingExposure = fuegoParams.exposicionHD;
+
+      const rMax = fuegoParams.radioPlataforma * 0.88;
+      const ratioO2 = THREE.MathUtils.clamp((fuegoParams.oxigenoPct - 8) / 38, 0, 1);
+      const poder = fuegoParams.intensidadCombustion;
+
+      const radBrisa = (fuegoParams.anguloBrisaDeg * Math.PI) / 180;
+      const brisaX = Math.cos(radBrisa) * fuegoParams.intensidadBrisa;
+      const brisaZ = Math.sin(radBrisa) * fuegoParams.intensidadBrisa;
+
+      if (energiaEstallido > 0.005) {
+        energiaEstallido = Math.max(0, energiaEstallido - dt * 0.85);
+        const escOnda = 1 + (1 - energiaEstallido) * rMax * 1.1;
+        ondaEstallidoMesh.scale.set(escOnda, escOnda * 0.65, escOnda);
+        ondaEstallidoMesh.material.opacity = energiaEstallido * 0.85;
+        blastLight.intensity = energiaEstallido * 10.0;
+      } else {
+        ondaEstallidoMesh.material.opacity = 0;
+        blastLight.intensity = 0;
+      }
+
+      const parpadeo = 0.86 + 0.2 * Math.sin(tiempoSeg * 13.5) + 0.12 * Math.cos(tiempoSeg * 23.0);
+      fireLight.intensity = (2.5 + fuegoParams.flujoTermico * poder * 2.2) * parpadeo + energiaEstallido * 4.5;
+      blueLight.intensity = (0.6 + ratioO2 * 3.2) * parpadeo * poder;
+      focoBaseMesh.material.emissiveIntensity = Math.min(2.2, (0.4 + poder * 0.55) * parpadeo + energiaEstallido * 0.9);
+      meshAgentes.material.emissiveIntensity = THREE.MathUtils.clamp(0.55 + poder * 0.35, 0.3, 1.4);
+
+      agentes.forEach((a, i) => {
+        const factorGravedad = a.esProductoDenso && a.cicloVida > 0.55 ? fuegoParams.gravedad * 0.35 : 0;
+        a.cicloVida += (a.velCiclo * fuegoParams.flujoTermico * (0.55 + poder * 0.45) * 0.42 - factorGravedad * 0.25) * dt;
+
+        if (a.cicloVida >= 1.0) {
+          a.cicloVida = 0.0;
+          a.radioNorm = Math.pow(Math.random(), 0.5 + fuegoParams.concentracion * 0.75);
+          a.angulo = Math.random() * Math.PI * 2;
+          const canal = i % 7;
+          a.anguloCanal = (canal / 7) * Math.PI * 2 + (Math.random() - 0.5) * 0.45;
+        } else if (a.cicloVida < 0.0) {
+          a.cicloVida = 0.02;
+        }
+
+        const tExistencia = a.cicloVida;
+        const remolinoCiclonicoLeve = fuegoParams.intensidadBrisa * (0.35 + tExistencia * 0.85);
+        a.angulo += (a.velGiro + remolinoCiclonicoLeve + (1 - tExistencia) * 0.8) * dt;
+        a.anguloCanal += (remolinoCiclonicoLeve * 0.65) * dt;
+
+        if (a.impulsoRadial > 0) {
+          a.radioNorm = Math.min(1.0, a.radioNorm + a.impulsoRadial * dt * 0.55);
+          a.impulsoRadial = Math.max(0, a.impulsoRadial - dt * 1.4);
+        }
+
+        const aperturaSup = Math.pow(Math.max(0, tExistencia - 0.35) / 0.65, 1.3) * fuegoParams.aperturaLlama;
+        const estrechamientoBase = (1.0 - Math.min(0.45, tExistencia * 0.55)) * (1.05 - fuegoParams.concentracion * 0.3);
+        const radioEfectivo = Math.min(
+          rMax,
+          (0.35 + a.radioNorm * rMax * 0.44) * estrechamientoBase + aperturaSup * 2.1 + energiaEstallido * a.radioNorm * 3.5
+        );
+
+        const anguloFinal = a.angulo * (1 - aperturaSup * 0.65) + a.anguloCanal * (aperturaSup * 0.65);
+
+        const derivaBrisaX = brisaX * (0.25 + tExistencia * 1.65) + Math.sin(tiempoSeg * 2.2 + a.fase) * fuegoParams.intensidadBrisa * 0.25;
+        const derivaBrisaZ = brisaZ * (0.25 + tExistencia * 1.65) + Math.cos(tiempoSeg * 2.0 + a.fase) * fuegoParams.intensidadBrisa * 0.25;
+
+        const lenguaX = Math.sin(tiempoSeg * 5.2 + a.fase + tExistencia * 4.5) * (0.32 + aperturaSup * 0.45) * tExistencia;
+        const lenguaZ = Math.cos(tiempoSeg * 4.7 + a.fase + tExistencia * 4.0) * (0.32 + aperturaSup * 0.45) * tExistencia;
+
+        const x = Math.cos(anguloFinal) * radioEfectivo + lenguaX + derivaBrisaX;
+        const z = Math.sin(anguloFinal) * radioEfectivo + lenguaZ + derivaBrisaZ;
+        const y = -1.75 + tExistencia * (5.6 + fuegoParams.flujoTermico * poder * 1.4);
+
+        const progresoExtincion = Math.max(0, (tExistencia - 0.58) / 0.42);
+        const factorReduccion = 1.0 - Math.pow(progresoExtincion, 1.35) * fuegoParams.reduccionExtincion;
+        const escalaBase = (0.58 + (1 - tExistencia) * 0.68 + energiaEstallido * 0.65) * (0.48 + poder * 0.55);
+        const escala = Math.max(0.03, escalaBase * Math.max(0.05, factorReduccion) * (a.esProductoDenso ? 0.85 : 1.0));
+
+        dummyAgente.position.set(x, y, z);
+        dummyAgente.rotation.set(tiempoSeg * 2 + a.fase, anguloFinal, 0);
+        dummyAgente.scale.set(escala, escala * (0.9 + (1 - progresoExtincion) * 0.35), escala);
+        dummyAgente.updateMatrix();
+        meshAgentes.setMatrixAt(i, dummyAgente.matrix);
+
+        calcularColorPorEtapaCombustion(tExistencia, ratioO2, a.esProductoDenso, a.radioNorm, energiaEstallido, colTmp);
+        meshAgentes.setColorAt(i, colTmp);
+      });
+
+      meshAgentes.instanceMatrix.needsUpdate = true;
+      if (meshAgentes.instanceColor) meshAgentes.instanceColor.needsUpdate = true;
+
+      const tempNucleoK = Math.round(920 + fuegoParams.flujoTermico * poder * 280 + ratioO2 * 220 + energiaEstallido * 680);
+      const tempAmbK = Math.round(292 + fuegoParams.concentracion * 20 + energiaEstallido * 90);
+      const intEl = document.getElementById('m-intensidad');
+      const tempEl = document.getElementById('m-temp');
+      const brisaEl = document.getElementById('m-brisa');
+      if (intEl) intEl.innerText = `${Math.round(poder * 100)}% · ${poder < 0.6 ? 'Suave' : (poder > 1.35 ? 'Intensa' : 'Viva')}`;
+      if (tempEl) tempEl.innerText = `${tempNucleoK} K / ${tempAmbK} K`;
+      if (brisaEl) {
+        const velBrisaMs = (fuegoParams.intensidadBrisa * 1.3).toFixed(2);
+        const estadoBrisa = fuegoParams.intensidadBrisa < 0.2 ? 'Brisa Muy Leve' : (fuegoParams.intensidadBrisa < 0.55 ? 'Tarde Calma' : 'Brisa Fresca');
+        brisaEl.innerText = `${velBrisaMs} m/s · ${estadoBrisa}`;
+      }
+    }
+
+    construirPlataformaCircular();
+    construirAgentesCombustion();
+
+    let prevFireT = performance.now();
+    const inicioFireT = prevFireT;
+    (function loopFire() {
+      requestAnimationFrame(loopFire);
+      const now = performance.now();
+      const dt = Math.min((now - prevFireT) / 1000, 0.05);
+      const tiempoSeg = (now - inicioFireT) / 1000;
+      prevFireT = now;
+
+      if (fuegoParams.rotacionEscena > 0) {
+        grupoEscenaFuego.rotation.y += fuegoParams.rotacionEscena;
+      }
+
+      actualizarCombustion(dt, tiempoSeg);
+      fireControls.update();
+      fireRenderer.render(fireScene, fireCamera);
+    })();
+
+    /* ==========================================================================
+       7. WIDGET FLOTANTE COMPACTO, DESPLEGABLE Y MOVIBLE + ESTADOS DE INTERACCIÓN
+       ========================================================================== */
+    const ffwWidget = document.getElementById('fuegoFloatWidget');
+    const ffwDragHandle = document.getElementById('ffwDragHandle');
+    const ffwToggleBtn = document.getElementById('ffwToggleBtn');
+    const ffwDrawer = document.getElementById('ffwDrawer');
+    const ffwArrow = document.getElementById('ffwArrow');
+    const ffwInteractBtn = document.getElementById('ffwInteractBtn');
+    const ffwSimBtn = document.getElementById('ffwSimBtn');
+
+    let isFireInteracting = false;
+    let isFireSimFull = false;
+
+    ffwToggleBtn.addEventListener('click', () => {
+      const willOpen = ffwDrawer.hidden;
+      ffwDrawer.hidden = !willOpen;
+      ffwToggleBtn.setAttribute('aria-expanded', String(willOpen));
+      ffwArrow.textContent = willOpen ? '▴' : '▾';
+      clampFireWidgetInsideViewport();
+    });
+
+    function syncFuegoModes() {
+      const canInteract = isFireInteracting || isFireSimFull;
+      fireControls.enabled = canInteract;
+      fuegoCanvas.style.pointerEvents = canInteract ? 'auto' : 'none';
+      document.body.classList.toggle('sim-fullscreen', isFireSimFull);
+
+      ffwInteractBtn.setAttribute('aria-pressed', String(isFireInteracting));
+      ffwInteractBtn.textContent = isFireInteracting ? 'Desactivar interacción' : 'Activar interacción';
+      ffwInteractBtn.classList.toggle('active-state', isFireInteracting);
+
+      ffwSimBtn.setAttribute('aria-pressed', String(isFireSimFull));
+      ffwSimBtn.textContent = isFireSimFull ? 'Salir del simulador' : 'Entrar al simulador';
+      ffwSimBtn.classList.toggle('active-state', isFireSimFull);
+
+      fireCamera.aspect = window.innerWidth / window.innerHeight;
+      fireCamera.updateProjectionMatrix();
+      fireRenderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    ffwInteractBtn.addEventListener('click', () => {
+      isFireInteracting = !isFireInteracting;
+      syncFuegoModes();
+    });
+
+    ffwSimBtn.addEventListener('click', () => {
+      isFireSimFull = !isFireSimFull;
+      syncFuegoModes();
+    });
+
+    let ffwDragging = false;
+    let ffwOffsetX = 0;
+    let ffwOffsetY = 0;
+
+    function clampFireWidgetInsideViewport() {
+      if (!ffwWidget.style.left && !ffwWidget.style.top) return;
+      const maxX = Math.max(8, window.innerWidth - ffwWidget.offsetWidth - 8);
+      const maxY = Math.max(8, window.innerHeight - ffwWidget.offsetHeight - 8);
+      const curLeft = parseFloat(ffwWidget.style.left) || 8;
+      const curTop = parseFloat(ffwWidget.style.top) || 8;
+      ffwWidget.style.left = `${Math.min(maxX, Math.max(8, curLeft))}px`;
+      ffwWidget.style.top = `${Math.min(maxY, Math.max(8, curTop))}px`;
+    }
+
+    ffwDragHandle.addEventListener('pointerdown', (e) => {
+      ffwDragging = true;
+      const rect = ffwWidget.getBoundingClientRect();
+      ffwOffsetX = e.clientX - rect.left;
+      ffwOffsetY = e.clientY - rect.top;
+      ffwWidget.style.left = `${rect.left}px`;
+      ffwWidget.style.top = `${rect.top}px`;
+      ffwWidget.style.right = 'auto';
+      ffwWidget.style.bottom = 'auto';
+      ffwDragHandle.setPointerCapture(e.pointerId);
+    });
+
+    ffwDragHandle.addEventListener('pointermove', (e) => {
+      if (!ffwDragging) return;
+      const maxX = Math.max(8, window.innerWidth - ffwWidget.offsetWidth - 8);
+      const maxY = Math.max(8, window.innerHeight - ffwWidget.offsetHeight - 8);
+      const nextLeft = Math.min(maxX, Math.max(8, e.clientX - ffwOffsetX));
+      const nextTop = Math.min(maxY, Math.max(8, e.clientY - ffwOffsetY));
+      ffwWidget.style.left = `${nextLeft}px`;
+      ffwWidget.style.top = `${nextTop}px`;
+    });
+
+    function stopFfwDrag(e) {
+      if (!ffwDragging) return;
+      ffwDragging = false;
+      if (e && ffwDragHandle.hasPointerCapture(e.pointerId)) {
+        ffwDragHandle.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    ffwDragHandle.addEventListener('pointerup', stopFfwDrag);
+    ffwDragHandle.addEventListener('pointercancel', stopFfwDrag);
+
+    window.addEventListener('resize', () => {
+      fireCamera.aspect = window.innerWidth / window.innerHeight;
+      fireCamera.updateProjectionMatrix();
+      fireRenderer.setSize(window.innerWidth, window.innerHeight);
+      clampFireWidgetInsideViewport();
+    });
+
   </script>
 </body>
 </html>
