@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admin | MultiversoLabs</title>
+  <style>
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.92);
+      --glass-border: rgba(56, 189, 248, 0.22);
+      --glass-highlight: rgba(56, 189, 248, 0.36);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.80);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.96);
+      --glass-border: rgba(2, 132, 199, 0.22);
+      --glass-highlight: rgba(2, 132, 199, 0.28);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: color 0.4s ease;
+    }
+
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.16) 0%, transparent 52%),
+        radial-gradient(circle at 80% 78%, rgba(168, 85, 247, 0.15) 0%, transparent 52%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 22s ease infinite alternate;
+    }
+
+    .holo-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.055) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(168, 85, 247, 0.055) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+      gap: 14px;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+      flex-shrink: 0;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) {
+      transform: rotateX(90deg) translateZ(16px);
+      background: rgba(244, 63, 94, 0.32);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+    }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px var(--glass-highlight);
+      transform: translateY(-1px);
+    }
+
+    .btn-glass.primary {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .btn-glass.danger {
+      border-color: rgba(244, 63, 94, 0.45);
+      color: var(--accent-red);
+    }
+
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px 5% 50px;
+    }
+
+    .kicker {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent-cyan);
+      font-weight: 800;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .admin-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      padding: clamp(22px, 4vw, 34px);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+    }
+
+    .auth-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 22px;
+    }
+
+    .auth-tab {
+      padding: 8px 14px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.06);
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab.active {
+      border-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--accent-cyan);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      max-width: 480px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .holo-input {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: rgba(5, 8, 20, 0.58);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    [data-theme="light"] .holo-input {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .holo-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.22);
+    }
+
+    .btn-submit {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-cyan);
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #050814;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.45);
+    }
+
+    .feedback-msg {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .feedback-msg.ok {
+      display: block;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--accent-emerald);
+    }
+
+    .feedback-msg.err {
+      display: block;
+      background: rgba(244, 63, 94, 0.14);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: var(--accent-red);
+    }
+
+    .dashboard-box {
+      display: none;
+    }
+
+    .dashboard-box.active {
+      display: block;
+    }
+
+    .session-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      margin-bottom: 22px;
+    }
+
+    .chat-launch-banner {
+      padding: 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14));
+      border: 1px solid var(--accent-cyan);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .btn-chat-link {
+      padding: 12px 20px;
+      border-radius: 11px;
+      border: 1px solid var(--accent-cyan);
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #050814;
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-chat-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.45);
+    }
+
+    .sub-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 18px;
+    }
+
+    .sub-panel {
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(56, 189, 248, 0.05);
+      border: 1px solid var(--glass-border);
+    }
+
+    footer {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="living-background"></div>
+  <div class="holo-grid"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <header>
+    <a href="admin.html" class="brand-cluster">
+      <div class="cube-viewport" title="Núcleo Admin MultiversoLabs">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size:0.96rem;letter-spacing:0.6px;">ADMIN · MULTIVERSOLABS</strong>
+        <div style="font-size:0.7rem;color:var(--text-secondary);">Control de Acceso &amp; Enlace MultiversoChat</div>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <button type="button" class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="multiversochat.html" class="btn-glass primary">💬 MultiversoChat ↗</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="admin-card">
+      <span class="kicker">Administración // MultiversoLabs.space</span>
+      <h1 style="font-size:clamp(1.65rem,3.2vw,2.35rem);font-weight:800;letter-spacing:-0.02em;">
+        Acceso Administrador &amp; Enlace de Chat
+      </h1>
+      <p style="color:var(--text-secondary);margin-top:6px;font-size:0.95rem;line-height:1.6;">
+        Registra tu correo, inicia o cierra sesión, recupera o cambia tu contraseña y accede directo a <strong>MultiversoChat</strong>.
+      </p>
+
+      <!-- MÓDULO DE AUTENTICACIÓN (REGISTRO, LOGIN, RECUPERAR) -->
+      <div id="authBox">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab active" data-mode="login">Iniciar Sesión</button>
+          <button type="button" class="auth-tab" data-mode="register">Registrar Correo</button>
+          <button type="button" class="auth-tab" data-mode="recover">Recuperar Contraseña</button>
+        </div>
+
+        <form id="authForm" class="form-grid">
+          <div class="field-group">
+            <label class="field-label" for="authEmail">Correo electrónico</label>
+            <input type="email" id="authEmail" class="holo-input" placeholder="tu-correo@multiversolabs.space" required />
+          </div>
+
+          <div class="field-group" id="passwordFieldGroup">
+            <label class="field-label" for="authPassword">Contraseña</label>
+            <input type="password" id="authPassword" class="holo-input" placeholder="••••••••" required />
+          </div>
+
+          <div class="field-group" id="newPassRecoverGroup" style="display:none;">
+            <label class="field-label" for="recoverNewPassword">Nueva contraseña de recuperación</label>
+            <input type="password" id="recoverNewPassword" class="holo-input" placeholder="Nueva contraseña segura" />
+          </div>
+
+          <button type="submit" class="btn-submit" id="authSubmitBtn">Iniciar Sesión →</button>
+        </form>
+
+        <div id="authFeedback" class="feedback-msg"></div>
+      </div>
+
+      <!-- PANEL ACTIVO TRAS INICIAR SESIÓN -->
+      <div id="dashboardBox" class="dashboard-box">
+        <div class="session-bar">
+          <div>
+            <span style="font-size:0.75rem;color:var(--accent-emerald);font-weight:800;text-transform:uppercase;">● Sesión Admin Activa</span>
+            <div id="activeAdminEmail" style="font-size:1rem;font-weight:700;margin-top:2px;"></div>
+          </div>
+          <button type="button" class="btn-glass danger" id="logoutBtn">Cerrar Sesión</button>
+        </div>
+
+        <!-- BOTÓN DE IMPLEMENTACIÓN / ENLACE A MULTIVERSOCHAT -->
+        <div class="chat-launch-banner">
+          <div style="flex:1;min-width:220px;">
+            <span class="kicker" style="margin-bottom:4px;">Nuevo Proyecto de Chat</span>
+            <h2 style="font-size:1.25rem;font-weight:800;">MultiversoChat · Enlace Tablet ↔ Celular</h2>
+            <p style="color:var(--text-secondary);font-size:0.88rem;margin-top:4px;line-height:1.5;">
+              Abre el espacio de comunicación conectado a <strong>multiversolabs.space</strong> con sala compartida.
+            </p>
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <input type="text" id="adminChatRoom" class="holo-input" style="max-width:230px;padding:8px 10px;font-size:0.84rem;" placeholder="Sala (ej. multiversochat-principal)" />
+              <button type="button" class="btn-glass" id="copyChatInviteBtn">🔗 Copiar Enlace</button>
+            </div>
+          </div>
+          <a href="multiversochat.html" id="openMultiversoChatBtn" class="btn-chat-link">
+            💬 Abrir MultiversoChat →
+          </a>
+        </div>
+
+        <!-- CAMBIAR CONTRASEÑA Y ACTUALIZAR CORREO -->
+        <div class="sub-sections">
+          <div class="sub-panel">
+            <span class="kicker">Seguridad</span>
+            <h3 style="font-size:1.05rem;margin-bottom:10px;">Cambiar Contraseña</h3>
+            <form id="changePassForm" class="form-grid">
+              <div class="field-group">
+                <label class="field-label" for="currentPassInput">Contraseña actual</label>
+                <input type="password" id="currentPassInput" class="holo-input" required />
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="newPassInput">Nueva contraseña</label>
+                <input type="password" id="newPassInput" class="holo-input" required />
+              </div>
+              <button type="submit" class="btn-submit">Guardar Nueva Contraseña</button>
+            </form>
+            <div id="passFeedback" class="feedback-msg"></div>
+          </div>
+
+          <div class="sub-panel">
+            <span class="kicker">Identidad</span>
+            <h3 style="font-size:1.05rem;margin-bottom:10px;">Correo Registrado</h3>
+            <form id="updateEmailForm" class="form-grid">
+              <div class="field-group">
+                <label class="field-label" for="updatedEmailInput">Correo del administrador</label>
+                <input type="email" id="updatedEmailInput" class="holo-input" required />
+              </div>
+              <button type="submit" class="btn-glass primary" style="justify-content:center;padding:11px 16px;">
+                Actualizar Correo
+              </button>
+            </form>
+            <div id="emailFeedback" class="feedback-msg"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions.
+    </div>
+    <div style="font-size:0.82rem;">
+      <a href="multiversochat.html" style="color:var(--accent-cyan);text-decoration:none;">MultiversoChat</a> ·
+      <a href="index.html" style="color:var(--text-primary);text-decoration:none;">Portal Principal →</a>
+    </div>
+  </footer>
+
+  <script>
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme');
+    if (savedTheme) applyTheme(savedTheme);
+    else applyTheme(((new Date().getHours() >= 7 && new Date().getHours() < 19) ? 'light' : 'dark'));
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+
+    const pCanvas = document.getElementById('particle-canvas');
+    const pCtx = pCanvas.getContext('2d');
+    let particles = [];
+    function resizeP() { pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeP);
+    resizeP();
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * pCanvas.width,
+        y: Math.random() * pCanvas.height,
+        r: Math.random() * 1.5 + 0.4,
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3
+      });
+    }
+    (function loopP() {
+      pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+      pCtx.fillStyle = rootEl.getAttribute('data-theme') === 'light' ? 'rgba(2,132,199,0.22)' : 'rgba(56,189,248,0.26)';
+      particles.forEach(p => {
+        p.x += p.dx; p.y += p.dy;
+        if (p.x < 0 || p.x > pCanvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > pCanvas.height) p.dy *= -1;
+        pCtx.beginPath(); pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2); pCtx.fill();
+      });
+      requestAnimationFrame(loopP);
+    })();
+
+    const ACCOUNT_KEY = 'mv_admin_account_v1';
+    const SESSION_KEY = 'mv_admin_session_active';
+
+    let mode = 'login';
+    const authTabs = document.querySelectorAll('.auth-tab');
+    const authForm = document.getElementById('authForm');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const recoverNewPassword = document.getElementById('recoverNewPassword');
+    const passwordFieldGroup = document.getElementById('passwordFieldGroup');
+    const newPassRecoverGroup = document.getElementById('newPassRecoverGroup');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authFeedback = document.getElementById('authFeedback');
+    const authBox = document.getElementById('authBox');
+    const dashboardBox = document.getElementById('dashboardBox');
+    const activeAdminEmail = document.getElementById('activeAdminEmail');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showFeedback(el, text, isOk) {
+      el.textContent = text;
+      el.className = 'feedback-msg ' + (isOk ? 'ok' : 'err');
+    }
+
+    function getAccount() {
+      try {
+        return JSON.parse(localStorage.getItem(ACCOUNT_KEY) || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveAccount(acc) {
+      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(acc));
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      authFeedback.className = 'feedback-msg';
+      authTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === nextMode));
+
+      if (nextMode === 'login') {
+        passwordFieldGroup.style.display = 'flex';
+        authPassword.required = true;
+        newPassRecoverGroup.style.display = 'none';
+        recoverNewPassword.required = false;
+        authSubmitBtn.textContent = 'Iniciar Sesión →';
+      } else if (nextMode === 'register') {
+        passwordFieldGroup.style.display = 'flex';
+        authPassword.required = true;
+        newPassRecoverGroup.style.display = 'none';
+        recoverNewPassword.required = false;
+        authSubmitBtn.textContent = 'Registrar Correo y Contraseña →';
+      } else {
+        passwordFieldGroup.style.display = 'none';
+        authPassword.required = false;
+        newPassRecoverGroup.style.display = 'flex';
+        recoverNewPassword.required = true;
+        authSubmitBtn.textContent = 'Recuperar y Establecer Contraseña →';
+      }
+    }
+
+    authTabs.forEach(tab => {
+      tab.addEventListener('click', () => setMode(tab.dataset.mode));
+    });
+
+    const adminChatRoom = document.getElementById('adminChatRoom');
+    const openMultiversoChatBtn = document.getElementById('openMultiversoChatBtn');
+    const copyChatInviteBtn = document.getElementById('copyChatInviteBtn');
+
+    function syncChatLink() {
+      const cleanRoom = (adminChatRoom.value || 'multiversochat-principal').trim().replace(/[^a-zA-Z0-9_-]/g, '-') || 'multiversochat-principal';
+      adminChatRoom.value = cleanRoom;
+      localStorage.setItem('mvchat_active_room', cleanRoom);
+      openMultiversoChatBtn.href = 'multiversochat.html?sala=' + encodeURIComponent(cleanRoom);
+    }
+
+    adminChatRoom.value = localStorage.getItem('mvchat_active_room') || 'multiversochat-principal';
+    syncChatLink();
+    adminChatRoom.addEventListener('change', syncChatLink);
+    adminChatRoom.addEventListener('input', syncChatLink);
+
+    copyChatInviteBtn.addEventListener('click', () => {
+      syncChatLink();
+      const room = adminChatRoom.value;
+      const base = window.location.href.includes('multiversolabs.space')
+        ? window.location.href.replace(/\/[^/]*$/, '/multiversochat.html')
+        : 'https://multiversolabs.space/multiversochat.html';
+      const url = base + '?sala=' + encodeURIComponent(room);
+      navigator.clipboard?.writeText(url).catch(() => {});
+      const prev = copyChatInviteBtn.textContent;
+      copyChatInviteBtn.textContent = '✓ Copiado';
+      setTimeout(() => { copyChatInviteBtn.textContent = prev; }, 1500);
+    });
+
+    function refreshSessionView() {
+      const acc = getAccount();
+      const logged = localStorage.getItem(SESSION_KEY) === 'true' && acc && acc.email;
+      if (logged) {
+        authBox.style.display = 'none';
+        dashboardBox.classList.add('active');
+        activeAdminEmail.textContent = acc.email;
+        document.getElementById('updatedEmailInput').value = acc.email;
+      } else {
+        authBox.style.display = 'block';
+        dashboardBox.classList.remove('active');
+        if (acc && acc.email && !authEmail.value) {
+          authEmail.value = acc.email;
+        }
+      }
+    }
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = (authEmail.value || '').trim().toLowerCase();
+      const pass = authPassword.value || '';
+      const recPass = recoverNewPassword.value || '';
+      const existing = getAccount();
+
+      if (mode === 'register') {
+        if (pass.length < 4) {
+          showFeedback(authFeedback, 'Usa al menos 4 caracteres en tu contraseña.', false);
+          return;
+        }
+        saveAccount({ email, password: pass });
+        localStorage.setItem(SESSION_KEY, 'true');
+        showFeedback(authFeedback, 'Correo registrado y sesión iniciada.', true);
+        refreshSessionView();
+      } else if (mode === 'login') {
+        if (!existing) {
+          showFeedback(authFeedback, 'No hay correo registrado aún. Usa la pestaña "Registrar Correo".', false);
+          return;
+        }
+        if (existing.email === email && existing.password === pass) {
+          localStorage.setItem(SESSION_KEY, 'true');
+          refreshSessionView();
+        } else {
+          showFeedback(authFeedback, 'Correo o contraseña incorrectos.', false);
+        }
+      } else {
+        if (!existing || existing.email !== email) {
+          showFeedback(authFeedback, 'Ese correo no coincide con el correo registrado.', false);
+          return;
+        }
+        if (recPass.length < 4) {
+          showFeedback(authFeedback, 'Ingresa una nueva contraseña de al menos 4 caracteres.', false);
+          return;
+        }
+        existing.password = recPass;
+        saveAccount(existing);
+        localStorage.setItem(SESSION_KEY, 'true');
+        recoverNewPassword.value = '';
+        showFeedback(authFeedback, 'Contraseña recuperada y actualizada. Sesión iniciada.', true);
+        refreshSessionView();
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.setItem(SESSION_KEY, 'false');
+      authPassword.value = '';
+      refreshSessionView();
+    });
+
+    document.getElementById('changePassForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const acc = getAccount();
+      const passFeedback = document.getElementById('passFeedback');
+      const cur = document.getElementById('currentPassInput').value || '';
+      const nxt = document.getElementById('newPassInput').value || '';
+      if (!acc || acc.password !== cur) {
+        showFeedback(passFeedback, 'La contraseña actual no coincide.', false);
+        return;
+      }
+      if (nxt.length < 4) {
+        showFeedback(passFeedback, 'La nueva contraseña debe tener al menos 4 caracteres.', false);
+        return;
+      }
+      acc.password = nxt;
+      saveAccount(acc);
+      document.getElementById('currentPassInput').value = '';
+      document.getElementById('newPassInput').value = '';
+      showFeedback(passFeedback, 'Contraseña cambiada correctamente.', true);
+    });
+
+    document.getElementById('updateEmailForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const acc = getAccount();
+      const emailFeedback = document.getElementById('emailFeedback');
+      const nextEmail = (document.getElementById('updatedEmailInput').value || '').trim().toLowerCase();
+      if (!acc || !nextEmail) return;
+      acc.email = nextEmail;
+      saveAccount(acc);
+      activeAdminEmail.textContent = nextEmail;
+      showFeedback(emailFeedback, 'Correo del administrador actualizado.', true);
+    });
+
+    refreshSessionView();
+  </script>
+</body>
+</html>
