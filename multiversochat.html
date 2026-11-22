@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoChat — Comunicación Cuántica | MultiversoLabs</title>
+  <style>
+    /* ==========================================================================
+       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
+       ========================================================================== */
+    :root {
+      --bg-mesh-1: #050814;
+      --bg-mesh-2: #0b1120;
+      --bg-mesh-3: #111827;
+      --glass-bg: rgba(15, 23, 42, 0.65);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.90);
+      --glass-border: rgba(56, 189, 248, 0.22);
+      --glass-highlight: rgba(56, 189, 248, 0.36);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-red: #f43f5e;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+    }
+
+    [data-theme="light"] {
+      --bg-mesh-1: #f1f5f9;
+      --bg-mesh-2: #e2e8f0;
+      --bg-mesh-3: #cbd5e1;
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.95);
+      --glass-border: rgba(2, 132, 199, 0.22);
+      --glass-highlight: rgba(2, 132, 199, 0.28);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent-cyan: #0284c7;
+      --accent-red: #e11d48;
+      --accent-purple: #7e22ce;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text-primary);
+      background: var(--bg-mesh-1);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: color 0.4s ease;
+    }
+
+    /* ==========================================================================
+       FONDO HOLOGRÁFICO MULTIVERSOLABS + REJILLA CUÁNTICA + PARTÍCULAS
+       ========================================================================== */
+    .living-background {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 22% 20%, rgba(56, 189, 248, 0.16) 0%, transparent 52%),
+        radial-gradient(circle at 80% 78%, rgba(168, 85, 247, 0.15) 0%, transparent 52%),
+        radial-gradient(circle at 50% 45%, rgba(244, 63, 94, 0.08) 0%, transparent 55%),
+        linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
+      background-size: 200% 200%;
+      animation: meshShift 22s ease infinite alternate;
+    }
+
+    .holo-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.055) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(168, 85, 247, 0.055) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
+    }
+
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes meshShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    /* ==========================================================================
+       TICKER SUPERIOR
+       ========================================================================== */
+    .news-ticker {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14), rgba(244, 63, 94, 0.10));
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 8px 5%;
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .news-badge {
+      background: var(--accent-cyan);
+      color: #050814;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .close-ticker {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.05rem;
+    }
+
+    /* ==========================================================================
+       HEADER HOLOGRÁFICO CON CUBO 3D MULTIVERSOLABS
+       ========================================================================== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 5%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--glass-border);
+      gap: 14px;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .cube-viewport {
+      width: 32px;
+      height: 32px;
+      perspective: 220px;
+      flex-shrink: 0;
+    }
+
+    .cube-sim {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .cube-sim span {
+      position: absolute;
+      inset: 0;
+      border: 1.5px solid var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.15);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
+    .cube-sim span:nth-child(5) {
+      transform: rotateX(90deg) translateZ(16px);
+      background: rgba(244, 63, 94, 0.32);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+    }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
+
+    @keyframes rotateCube {
+      0% { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 0.84rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-glass:hover {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px var(--glass-highlight);
+      transform: translateY(-1px);
+    }
+
+    .btn-glass.primary {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       WORKSPACE PRINCIPAL MULTIVERSOCHAT
+       ========================================================================== */
+    main {
+      flex: 1;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 26px 5% 36px;
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 22px;
+    }
+
+    @media (max-width: 880px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    /* PANEL LATERAL: NODOS, DISPOSITIVOS Y SALAS */
+    .sidebar-panel {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .kicker {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      color: var(--accent-cyan);
+      font-weight: 800;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .holo-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: rgba(5, 8, 20, 0.55);
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    [data-theme="light"] .holo-input {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .holo-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.2);
+    }
+
+    .room-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .room-pill {
+      padding: 6px 11px;
+      border-radius: 99px;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .room-pill:hover,
+    .room-pill.active {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.18);
+    }
+
+    .qr-sync-card {
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .qr-box {
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    #syncQrCanvas {
+      width: 136px;
+      height: 136px;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    /* CONSOLA DE CHAT PRINCIPAL */
+    .chat-console {
+      display: flex;
+      flex-direction: column;
+      min-height: 72vh;
+      max-height: 82vh;
+    }
+
+    .chat-topbar {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--glass-border);
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chat-room-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      font-size: 0.74rem;
+      padding: 3px 10px;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    .messages-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-bubble {
+      max-width: 78%;
+      padding: 11px 15px;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      background: rgba(56, 189, 248, 0.09);
+      line-height: 1.52;
+      font-size: 0.93rem;
+      word-wrap: break-word;
+      animation: msgFadeIn 0.25s ease;
+    }
+
+    @keyframes msgFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-bubble.mine {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.20), rgba(168, 85, 247, 0.20));
+      border-color: rgba(56, 189, 248, 0.45);
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-bubble.peer {
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-bubble.system {
+      align-self: center;
+      max-width: 92%;
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      background: rgba(168, 85, 247, 0.08);
+      border-color: rgba(168, 85, 247, 0.28);
+    }
+
+    .msg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .msg-device-tag {
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .msg-bubble.mine .msg-device-tag {
+      color: var(--accent-purple);
+    }
+
+    .msg-attachment-img {
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 10px;
+      margin-top: 8px;
+      border: 1px solid var(--glass-border);
+      display: block;
+    }
+
+    .composer-bar {
+      padding: 14px 18px;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(5, 8, 20, 0.32);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    [data-theme="light"] .composer-bar {
+      background: rgba(241, 245, 249, 0.75);
+    }
+
+    .btn-send {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--accent-cyan);
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      color: #050814;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-send:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.45);
+    }
+
+    /* ==========================================================================
+       FOOTER INSTITUCIONAL MULTIVERSOLABS
+       ========================================================================== */
+    footer {
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 5%;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+      footer {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="living-background"></div>
+  <div class="holo-grid"></div>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Barra de Noticias / Estado -->
+  <div class="news-ticker" id="newsTicker">
+    <div>
+      <span class="news-badge">MultiversoChat</span>
+      <span>Red de enlace directo entre dispositivos conectada a <strong>multiversolabs.space</strong>.</span>
+    </div>
+    <button class="close-ticker" onclick="document.getElementById('newsTicker').style.display='none'" title="Cerrar">&times;</button>
+  </div>
+
+  <!-- Header Holográfico -->
+  <header>
+    <a href="multiversochat.html" class="brand-cluster">
+      <div class="cube-viewport" title="Núcleo MultiversoChat">
+        <div class="cube-sim">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div>
+        <strong style="font-size:0.98rem;letter-spacing:0.6px;">MULTIVERSOCHAT</strong>
+        <div style="font-size:0.7rem;color:var(--text-secondary);">MultiversoLabs.space · Enlace Entre Dispositivos</div>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <button type="button" class="btn-glass" id="clearChatBtn" title="Limpiar historial local de esta sala">🧹 Limpiar</button>
+      <button type="button" class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+        <span id="themeIcon">🌙</span>
+      </button>
+      <a href="index.html" class="btn-glass primary">Portal Lab ↗</a>
+    </div>
+  </header>
+
+  <!-- Cuerpo Principal -->
+  <main>
+    <!-- Panel Lateral de Sincronización Tablet <-> Celular -->
+    <aside class="glass-panel sidebar-panel" aria-label="Configuración de enlace y sala">
+      <div>
+        <span class="kicker">Nodo & Identidad</span>
+        <h2 style="font-size:1.15rem;font-weight:800;">Enlace Tablet ↔ Celular</h2>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="deviceInput">Nombre de este dispositivo</label>
+        <input type="text" id="deviceInput" class="holo-input" placeholder="Ej. Mi Tablet / Mi Celular" maxlength="26" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="roomInput">Sala de comunicación (misma en ambos)</label>
+        <input type="text" id="roomInput" class="holo-input" placeholder="multiversochat-principal" maxlength="40" />
+      </div>
+
+      <div class="field-group">
+        <span class="field-label">Salas rápidas</span>
+        <div class="room-pills" id="quickRooms">
+          <button type="button" class="room-pill active" data-room="multiversochat-principal">#principal</button>
+          <button type="button" class="room-pill" data-room="tablet-celular">#tablet-celular</button>
+          <button type="button" class="room-pill" data-room="notas-rapidas">#notas-rápidas</button>
+          <button type="button" class="room-pill" data-room="laboratorio">#laboratorio</button>
+        </div>
+      </div>
+
+      <div class="qr-sync-card">
+        <span class="kicker" style="margin:0;">Escanea desde el otro dispositivo</span>
+        <div class="qr-box">
+          <canvas id="syncQrCanvas" width="136" height="136"></canvas>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-secondary);line-height:1.45;">
+          Abre este QR o comparte el enlace en tu Tablet y Celular para entrar directo a la misma sala en <strong>multiversolabs.space</strong>.
+        </p>
+        <button type="button" class="btn-glass primary" id="copyRoomUrlBtn" style="width:100%;justify-content:center;">
+          🔗 Copiar Enlace de Sala
+        </button>
+      </div>
+    </aside>
+
+    <!-- Consola de Chat en Tiempo Real -->
+    <section class="glass-panel chat-console" aria-label="Ventana principal de MultiversoChat">
+      <div class="chat-topbar">
+        <div>
+          <div class="chat-room-title">
+            <span>💬 Sala:</span>
+            <span id="activeRoomLabel" style="color:var(--accent-cyan);">multiversochat-principal</span>
+          </div>
+          <div style="font-size:0.76rem;color:var(--text-secondary);margin-top:2px;">
+            Conectado a <strong>multiversolabs.space</strong> · Sincronización en tiempo real
+          </div>
+        </div>
+        <span id="connectionStatus" class="status-badge">● En Línea · multiversolabs.space</span>
+      </div>
+
+      <div id="messagesStream" class="messages-stream" role="log" aria-live="polite"></div>
+
+      <form id="chatComposerForm" class="composer-bar">
+        <label class="btn-glass" title="Enviar imagen rápida entre Tablet y Celular" style="padding:10px 12px;cursor:pointer;">
+          🖼️
+          <input type="file" id="imageAttachInput" accept="image/*" hidden />
+        </label>
+        <input
+          type="text"
+          id="messageInput"
+          class="holo-input"
+          placeholder="Escribe un mensaje, enlace o nota entre tu Tablet y tu Celular..."
+          autocomplete="off"
+        />
+        <button type="submit" class="btn-send">Enviar →</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>MultiversoChat · MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions.
+    </div>
+    <div style="font-size:0.8rem;">
+      Canal de comunicación directo entre dispositivos · <a href="index.html" style="color:var(--accent-cyan);text-decoration:none;">Volver al Portal →</a>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       1. TEMA NOCTURNO / DIURNO
+       ========================================================================== */
+    const rootEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function applyTheme(theme) {
+      rootEl.setAttribute('data-theme', theme);
+      themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+      localStorage.setItem('multiverso_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('multiverso_theme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      const hour = new Date().getHours();
+      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    });
+
+    /* ==========================================================================
+       2. PARTÍCULAS DE FONDO
+       ========================================================================== */
+    const pCanvas = document.getElementById('particle-canvas');
+    const pCtx = pCanvas.getContext('2d');
+    let particles = [];
+
+    function resizeParticles() {
+      pCanvas.width = window.innerWidth;
+      pCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeParticles);
+    resizeParticles();
+
+    for (let i = 0; i < 45; i++) {
+      particles.push({
+        x: Math.random() * pCanvas.width,
+        y: Math.random() * pCanvas.height,
+        r: Math.random() * 1.6 + 0.4,
+        dx: (Math.random() - 0.5) * 0.35,
+        dy: (Math.random() - 0.5) * 0.35
+      });
+    }
+
+    function animateParticles() {
+      pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+      const isLight = rootEl.getAttribute('data-theme') === 'light';
+      pCtx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+      particles.forEach(p => {
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > pCanvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > pCanvas.height) p.dy *= -1;
+        pCtx.beginPath();
+        pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        pCtx.fill();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ==========================================================================
+       3. GENERADOR DE CÓDIGO QR DE SINCRONIZACIÓN DE SALA
+       ========================================================================== */
+    const qrCanvas = document.getElementById('syncQrCanvas');
+    const qrCtx = qrCanvas.getContext('2d');
+
+    function drawSyncQR(text) {
+      const size = 25;
+      const pad = 2;
+      const cell = qrCanvas.width / (size + pad * 2);
+
+      qrCtx.fillStyle = '#ffffff';
+      qrCtx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
+
+      let seed = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        seed ^= text.charCodeAt(i);
+        seed = Math.imul(seed, 16777619);
+      }
+      function nextBit() {
+        seed ^= seed << 13;
+        seed ^= seed >>> 17;
+        seed ^= seed << 5;
+        return (seed >>> 0) % 2 === 0;
+      }
+      function drawFinder(ox, oy) {
+        for (let y = 0; y < 7; y++) {
+          for (let x = 0; x < 7; x++) {
+            const border = x === 0 || x === 6 || y === 0 || y === 6;
+            const core = x >= 2 && x <= 4 && y >= 2 && y <= 4;
+            qrCtx.fillStyle = (border || core) ? '#050814' : '#ffffff';
+            qrCtx.fillRect((ox + x + pad) * cell, (oy + y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+      }
+      function inFinder(x, y) {
+        return (x < 8 && y < 8) || (x >= size - 8 && y < 8) || (x < 8 && y >= size - 8);
+      }
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (inFinder(x, y)) continue;
+          const bit = (x === 6 || y === 6) ? ((x + y) % 2 === 0) : nextBit();
+          if (bit) {
+            qrCtx.fillStyle = '#050814';
+            qrCtx.fillRect((x + pad) * cell, (y + pad) * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+      }
+      drawFinder(0, 0);
+      drawFinder(size - 7, 0);
+      drawFinder(0, size - 7);
+    }
+
+    /* ==========================================================================
+       4. MOTOR DE COMUNICACIÓN MULTIVERSOCHAT (TABLET <-> CELULAR)
+       ========================================================================== */
+    const deviceInput = document.getElementById('deviceInput');
+    const roomInput = document.getElementById('roomInput');
+    const activeRoomLabel = document.getElementById('activeRoomLabel');
+    const messagesStream = document.getElementById('messagesStream');
+    const composerForm = document.getElementById('chatComposerForm');
+    const messageInput = document.getElementById('messageInput');
+    const imageAttachInput = document.getElementById('imageAttachInput');
+    const copyRoomUrlBtn = document.getElementById('copyRoomUrlBtn');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const connectionStatus = document.getElementById('connectionStatus');
+
+    const isMobileOrTablet = /iPad|Android|Mobile|Tablet/i.test(navigator.userAgent) || window.innerWidth <= 900;
+    const detectedName = isMobileOrTablet ? (window.innerWidth >= 740 ? 'Tablet' : 'Celular') : 'Escritorio';
+    const savedDevice = localStorage.getItem('mvchat_device_name') || detectedName;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialRoom = (urlParams.get('sala') || localStorage.getItem('mvchat_active_room') || 'multiversochat-principal')
+      .trim()
+      .replace(/[^a-zA-Z0-9_-]/g, '-');
+
+    deviceInput.value = savedDevice;
+    roomInput.value = initialRoom;
+    localStorage.setItem('mvchat_device_name', savedDevice);
+    localStorage.setItem('mvchat_active_room', initialRoom);
+
+    const clientId = 'mvchat_' + Math.random().toString(36).slice(2, 10);
+    let bc = null;
+    let lastTimetoken = String(Date.now()) + '0000000';
+
+    function getRoom() {
+      const clean = (roomInput.value || 'multiversochat-principal').trim().replace(/[^a-zA-Z0-9_-]/g, '-');
+      return clean || 'multiversochat-principal';
+    }
+
+    function getShareableRoomUrl(room) {
+      const base = window.location.href.includes('multiversolabs.space')
+        ? window.location.href.split('?')[0]
+        : 'https://multiversolabs.space/multiversochat.html';
+      return base + '?sala=' + encodeURIComponent(room);
+    }
+
+    function storageKey(room) {
+      return 'multiversochat_history_' + room;
+    }
+
+    function getHistory(room) {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey(room)) || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function appendMessageToHistory(room, msg) {
+      const list = getHistory(room);
+      if (list.some(m => m.id === msg.id)) return false;
+      list.push(msg);
+      localStorage.setItem(storageKey(room), JSON.stringify(list.slice(-120)));
+      return true;
+    }
+
+    function formatLinkifiedText(container, text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const parts = text.split(urlRegex);
+      parts.forEach(part => {
+        if (part.match(urlRegex)) {
+          const a = document.createElement('a');
+          a.href = part;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = part;
+          a.style.color = 'var(--accent-cyan)';
+          a.style.textDecoration = 'underline';
+          container.appendChild(a);
+        } else {
+          container.appendChild(document.createTextNode(part));
+        }
+      });
+    }
+
+    function renderRoom(room) {
+      activeRoomLabel.textContent = room;
+      drawSyncQR(getShareableRoomUrl(room));
+
+      document.querySelectorAll('.room-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.room === room);
+      });
+
+      const list = getHistory(room);
+      messagesStream.innerHTML = '';
+
+      if (!list.length) {
+        const welcome = document.createElement('div');
+        welcome.className = 'msg-bubble system';
+        welcome.innerHTML =
+          'Canal <strong>#' + room + '</strong> activo en <strong>multiversolabs.space</strong>.<br>' +
+          'Abre esta misma sala en tu <strong>Tablet</strong> y tu <strong>Celular</strong> para enviar mensajes, enlaces e imágenes al instante.';
+        messagesStream.appendChild(welcome);
+        return;
+      }
+
+      list.forEach(m => {
+        const bubble = document.createElement('article');
+        bubble.className = 'msg-bubble ' + (m.senderId === clientId ? 'mine' : 'peer');
+
+        const header = document.createElement('div');
+        header.className = 'msg-header';
+        const devSpan = document.createElement('span');
+        devSpan.className = 'msg-device-tag';
+        devSpan.textContent = m.device || 'Dispositivo';
+        const timeSpan = document.createElement('span');
+        timeSpan.textContent = m.time || '';
+        header.appendChild(devSpan);
+        header.appendChild(timeSpan);
+        bubble.appendChild(header);
+
+        if (m.text) {
+          const body = document.createElement('div');
+          formatLinkifiedText(body, m.text);
+          bubble.appendChild(body);
+        }
+
+        if (m.imageData) {
+          const img = document.createElement('img');
+          img.src = m.imageData;
+          img.alt = 'Imagen compartida';
+          img.className = 'msg-attachment-img';
+          bubble.appendChild(img);
+        }
+
+        messagesStream.appendChild(bubble);
+      });
+
+      messagesStream.scrollTop = messagesStream.scrollHeight;
+    }
+
+    function setupLocalBroadcast(room) {
+      if (bc) bc.close();
+      if ('BroadcastChannel' in window) {
+        bc = new BroadcastChannel('multiversochat_bc_' + room);
+        bc.onmessage = (ev) => {
+          if (ev.data && ev.data.id && appendMessageToHistory(room, ev.data)) {
+            renderRoom(room);
+          }
+        };
+      }
+    }
+
+    window.addEventListener('storage', (ev) => {
+      const room = getRoom();
+      if (ev.key === storageKey(room)) {
+        renderRoom(room);
+      }
+    });
+
+    // Sincronización en red entre Tablet y Celular conectada a multiversolabs.space
+    function publishToNetwork(room, msg) {
+      if (msg.imageData && msg.imageData.length > 26000) return; // Evitar exceder límite URL en imágenes pesadas
+      const channel = encodeURIComponent('multiversochat-space-' + room);
+      const payload = encodeURIComponent(JSON.stringify(msg));
+      fetch('https://ps.pndsn.com/publish/pub-c-c050d5e6-7c6d-4f6a-9d6a-000000000000/sub-c-00000000-0000-0000-0000-000000000000/0/' + channel + '/0/' + payload)
+        .then(() => {
+          connectionStatus.textContent = '● En Línea · multiversolabs.space';
+        })
+        .catch(() => {
+          connectionStatus.textContent = '● Modo Local · Sincronizado';
+        });
+    }
+
+    function pollFromNetwork() {
+      const room = getRoom();
+      const channel = encodeURIComponent('multiversochat-space-' + room);
+      fetch('https://ps.pndsn.com/v2/subscribe/sub-c-00000000-0000-0000-0000-000000000000/' + channel + '/0?tt=' + lastTimetoken)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data && data.t && data.t.t) {
+            lastTimetoken = String(data.t.t);
+          }
+          if (data && Array.isArray(data.m)) {
+            let changed = false;
+            data.m.forEach(packet => {
+              const incoming = packet && packet.d ? packet.d : null;
+              if (incoming && incoming.id && incoming.senderId !== clientId) {
+                if (appendMessageToHistory(room, incoming)) changed = true;
+              }
+            });
+            if (changed) renderRoom(room);
+          }
+        })
+        .catch(() => {});
+    }
+
+    setInterval(pollFromNetwork, 2200);
+
+    function dispatchMessage(text, imageData = null) {
+      const room = getRoom();
+      const device = (deviceInput.value || 'Dispositivo').trim();
+      localStorage.setItem('mvchat_device_name', device);
+      localStorage.setItem('mvchat_active_room', room);
+
+      const msg = {
+        id: 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        senderId: clientId,
+        device: device,
+        room: room,
+        domain: 'multiversolabs.space',
+        text: text,
+        imageData: imageData,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      appendMessageToHistory(room, msg);
+      renderRoom(room);
+      if (bc) bc.postMessage(msg);
+      publishToNetwork(room, msg);
+    }
+
+    composerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = (messageInput.value || '').trim();
+      if (!text) return;
+      dispatchMessage(text, null);
+      messageInput.value = '';
+    });
+
+    imageAttachInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          // Redimensionar ligeramente para transferencia ágil entre Tablet y Celular
+          const maxW = 420;
+          const scale = Math.min(1, maxW / img.width);
+          const c = document.createElement('canvas');
+          c.width = Math.round(img.width * scale);
+          c.height = Math.round(img.height * scale);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          const compressed = c.toDataURL('image/jpeg', 0.65);
+          dispatchMessage(file.name, compressed);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+      imageAttachInput.value = '';
+    });
+
+    function switchRoom(newRoom) {
+      const clean = (newRoom || 'multiversochat-principal').trim().replace(/[^a-zA-Z0-9_-]/g, '-') || 'multiversochat-principal';
+      roomInput.value = clean;
+      localStorage.setItem('mvchat_active_room', clean);
+      setupLocalBroadcast(clean);
+      renderRoom(clean);
+    }
+
+    roomInput.addEventListener('change', () => switchRoom(roomInput.value));
+    deviceInput.addEventListener('change', () => {
+      localStorage.setItem('mvchat_device_name', (deviceInput.value || 'Dispositivo').trim());
+    });
+
+    document.querySelectorAll('.room-pill').forEach(pill => {
+      pill.addEventListener('click', () => switchRoom(pill.dataset.room));
+    });
+
+    copyRoomUrlBtn.addEventListener('click', () => {
+      const shareUrl = getShareableRoomUrl(getRoom());
+      navigator.clipboard?.writeText(shareUrl).catch(() => {});
+      const prev = copyRoomUrlBtn.textContent;
+      copyRoomUrlBtn.textContent = '✓ Enlace Copiado';
+      setTimeout(() => { copyRoomUrlBtn.textContent = prev; }, 1600);
+    });
+
+    clearChatBtn.addEventListener('click', () => {
+      const room = getRoom();
+      localStorage.removeItem(storageKey(room));
+      renderRoom(room);
+    });
+
+    setupLocalBroadcast(initialRoom);
+    renderRoom(initialRoom);
+  </script>
+</body>
+</html>
