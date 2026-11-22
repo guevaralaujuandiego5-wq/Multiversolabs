@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Corredor en U - Plantas, Rivales y Redes</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #10101e; font-family: sans-serif; }
+    #info {
+      position: absolute; top: 20px; left: 20px; color: #fff;
+      background: rgba(0, 0, 0, 0.72); padding: 14px; border-radius: 10px;
+      pointer-events: none; line-height: 1.5; font-size: 13px;
+    }
+    #hud {
+      position: absolute; top: 20px; right: 20px; color: #00ffcc;
+      background: rgba(0, 0, 0, 0.72); padding: 12px 16px; border-radius: 10px;
+      font-size: 13px; text-align: right; line-height: 1.5;
+    }
+    #actionBar {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    }
+    .action-btn {
+      background: rgba(20, 25, 40, 0.9); color: #fff; border: 2px solid #00ffcc;
+      padding: 9px 14px; border-radius: 8px; font-weight: bold; cursor: pointer;
+      font-size: 13px; transition: transform 0.1s, background 0.15s;
+    }
+    .action-btn:active { transform: scale(0.95); background: #00ffcc; color: #111; }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <strong>Controles:</strong><br>
+    ⬅️/A y ➡️/D : Carril &nbsp;|&nbsp; Q / E : Voltereta lateral<br>
+    ⬆️/W/Espacio : Saltar &nbsp;|&nbsp; ⬇️/S : Agacharse<br>
+    Z/X : Deslizarse &nbsp;|&nbsp; C : Cámara &nbsp;|&nbsp; R : Reiniciar
+  </div>
+  <div id="hud">
+    Vidas: <span id="livesStatus">3</span> &nbsp;|&nbsp; Esquivados: <span id="scoreStatus">0</span><br>
+    Sector: <span id="laneStatus">0 (Centro)</span><br>
+    Acción: <span id="actionStatus">Corriendo</span>
+  </div>
+
+  <div id="actionBar">
+    <button class="action-btn" onclick="triggerSideFlip(-1)">Voltereta Izq. (Q)</button>
+    <button class="action-btn" onclick="triggerSideFlip(1)">Voltereta Der. (E)</button>
+    <button class="action-btn" onclick="triggerSlide()">Deslizarse (Z/X)</button>
+    <button class="action-btn" onclick="frontView = !frontView">Cámara (C)</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x10101e, 24, 92);
+
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+    let frontView = false;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.72));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    dirLight.position.set(10, 22, 14);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    // --- CORREDOR EN U ---
+    const LANE_WIDTH = 2.0;
+    const STEP_HEIGHT = 1.15;
+
+    function getBaseHeightForLane(laneIndex) {
+      const absLane = Math.abs(laneIndex);
+      if (absLane <= 1) return 0;
+      return (absLane - 1) * STEP_HEIGHT;
+    }
+
+    const trackGroup = new THREE.Group();
+    scene.add(trackGroup);
+
+    const segmentLength = 4;
+    const numSegments = 24;
+    const segments = [];
+
+    const floorMatA = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.7 });
+    const floorMatB = new THREE.MeshStandardMaterial({ color: 0x26323d, roughness: 0.7 });
+    const provPathMat1 = new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.45 });
+    const provPathMat2 = new THREE.MeshStandardMaterial({ color: 0x34495e, roughness: 0.45 });
+    const provDeckMat = new THREE.MeshStandardMaterial({ color: 0xffa502, emissive: 0x332000, roughness: 0.35 });
+    const provEdgeMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x3742fa, roughness: 0.4 });
+
+    for (let s = 0; s < numSegments; s++) {
+      const seg = new THREE.Group();
+      seg.position.z = -s * segmentLength + 12;
+
+      const mat = s % 2 === 0 ? floorMatA : floorMatB;
+      const centerFloor = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH * 3, 0.5, segmentLength), mat);
+      centerFloor.position.y = -0.25;
+      centerFloor.receiveShadow = true;
+      seg.add(centerFloor);
+
+      [-1, 1].forEach(side => {
+        const line = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, segmentLength), provEdgeMat);
+        line.position.set(side * LANE_WIDTH * 0.5, 0.01, 0);
+        seg.add(line);
+      });
+
+      [-1, 1].forEach(side => {
+        const step1 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH, STEP_HEIGHT + 0.5, segmentLength), provPathMat1);
+        step1.position.set(side * LANE_WIDTH * 2, (STEP_HEIGHT - 0.5) / 2, 0);
+        step1.receiveShadow = true;
+
+        const deck1 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH - 0.25, 0.08, segmentLength * 0.72), provDeckMat);
+        deck1.position.set(side * LANE_WIDTH * 2, STEP_HEIGHT + 0.02, 0);
+
+        const edge1 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, segmentLength), provEdgeMat);
+        edge1.position.set(side * (LANE_WIDTH * 1.5), STEP_HEIGHT + 0.03, 0);
+
+        const step2 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH, STEP_HEIGHT * 2 + 0.5, segmentLength), provPathMat2);
+        step2.position.set(side * LANE_WIDTH * 3, (STEP_HEIGHT * 2 - 0.5) / 2, 0);
+        step2.receiveShadow = true;
+
+        const deck2 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH - 0.25, 0.08, segmentLength * 0.72), provDeckMat);
+        deck2.position.set(side * LANE_WIDTH * 3, STEP_HEIGHT * 2 + 0.02, 0);
+
+        const edge2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, segmentLength), provEdgeMat);
+        edge2.position.set(side * (LANE_WIDTH * 2.5), STEP_HEIGHT * 2 + 0.03, 0);
+
+        const outerWall = new THREE.Mesh(new THREE.BoxGeometry(0.45, 4.8, segmentLength), wallMat);
+        outerWall.position.set(side * (LANE_WIDTH * 3.5 + 0.22), STEP_HEIGHT * 2 + 1.9, 0);
+
+        seg.add(step1, deck1, edge1, step2, deck2, edge2, outerWall);
+      });
+
+      trackGroup.add(seg);
+      segments.push(seg);
+    }
+
+    // --- AGENTE 3D ---
+    const agent = new THREE.Group();
+    scene.add(agent);
+
+    const pivotBody = new THREE.Group();
+    pivotBody.position.y = 1.1;
+    agent.add(pivotBody);
+
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xffcca8, roughness: 0.45 });
+    const hairMat = new THREE.MeshStandardMaterial({ color: 0x2d1e17, roughness: 0.8 });
+    const capMat = new THREE.MeshStandardMaterial({ color: 0xff4757, roughness: 0.4 });
+    const capVisorMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
+    const jacketMainMat = new THREE.MeshStandardMaterial({ color: 0x1e90ff, roughness: 0.45 });
+    const jacketDarkMat = new THREE.MeshStandardMaterial({ color: 0x0c2461, roughness: 0.5 });
+    const zipperMat = new THREE.MeshStandardMaterial({ color: 0xdcdde1, metalness: 0.7, roughness: 0.2 });
+    const backpackMat = new THREE.MeshStandardMaterial({ color: 0x2f3542, roughness: 0.6 });
+    const gloveMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x2f3640, roughness: 0.65 });
+    const kneePadMat = new THREE.MeshStandardMaterial({ color: 0xffa502, roughness: 0.4 });
+    const shoeUpperMat = new THREE.MeshStandardMaterial({ color: 0xff4757, roughness: 0.35 });
+    const shoeSoleMat = new THREE.MeshStandardMaterial({ color: 0xf1f2f6, roughness: 0.6 });
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+    const mouthMat = new THREE.MeshBasicMaterial({ color: 0x2c0e0e });
+
+    const torsoGroup = new THREE.Group();
+    pivotBody.add(torsoGroup);
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.94, 1.0, 0.56), jacketMainMat);
+    torso.castShadow = true;
+    const chestPanel = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.96, 0.58), jacketDarkMat);
+    const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.98, 0.6), zipperMat);
+    const collar = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.18, 0.62), jacketDarkMat);
+    collar.position.y = 0.54;
+    const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.72, 0.26), backpackMat);
+    backpack.position.set(0, 0.04, 0.38);
+    torsoGroup.add(torso, chestPanel, zipper, collar, backpack);
+
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 1.05, 0);
+    torsoGroup.add(headGroup);
+
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.88, 0.88), skinMat);
+    head.castShadow = true;
+    const hairBack = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.55, 0.35), hairMat);
+    hairBack.position.set(0, 0.15, 0.32);
+    const capCrown = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.34, 0.94), capMat);
+    capCrown.position.set(0, 0.44, 0);
+    const capVisor = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.08, 0.48), capVisorMat);
+    capVisor.position.set(0, 0.31, -0.58);
+    headGroup.add(head, hairBack, capCrown, capVisor);
+
+    const earGeo = new THREE.BoxGeometry(0.16, 0.28, 0.2);
+    const leftEar = new THREE.Mesh(earGeo, skinMat);
+    leftEar.position.set(-0.54, -0.02, 0);
+    const rightEar = new THREE.Mesh(earGeo, skinMat);
+    rightEar.position.set(0.54, -0.02, 0);
+    headGroup.add(leftEar, rightEar);
+
+    function createEye(xPos) {
+      const eyeGroup = new THREE.Group();
+      eyeGroup.position.set(xPos, 0.06, -0.45);
+      const sclera = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.04), eyeWhiteMat);
+      const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.11, 0.05), pupilMat);
+      pupil.position.z = -0.01;
+      eyeGroup.add(sclera, pupil);
+      headGroup.add(eyeGroup);
+      return { eyeGroup, sclera, pupil };
+    }
+    const leftEye = createEye(-0.22);
+    const rightEye = createEye(0.22);
+
+    const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.08, 0.05), mouthMat);
+    mouth.position.set(0, -0.24, -0.45);
+    headGroup.add(mouth);
+
+    function createArm(xPos) {
+      const shoulder = new THREE.Group();
+      shoulder.position.set(xPos, 0.42, 0);
+      const shoulderPad = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.36), jacketDarkMat);
+      shoulderPad.position.y = -0.05;
+      const sleeve = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.34, 0.32), jacketMainMat);
+      sleeve.position.y = -0.24;
+      const forearm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.34, 0.24), skinMat);
+      forearm.position.y = -0.52;
+      const glove = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.18, 0.27), gloveMat);
+      glove.position.y = -0.72;
+      shoulder.add(shoulderPad, sleeve, forearm, glove);
+      torsoGroup.add(shoulder);
+      return shoulder;
+    }
+    const leftArm = createArm(-0.67);
+    const rightArm = createArm(0.67);
+
+    function createLeg(xPos) {
+      const hip = new THREE.Group();
+      hip.position.set(xPos, -0.48, 0);
+      const pantLeg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.48, 0.38), pantsMat);
+      pantLeg.position.y = -0.22;
+      const kneePad = new THREE.Mesh(new THREE.BoxGeometry(0.37, 0.15, 0.12), kneePadMat);
+      kneePad.position.set(0, -0.24, -0.17);
+      const shoeGroup = new THREE.Group();
+      shoeGroup.position.set(0, -0.52, -0.08);
+      const sole = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.09, 0.64), shoeSoleMat);
+      sole.position.y = -0.05;
+      const upper = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.16, 0.6), shoeUpperMat);
+      upper.position.y = 0.06;
+      const toeCap = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.11, 0.18), shoeSoleMat);
+      toeCap.position.set(0, 0.02, -0.24);
+      shoeGroup.add(sole, upper, toeCap);
+      hip.add(pantLeg, kneePad, shoeGroup);
+      pivotBody.add(hip);
+      return hip;
+    }
+    const leftLeg = createLeg(-0.25);
+    const rightLeg = createLeg(0.25);
+
+    const slideTrail = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.1, 2.2),
+      new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.0, side: THREE.DoubleSide })
+    );
+    slideTrail.rotation.x = -Math.PI / 2;
+    slideTrail.position.set(0, 0.02, 0.6);
+    agent.add(slideTrail);
+
+    // --- PLANTAS, PERSONAJES RIVALES Y REDES ---
+    const obstaclesGroup = new THREE.Group();
+    scene.add(obstaclesGroup);
+
+    const potMat = new THREE.MeshStandardMaterial({ color: 0xd35400, roughness: 0.65 });
+    const stemMat = new THREE.MeshStandardMaterial({ color: 0x27ae60, roughness: 0.5 });
+    const leafMatA = new THREE.MeshStandardMaterial({ color: 0x2ecc71, roughness: 0.45 });
+    const leafMatB = new THREE.MeshStandardMaterial({ color: 0x1abc9c, roughness: 0.45 });
+    const flowerMat = new THREE.MeshStandardMaterial({ color: 0xfeca57, emissive: 0x332200, roughness: 0.4 });
+
+    function createPlantMesh() {
+      const plant = new THREE.Group();
+      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.24, 0.45, 8), potMat);
+      pot.position.y = 0.225;
+      pot.castShadow = true;
+
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.65, 6), stemMat);
+      stem.position.y = 0.65;
+
+      const leaf1 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.24), leafMatA);
+      leaf1.position.set(0.26, 0.72, 0);
+      leaf1.rotation.z = -0.45;
+
+      const leaf2 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.24), leafMatB);
+      leaf2.position.set(-0.26, 0.82, 0);
+      leaf2.rotation.z = 0.45;
+
+      const leaf3 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.55), leafMatA);
+      leaf3.position.set(0, 0.92, 0.22);
+      leaf3.rotation.x = 0.4;
+
+      const bud = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), flowerMat);
+      bud.position.y = 1.05;
+
+      plant.add(pot, stem, leaf1, leaf2, leaf3, bud);
+      return plant;
+    }
+
+    // Decoración de plantas laterales en el corredor
+    for (let i = 0; i < 14; i++) {
+      [-1, 1].forEach(side => {
+        const sidePlant = createPlantMesh();
+        const pLane = side * (i % 2 === 0 ? 2 : 3);
+        sidePlant.position.set(
+          pLane * LANE_WIDTH + (side * 0.45),
+          getBaseHeightForLane(pLane),
+          -i * 6.5 + 6
+        );
+        sidePlant.userData.isSidePlant = true;
+        sidePlant.userData.phase = i * 0.7;
+        obstaclesGroup.add(sidePlant);
+      });
+    }
+
+    const RIVAL_COLORS = [0xff4757, 0xa55eea, 0xff9f43, 0x00d2d3, 0xff6b81];
+
+    function createColoredCharacter(colorHex) {
+      const charGroup = new THREE.Group();
+      const bodyMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.4 });
+      const trimMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+      const visorMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.95, 0.52), bodyMat);
+      body.position.y = 0.95;
+      body.castShadow = true;
+
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.18, 0.56), trimMat);
+      stripe.position.y = 1.02;
+
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.68, 0.72), bodyMat);
+      head.position.y = 1.8;
+      head.castShadow = true;
+
+      const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.05), visorMat);
+      eyeL.position.set(-0.18, 1.82, 0.37);
+      const eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.05), visorMat);
+      eyeR.position.set(0.18, 1.82, 0.37);
+
+      const armL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.65, 0.24), bodyMat);
+      armL.position.set(-0.56, 0.95, 0);
+      const armR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.65, 0.24), bodyMat);
+      armR.position.set(0.56, 0.95, 0);
+
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.5, 0.3), trimMat);
+      legL.position.set(-0.22, 0.25, 0);
+      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.5, 0.3), trimMat);
+      legR.position.set(0.22, 0.25, 0);
+
+      charGroup.add(body, stripe, head, eyeL, eyeR, armL, armR, legL, legR);
+      return charGroup;
+    }
+
+    function createNetMesh(colorHex = 0xff3838) {
+      const netGroup = new THREE.Group();
+      const wireMat = new THREE.MeshBasicMaterial({ color: colorHex, wireframe: true });
+      const frameMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.35 });
+
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.15, 0.35), wireMat);
+      mesh.position.y = 0.85;
+
+      const topBar = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.08, 0.12), frameMat);
+      topBar.position.y = 1.42;
+
+      const botBar = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.08, 0.12), frameMat);
+      botBar.position.y = 0.28;
+
+      netGroup.add(mesh, topBar, botBar);
+      return netGroup;
+    }
+
+    const activeThreats = [];
+    let spawnTimer = 0.9;
+    let lives = 3;
+    let score = 0;
+    let invulnTimer = 0;
+
+    function spawnThreat() {
+      const possibleLanes = [-2, -1, 0, 1, 2];
+      const chosenLane = possibleLanes[Math.floor(Math.random() * possibleLanes.length)];
+      const baseY = getBaseHeightForLane(chosenLane);
+      const colorHex = RIVAL_COLORS[Math.floor(Math.random() * RIVAL_COLORS.length)];
+
+      // 0: Planta obstáculo, 1: Personaje rival de color, 2: Red que ataca hacia el jugador
+      const kind = Math.floor(Math.random() * 3);
+
+      let obj;
+      let speedZ = 0.26;
+      let yOffset = 0;
+      let dodgeHint = 'Salta o cambia de carril';
+
+      if (kind === 0) {
+        obj = createPlantMesh();
+        obj.scale.setScalar(1.15);
+        dodgeHint = 'Salta o esquiva la planta';
+      } else if (kind === 1) {
+        obj = createColoredCharacter(colorHex);
+        speedZ = 0.34;
+        dodgeHint = '¡Esquiva al rival!';
+      } else {
+        obj = createNetMesh(colorHex);
+        speedZ = 0.44;
+        // Alterna entre red baja (saltar) y red media/alta (agacharse/deslizarse)
+        const highNet = Math.random() > 0.5;
+        yOffset = highNet ? 0.55 : 0.0;
+        dodgeHint = highNet ? '¡Agáchate o deslízate bajo la red!' : '¡Salta sobre la red!';
+      }
+
+      obj.position.set(chosenLane * LANE_WIDTH, baseY + yOffset, -68);
+      obstaclesGroup.add(obj);
+
+      activeThreats.push({
+        mesh: obj,
+        kind,
+        lane: chosenLane,
+        baseY,
+        yOffset,
+        speedZ,
+        dodgeHint,
+        passed: false,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+
+    // --- CONTROLES Y ESTADO ---
+    let lane = 0;
+    let lastMoveDir = 0;
+    let currentGroundY = 0;
+    let jumpOffsetY = 0;
+    let velocityY = 0;
+    let isJumping = false;
+    let isCrouching = false;
+    let isFlipping = false;
+    let flipDir = 0;
+    let flipProgress = 0;
+    let isSliding = false;
+    let slideTimer = 0;
+    let bumpFeedback = 0;
+    let runCycle = 0;
+
+    let blinkTimer = 2.4;
+    let blinkDuration = 0;
+
+    function resetGame() {
+      lives = 3;
+      score = 0;
+      invulnTimer = 0;
+      lane = 0;
+      jumpOffsetY = 0;
+      velocityY = 0;
+      isJumping = false;
+      isSliding = false;
+      isFlipping = false;
+      for (let i = activeThreats.length - 1; i >= 0; i--) {
+        obstaclesGroup.remove(activeThreats[i].mesh);
+        activeThreats.splice(i, 1);
+      }
+      document.getElementById('livesStatus').textContent = lives;
+      document.getElementById('scoreStatus').textContent = score;
+    }
+
+    function triggerSlide() {
+      if (isSliding || isFlipping) return;
+      isSliding = true;
+      slideTimer = 0.65;
+      if (isJumping) velocityY = -0.35;
+    }
+
+    function triggerSideFlip(dir) {
+      if (isFlipping) return;
+      isFlipping = true;
+      isSliding = false;
+      flipProgress = 0;
+      flipDir = dir;
+      lane = THREE.MathUtils.clamp(lane + dir, -3, 3);
+      velocityY = 0.34;
+      isJumping = true;
+    }
+
+    function moveLane(dir) {
+      lastMoveDir = dir;
+      const nextLane = THREE.MathUtils.clamp(lane + dir, -3, 3);
+      if (nextLane === lane) return;
+
+      const nextGround = getBaseHeightForLane(nextLane);
+      const needsFlipToClimb = nextGround > currentGroundY + 0.2;
+
+      if (needsFlipToClimb && !isFlipping) {
+        bumpFeedback = dir * 0.35;
+        return;
+      }
+      lane = nextLane;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (e.key === 'ArrowLeft' || key === 'a') moveLane(-1);
+      if (e.key === 'ArrowRight' || key === 'd') moveLane(1);
+      if (key === 'q') triggerSideFlip(-1);
+      if (key === 'e') triggerSideFlip(1);
+      if (e.key === 'Shift') triggerSideFlip(lastMoveDir !== 0 ? lastMoveDir : 0);
+
+      if ((e.key === 'ArrowUp' || key === 'w' || key === ' ') && !isJumping && !isCrouching) {
+        isSliding = false;
+        velocityY = 0.30;
+        isJumping = true;
+      }
+
+      if (e.key === 'ArrowDown' || key === 's') isCrouching = true;
+      if (key === 'z' || key === 'x') triggerSlide();
+      if (key === 'c') frontView = !frontView;
+      if (key === 'r') resetGame();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      const key = e.key.toLowerCase();
+      if (e.key === 'ArrowDown' || key === 's') isCrouching = false;
+    });
+
+    function updateBlink(dt) {
+      if (blinkDuration > 0) {
+        blinkDuration -= dt;
+        leftEye.sclera.scale.y = 0.08;
+        rightEye.sclera.scale.y = 0.08;
+        return;
+      }
+      blinkTimer -= dt;
+      if (blinkTimer <= 0) {
+        blinkDuration = 0.14;
+        blinkTimer = 2.2 + Math.random() * 2.5;
+      } else {
+        leftEye.sclera.scale.y = THREE.MathUtils.lerp(leftEye.sclera.scale.y, 1.0, 0.25);
+        rightEye.sclera.scale.y = THREE.MathUtils.lerp(rightEye.sclera.scale.y, 1.0, 0.25);
+      }
+    }
+
+    let lastTime = performance.now();
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
+
+      if (invulnTimer > 0) {
+        invulnTimer -= dt;
+        agent.visible = Math.floor(invulnTimer * 18) % 2 === 0;
+      } else {
+        agent.visible = true;
+      }
+
+      const baseSpeed = 0.26;
+      const currentSpeed = isSliding ? baseSpeed * 1.65 : baseSpeed;
+
+      for (let i = 0; i < segments.length; i++) {
+        segments[i].position.z += currentSpeed;
+        if (segments[i].position.z > 16) {
+          segments[i].position.z -= numSegments * segmentLength;
+        }
+      }
+
+      // Animar plantas laterales
+      obstaclesGroup.children.forEach(child => {
+        if (child.userData.isSidePlant) {
+          child.position.z += currentSpeed;
+          if (child.position.z > 16) child.position.z -= 91;
+          child.rotation.z = Math.sin(now * 0.003 + child.userData.phase) * 0.06;
+        }
+      });
+
+      // Generar y mover amenazas (plantas, personajes de colores y redes)
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        spawnThreat();
+        spawnTimer = Math.max(0.75, 1.45 - Math.min(0.55, score * 0.015));
+      }
+
+      const playerLow = isSliding || (isCrouching && !isJumping);
+      const playerBottomY = agent.position.y;
+      const playerTopY = agent.position.y + (playerLow ? 0.85 : 1.85);
+
+      let activeHint = '';
+
+      for (let i = activeThreats.length - 1; i >= 0; i--) {
+        const t = activeThreats[i];
+        t.phase += dt * 7;
+
+        if (t.kind === 2) {
+          // Red que avanza atacando con ligera oscilación
+          t.mesh.position.z += t.speedZ + currentSpeed * 0.45;
+          t.mesh.position.y = t.baseY + t.yOffset + Math.sin(t.phase) * 0.12;
+        } else if (t.kind === 1) {
+          // Personaje rival que corre hacia el jugador
+          t.mesh.position.z += t.speedZ + currentSpeed * 0.35;
+          t.mesh.position.y = t.baseY + Math.abs(Math.sin(t.phase)) * 0.14;
+        } else {
+          // Planta en el camino
+          t.mesh.position.z += currentSpeed;
+          t.mesh.rotation.z = Math.sin(t.phase * 0.6) * 0.08;
+        }
+
+        const distZ = Math.abs(t.mesh.position.z - agent.position.z);
+        const distX = Math.abs(t.mesh.position.x - agent.position.x);
+
+        if (t.mesh.position.z > -14 && t.mesh.position.z < 2 && distX < 1.3) {
+          activeHint = t.dodgeHint;
+        }
+
+        // Comprobar colisión
+        const threatMinY = t.mesh.position.y;
+        const threatMaxY = t.mesh.position.y + (t.kind === 2 ? 1.4 : 1.65);
+
+        if (distZ < 0.85 && distX < 0.82 && invulnTimer <= 0 && !isFlipping) {
+          const overlapsY = playerTopY > threatMinY + 0.15 && playerBottomY < threatMaxY - 0.15;
+          if (overlapsY) {
+            invulnTimer = 1.25;
+            lives = Math.max(0, lives - 1);
+            document.getElementById('livesStatus').textContent = lives;
+            bumpFeedback = (agent.position.x >= t.mesh.position.x ? 1 : -1) * 0.45;
+            obstaclesGroup.remove(t.mesh);
+            activeThreats.splice(i, 1);
+            continue;
+          }
+        }
+
+        if (!t.passed && t.mesh.position.z > agent.position.z + 0.8) {
+          t.passed = true;
+          score += 1;
+          document.getElementById('scoreStatus').textContent = score;
+        }
+
+        if (t.mesh.position.z > 18) {
+          obstaclesGroup.remove(t.mesh);
+          activeThreats.splice(i, 1);
+        }
+      }
+
+      bumpFeedback = THREE.MathUtils.lerp(bumpFeedback, 0, 0.2);
+
+      const targetX = lane * LANE_WIDTH + bumpFeedback;
+      const deltaX = targetX - agent.position.x;
+      agent.position.x += deltaX * 0.18;
+
+      const targetGroundY = getBaseHeightForLane(lane);
+      currentGroundY = THREE.MathUtils.lerp(currentGroundY, targetGroundY, 0.22);
+
+      jumpOffsetY += velocityY;
+      if (jumpOffsetY > 0) {
+        velocityY -= 0.016;
+      } else {
+        jumpOffsetY = 0;
+        velocityY = 0;
+        isJumping = false;
+      }
+
+      agent.position.y = currentGroundY + jumpOffsetY;
+
+      const sectorName = lane === 0 ? 'Centro' : (Math.abs(lane) === 1 ? 'Borde Centro' : `Camino Lateral ${lane > 0 ? 'Der' : 'Izq'} (${Math.abs(lane) - 1})`);
+      document.getElementById('laneStatus').textContent = `${lane} - ${sectorName}`;
+
+      const targetZ = isSliding ? -1.15 : 0;
+      agent.position.z = THREE.MathUtils.lerp(agent.position.z, targetZ, 0.2);
+
+      agent.rotation.z = -deltaX * 0.2;
+      agent.rotation.y = -deltaX * 0.28;
+
+      const lookX = THREE.MathUtils.clamp(deltaX * 0.05, -0.045, 0.045);
+      leftEye.pupil.position.x = lookX;
+      rightEye.pupil.position.x = lookX;
+
+      const actionLabel = document.getElementById('actionStatus');
+
+      if (lives <= 0) {
+        actionLabel.textContent = '¡Sin vidas! Pulsa R para reiniciar';
+      } else if (isFlipping) {
+        actionLabel.textContent = flipDir === 0 ? 'Voltereta frontal' : (flipDir < 0 ? 'Voltereta Izquierda' : 'Voltereta Derecha');
+        flipProgress += dt * 3.2;
+        pivotBody.rotation.x = -flipProgress * Math.PI * 2;
+        pivotBody.rotation.z = -flipDir * Math.sin(flipProgress * Math.PI) * 0.8;
+        leftArm.rotation.x = -2.4;
+        rightArm.rotation.x = -2.4;
+        leftLeg.rotation.x = 1.1;
+        rightLeg.rotation.x = 1.1;
+        mouth.scale.set(0.8, 2.2, 1);
+        slideTrail.material.opacity = 0;
+        if (flipProgress >= 1) {
+          isFlipping = false;
+          flipProgress = 0;
+          pivotBody.rotation.x = 0;
+          pivotBody.rotation.z = 0;
+        }
+      } else if (isSliding) {
+        actionLabel.textContent = activeHint || 'Deslizamiento';
+        slideTimer -= dt;
+        slideTrail.material.opacity = 0.45;
+        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 0.42, 0.35);
+        pivotBody.rotation.x = THREE.MathUtils.lerp(pivotBody.rotation.x, 0.85, 0.35);
+        pivotBody.rotation.z = 0;
+        torsoGroup.rotation.x = 0;
+        headGroup.rotation.x = -0.65;
+        rightLeg.rotation.x = THREE.MathUtils.lerp(rightLeg.rotation.x, 0.75, 0.35);
+        leftLeg.rotation.x = THREE.MathUtils.lerp(leftLeg.rotation.x, -1.35, 0.35);
+        leftArm.rotation.x = -0.9;
+        rightArm.rotation.x = -0.5;
+        mouth.scale.set(1.3, 0.8, 1);
+        if (slideTimer <= 0) isSliding = false;
+      } else if (isCrouching && !isJumping) {
+        actionLabel.textContent = activeHint || 'Agachado';
+        slideTrail.material.opacity = 0;
+        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 0.65, 0.25);
+        pivotBody.rotation.x = 0;
+        pivotBody.rotation.z = 0;
+        torsoGroup.rotation.x = THREE.MathUtils.lerp(torsoGroup.rotation.x, -0.55, 0.25);
+        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, 0.45, 0.25);
+        leftArm.rotation.x = -0.8;
+        rightArm.rotation.x = -0.8;
+        leftLeg.rotation.x = 0.9;
+        rightLeg.rotation.x = 0.9;
+        mouth.scale.set(1.2, 0.7, 1);
+      } else if (isJumping) {
+        actionLabel.textContent = activeHint || 'Saltando';
+        slideTrail.material.opacity = 0;
+        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 1.1, 0.2);
+        pivotBody.rotation.x = 0;
+        pivotBody.rotation.z = 0;
+        torsoGroup.rotation.x = -0.1;
+        headGroup.rotation.x = 0.15;
+        leftArm.rotation.x = Math.PI * 0.85;
+        rightArm.rotation.x = Math.PI * 0.85;
+        leftLeg.rotation.x = 0.65;
+        rightLeg.rotation.x = -0.45;
+        mouth.scale.set(0.75, 2.6, 1);
+      } else {
+        actionLabel.textContent = bumpFeedback !== 0 ? '¡Usa voltereta (Q/E)!' : (activeHint || 'Corriendo');
+        slideTrail.material.opacity = THREE.MathUtils.lerp(slideTrail.material.opacity, 0, 0.2);
+        runCycle += 0.22;
+        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 1.1 + Math.abs(Math.cos(runCycle)) * 0.06, 0.25);
+        pivotBody.rotation.x = 0;
+        pivotBody.rotation.z = 0;
+        torsoGroup.rotation.x = 0;
+        headGroup.rotation.x = 0;
+        leftArm.rotation.x = Math.sin(runCycle) * 0.7;
+        rightArm.rotation.x = -Math.sin(runCycle) * 0.7;
+        leftLeg.rotation.x = -Math.sin(runCycle) * 0.8;
+        rightLeg.rotation.x = Math.sin(runCycle) * 0.8;
+        mouth.scale.set(1, 1, 1);
+      }
+
+      updateBlink(dt);
+
+      if (frontView) {
+        camera.position.lerp(new THREE.Vector3(agent.position.x * 0.6, agent.position.y + 2.6, -7.2), 0.12);
+        camera.lookAt(agent.position.x, agent.position.y + 1.0, 0);
+      } else {
+        const camX = agent.position.x * 0.5;
+        const camY = 5.2 + agent.position.y * 0.75;
+        const camZ = 9.4 + Math.abs(agent.position.x) * 0.25 + jumpOffsetY * 0.35;
+        camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.12);
+        camera.lookAt(agent.position.x * 0.4, agent.position.y + 1.2, -8);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
