@@ -1,777 +1,1650 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Corredor en U - Plantas, Rivales y Redes</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoLabs — Malla Zodiacal (Capricornio), Tierra, Luna, Sol y Fuego</title>
   <style>
-    body { margin: 0; overflow: hidden; background: #10101e; font-family: sans-serif; }
-    #info {
-      position: absolute; top: 20px; left: 20px; color: #fff;
-      background: rgba(0, 0, 0, 0.72); padding: 14px; border-radius: 10px;
-      pointer-events: none; line-height: 1.5; font-size: 13px;
+    :root {
+      --bg-dark: #04060d;
+      --glass-bg: rgba(15, 23, 42, 0.78);
+      --glass-border: rgba(56, 189, 248, 0.28);
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-gold: #fbbf24;
+      --accent-orange: #f97316;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { overflow: hidden; background: var(--bg-dark); color: var(--text-main); touch-action: none; transition: background 0.6s ease; }
+    body.modo-dia { background: #0c2340; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 24px; background: var(--glass-bg); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .brand-cluster { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-main); }
+    .cube-viewport { width: 28px; height: 28px; perspective: 200px; }
+    .cube-sim { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; animation: rotC 12s linear infinite; }
+    .cube-sim span { position: absolute; inset: 0; border: 1.5px solid var(--accent-cyan); background: rgba(56, 189, 248, 0.16); }
+    .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(14px); }
+    .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(14px); }
+    .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(14px); }
+    .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(14px); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(14px); border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.25); }
+    .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(14px); }
+    @keyframes rotC { to { transform: rotateX(360deg) rotateY(360deg); } }
+
     #hud {
-      position: absolute; top: 20px; right: 20px; color: #00ffcc;
-      background: rgba(0, 0, 0, 0.72); padding: 12px 16px; border-radius: 10px;
-      font-size: 13px; text-align: right; line-height: 1.5;
+      position: absolute; top: 74px; left: 20px; z-index: 100; width: 370px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 14px; padding: 16px; backdrop-filter: blur(14px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     }
-    #actionBar {
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    #hud h3 { font-size: 0.92rem; color: var(--accent-cyan); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-muted); }
+    .val { font-weight: 700; color: var(--text-main); }
+    .holo-bar { height: 7px; border-radius: 99px; margin-top: 8px; background: linear-gradient(90deg, #38bdf8, #ef4444, #f97316, #fde047, #34d399); }
+
+    #deck {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 120;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 14px 20px; max-width: 980px; width: 96%; text-align: center; backdrop-filter: blur(16px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
     }
-    .action-btn {
-      background: rgba(20, 25, 40, 0.9); color: #fff; border: 2px solid #00ffcc;
-      padding: 9px 14px; border-radius: 8px; font-weight: bold; cursor: pointer;
-      font-size: 13px; transition: transform 0.1s, background 0.15s;
+    #deck h2 { font-size: 1.0rem; color: var(--accent-cyan); margin-bottom: 4px; }
+    #deck p { font-size: 0.81rem; color: var(--text-muted); margin-bottom: 10px; line-height: 1.35; }
+    .btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      background: rgba(30, 41, 59, 0.92); color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 8px 13px; border-radius: 9px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.15s ease;
     }
-    .action-btn:active { transform: scale(0.95); background: #00ffcc; color: #111; }
+    .btn:hover { transform: translateY(-2px); border-color: var(--accent-cyan); }
+    .btn-zodiac { background: linear-gradient(135deg, #0ea5e9, #fbbf24); border: none; color: #05060d; }
+    .btn-holo { background: linear-gradient(135deg, #0284c7, #10b981); border: none; color: #fff; }
+    .btn-solar { background: linear-gradient(135deg, #f97316, #fbbf24); border: none; color: #05060d; }
+    .btn-flare { background: linear-gradient(135deg, #dc2626, #f97316); border: none; color: #fff; }
+    .btn-time { background: linear-gradient(135deg, #2563eb, #38bdf8); border: none; color: #fff; }
+    .lil-gui { top: 74px !important; right: 20px !important; --background-color: rgba(15, 23, 42, 0.9) !important; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
 </head>
 <body>
-  <div id="info">
-    <strong>Controles:</strong><br>
-    ⬅️/A y ➡️/D : Carril &nbsp;|&nbsp; Q / E : Voltereta lateral<br>
-    ⬆️/W/Espacio : Saltar &nbsp;|&nbsp; ⬇️/S : Agacharse<br>
-    Z/X : Deslizarse &nbsp;|&nbsp; C : Cámara &nbsp;|&nbsp; R : Reiniciar
-  </div>
+  <header>
+    <a href="index.html" class="brand-cluster">
+      <div class="cube-viewport"><div class="cube-sim"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      <div><strong>MULTIVERSOLABS</strong><div style="font-size:0.68rem;color:var(--text-muted);">Malla Zodiacal (Capricornio) · Tierra · Agua · Luna · Sol · Fuego</div></div>
+    </a>
+    <a href="index.html" class="btn">← Portal</a>
+  </header>
+
   <div id="hud">
-    Vidas: <span id="livesStatus">3</span> &nbsp;|&nbsp; Esquivados: <span id="scoreStatus">0</span><br>
-    Sector: <span id="laneStatus">0 (Centro)</span><br>
-    Acción: <span id="actionStatus">Corriendo</span>
+    <h3>
+      <span>♑ Malla Zodiacal & Sistema</span>
+      <span id="badge-ciclo" style="font-size:0.68rem; background:rgba(56,189,248,0.2); color:#38bdf8; padding:2px 8px; border-radius:99px;">NOCHE</span>
+    </h3>
+    <div class="row"><span>Signo Activo / Pulso:</span><span class="val" id="m-zodiaco" style="color:#fbbf24;">♑ Capricornio (Tierra) · Activo</span></div>
+    <div class="row"><span>Velocidad del Tiempo:</span><span class="val" id="m-tiempo" style="color:#fbbf24;">1.00x · Sim: 0.0s</span></div>
+    <div class="row"><span>Combustión (Etapas):</span><span class="val" id="m-fuego" style="color:#f97316;">100% · O₂ 24%</span></div>
+    <div class="row"><span>Cuerpos Celestes:</span><span class="val" id="m-celestes" style="color:#38bdf8;">900★ · 140☄ · 8 Cometas</span></div>
+    <div class="row"><span>Luna (Órbita / Giro):</span><span class="val" id="m-luna" style="color:#e2e8f0;">R = 4.6 · Síncrona (0°)</span></div>
+    <div class="row"><span>Sol (Fusión / Elevación):</span><span class="val" id="m-sol" style="color:#fbbf24;">15.0 MK · 18°</span></div>
+    <div class="row"><span>Gravedad / Giro Axial:</span><span class="val" id="m-gravedad" style="color:#34d399;">9.81 m/s² · 23.5°</span></div>
+    <div class="row"><span>Órbita / Agua H₂O:</span><span class="val" id="m-orbita" style="color:#38bdf8;">R = 7.2 · 295 K</span></div>
+    <div class="holo-bar"></div>
   </div>
 
-  <div id="actionBar">
-    <button class="action-btn" onclick="triggerSideFlip(-1)">Voltereta Izq. (Q)</button>
-    <button class="action-btn" onclick="triggerSideFlip(1)">Voltereta Der. (E)</button>
-    <button class="action-btn" onclick="triggerSlide()">Deslizarse (Z/X)</button>
-    <button class="action-btn" onclick="frontView = !frontView">Cámara (C)</button>
+  <div id="deck">
+    <h2>Malla Zodiacal Alrededor de la Tierra — Inicio: Capricornio</h2>
+    <p>Observa la malla esférica zodiacal rodeando la Tierra con los astros de Capricornio palpitando en su sector y líneas conectadas, junto con el Sol, la Luna, las moléculas de agua y los cuerpos celestes.</p>
+    <div class="btns">
+      <button class="btn btn-zodiac" onclick="ciclarSignoZodiacal()">♑ Siguiente Signo</button>
+      <button class="btn btn-time" onclick="ciclarVelocidadTiempo()">⏩ Velocidad Tiempo</button>
+      <button class="btn btn-flare" onclick="estallarCombustion()">💥 Estallido Combustión</button>
+      <button class="btn btn-solar" onclick="lanzarFugazYCometa()">☄️ Fugaz / Cometa</button>
+      <button class="btn btn-holo" onclick="alternarDiaNoche()">🌓 Noche / Día</button>
+      <button class="btn" onclick="alternarCapaAguaMolecular()">💧 Agua H₂O</button>
+      <button class="btn" onclick="alternarHolograma()">💠 Holograma</button>
+    </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x10101e, 24, 92);
+    const VELOCIDADES_TIEMPO = [0.25, 1.0, 2.5, 5.0, 10.0];
+    let idxVelTiempo = 1;
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
-    let frontView = false;
+    // Signos zodiacales comenzando por Capricornio (índice 0)
+    const SIGNOS_ZODIACALES = [
+      {
+        nombre: 'Capricornio',
+        simbolo: '♑',
+        elemento: 'Tierra',
+        sectorDeg: 270,
+        color: 0xfbbf24,
+        // Coordenadas esféricas relativas (latitud y longitud dentro del sector de Capricornio)
+        astros: [
+          { nombre: 'Deneb Algedi', lat: 0.14, lon: -0.22, mag: 1.35, fase: 0.0 },
+          { nombre: 'Dabih',        lat: 0.18, lon: -0.10, mag: 1.15, fase: 0.9 },
+          { nombre: 'Nashira',      lat: 0.06, lon: -0.02, mag: 1.10, fase: 1.7 },
+          { nombre: 'Algedi',       lat: 0.22, lon:  0.08, mag: 1.25, fase: 2.5 },
+          { nombre: 'Castra',       lat: -0.04, lon: 0.12, mag: 1.05, fase: 3.3 },
+          { nombre: 'Bos',          lat: -0.16, lon: 0.04, mag: 1.00, fase: 4.1 },
+          { nombre: 'Armus',        lat: -0.14, lon: -0.12, mag: 1.12, fase: 4.9 }
+        ],
+        enlaces: [[0,1],[1,2],[2,4],[4,5],[5,6],[6,0],[1,3]]
+      },
+      {
+        nombre: 'Acuario',
+        simbolo: '♒',
+        elemento: 'Aire',
+        sectorDeg: 300,
+        color: 0x38bdf8,
+        astros: [
+          { nombre: 'Sadalsuud', lat: 0.16, lon: -0.16, mag: 1.30, fase: 0.2 },
+          { nombre: 'Sadalmelik',lat: 0.20, lon:  0.04, mag: 1.25, fase: 1.1 },
+          { nombre: 'Skat',       lat: -0.05, lon: -0.08, mag: 1.10, fase: 2.0 },
+          { nombre: 'Ancha',      lat: -0.15, lon:  0.14, mag: 1.15, fase: 2.9 }
+        ],
+        enlaces: [[0,1],[0,2],[2,3]]
+      },
+      {
+        nombre: 'Piscis',
+        simbolo: '♓',
+        elemento: 'Agua',
+        sectorDeg: 330,
+        color: 0x34d399,
+        astros: [
+          { nombre: 'Alrescha',   lat: -0.12, lon: -0.18, mag: 1.20, fase: 0.4 },
+          { nombre: 'Kullat Nunu',lat:  0.15, lon: -0.04, mag: 1.15, fase: 1.4 },
+          { nombre: 'Torcular',   lat:  0.08, lon:  0.16, mag: 1.25, fase: 2.4 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Aries',
+        simbolo: '♈',
+        elemento: 'Fuego',
+        sectorDeg: 0,
+        color: 0xf97316,
+        astros: [
+          { nombre: 'Hamal',      lat: 0.16, lon: -0.12, mag: 1.35, fase: 0.1 },
+          { nombre: 'Sheratan',   lat: 0.10, lon:  0.02, mag: 1.15, fase: 1.2 },
+          { nombre: 'Mesarthim',  lat: 0.04, lon:  0.14, mag: 1.05, fase: 2.2 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Tauro',
+        simbolo: '♉',
+        elemento: 'Tierra',
+        sectorDeg: 30,
+        color: 0xfbbf24,
+        astros: [
+          { nombre: 'Aldebarán',  lat: 0.12, lon: -0.12, mag: 1.40, fase: 0.3 },
+          { nombre: 'Elnath',     lat: 0.22, lon:  0.10, mag: 1.20, fase: 1.5 },
+          { nombre: 'Alcyone',    lat: 0.16, lon: -0.22, mag: 1.15, fase: 2.7 }
+        ],
+        enlaces: [[0,1],[0,2]]
+      },
+      {
+        nombre: 'Géminis',
+        simbolo: '♊',
+        elemento: 'Aire',
+        sectorDeg: 60,
+        color: 0x38bdf8,
+        astros: [
+          { nombre: 'Cástor',     lat: 0.22, lon: -0.08, mag: 1.30, fase: 0.5 },
+          { nombre: 'Pólux',      lat: 0.14, lon:  0.06, mag: 1.35, fase: 1.6 },
+          { nombre: 'Alhena',     lat: -0.08, lon: -0.14, mag: 1.10, fase: 2.8 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Cáncer',
+        simbolo: '♋',
+        elemento: 'Agua',
+        sectorDeg: 90,
+        color: 0x34d399,
+        astros: [
+          { nombre: 'Acubens',    lat: -0.12, lon: -0.12, mag: 1.10, fase: 0.6 },
+          { nombre: 'Pesebre',    lat:  0.12, lon:  0.00, mag: 1.30, fase: 1.7 },
+          { nombre: 'Asellus Aus.',lat: -0.08, lon: 0.14, mag: 1.15, fase: 2.9 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Leo',
+        simbolo: '♌',
+        elemento: 'Fuego',
+        sectorDeg: 120,
+        color: 0xf97316,
+        astros: [
+          { nombre: 'Régulo',     lat: -0.06, lon: -0.18, mag: 1.40, fase: 0.2 },
+          { nombre: 'Algieba',    lat:  0.12, lon: -0.04, mag: 1.25, fase: 1.3 },
+          { nombre: 'Denébola',   lat:  0.04, lon:  0.18, mag: 1.25, fase: 2.5 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Virgo',
+        simbolo: '♍',
+        elemento: 'Tierra',
+        sectorDeg: 150,
+        color: 0xfbbf24,
+        astros: [
+          { nombre: 'Spica',      lat: -0.16, lon:  0.14, mag: 1.38, fase: 0.4 },
+          { nombre: 'Porrima',    lat:  0.06, lon: -0.04, mag: 1.15, fase: 1.6 },
+          { nombre: 'Vindemiatrix',lat: 0.18, lon: -0.16, mag: 1.10, fase: 2.7 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      },
+      {
+        nombre: 'Libra',
+        simbolo: '♎',
+        elemento: 'Aire',
+        sectorDeg: 180,
+        color: 0x38bdf8,
+        astros: [
+          { nombre: 'Zubenelgenubi',lat: -0.12, lon: -0.12, mag: 1.20, fase: 0.5 },
+          { nombre: 'Zubeneschamali',lat: 0.14, lon:  0.06, mag: 1.30, fase: 1.8 }
+        ],
+        enlaces: [[0,1]]
+      },
+      {
+        nombre: 'Escorpio',
+        simbolo: '♏',
+        elemento: 'Agua',
+        sectorDeg: 210,
+        color: 0x34d399,
+        astros: [
+          { nombre: 'Antares',    lat: -0.10, lon: -0.06, mag: 1.42, fase: 0.1 },
+          { nombre: 'Shaula',     lat: -0.22, lon:  0.16, mag: 1.25, fase: 1.2 },
+          { nombre: 'Graffias',   lat:  0.12, lon: -0.14, mag: 1.15, fase: 2.4 }
+        ],
+        enlaces: [[2,0],[0,1]]
+      },
+      {
+        nombre: 'Sagitario',
+        simbolo: '♐',
+        elemento: 'Fuego',
+        sectorDeg: 240,
+        color: 0xf97316,
+        astros: [
+          { nombre: 'Kaus Australis',lat: -0.18, lon: -0.10, mag: 1.30, fase: 0.3 },
+          { nombre: 'Nunki',      lat:  0.06, lon:  0.06, mag: 1.20, fase: 1.5 },
+          { nombre: 'Ascella',    lat: -0.08, lon:  0.18, mag: 1.15, fase: 2.6 }
+        ],
+        enlaces: [[0,1],[1,2]]
+      }
+    ];
+
+    const params = {
+      velocidadTiempo: 1.0,
+
+      // Malla zodiacal alrededor de la Tierra (inicia en Capricornio = 0)
+      indiceSigno: 0,
+      radioMallaZodiacal: 3.65,
+      frecuenciaLatidoZodiaco: 3.4,
+      intensidadMallaZodiacal: 0.9,
+
+      // Tierra, giro, órbita y gravedad
+      radioTierra: 2.6,
+      velocidadRotacion: 0.45,
+      velocidadOrbita: 0.22,
+      orbitaActiva: true,
+      radioOrbita: 7.2,
+      gravedadG: 1.0,
+      inclinacionAxialDeg: 23.5,
+      intensidadHolograma: 0.85,
+      exposicionHD: 1.2,
+
+      // Luna en órbita y giro síncrono frente a la Tierra
+      radioLuna: 0.68,
+      radioOrbitaLuna: 4.6,
+      velocidadOrbitaLuna: 0.85,
+      inclinacionOrbitaLunaDeg: 5.14,
+
+      // Componente de agua molecular
+      mostrarAguaMolecular: true,
+      moleculasOceano: 120,
+      proporcionOtrasMoleculas: 0.2,
+      tensionSuperficial: 3.1,
+      cohesionPuentes: 1.35,
+      temperaturaK: 295,
+
+      // Componente solar
+      modoDia: false,
+      distanciaSolar: 24.0,
+      radioSol: 3.3,
+      anguloElevacionDeg: 18,
+      anguloAcimutDeg: 125,
+      tasaFusion: 1.15,
+      actividadMagnetica: 0.75,
+      rotacionEcuatorial: 0.45,
+      numCeldasPlasma: 460,
+      numProminencias: 120,
+
+      // Propiedades de fuego / combustión por etapas
+      intensidadCombustion: 1.0,
+      aperturaLlama: 0.65,
+      reduccionExtincion: 0.88,
+      oxigenoPct: 24,
+      flujoTermico: 1.35,
+      concentracion: 0.55,
+      intensidadBrisa: 0.35,
+      anguloBrisaDeg: 35,
+      numAgentesFuego: 240,
+
+      // Cuerpos celestes: estrellas, fugaces, cometas y asteroides
+      numEstrellas: 900,
+      numAsteroides: 140,
+      numCometas: 8,
+      numFugaces: 10,
+      actividadCeleste: 1.0
+    };
+
+    const scene = new THREE.Scene();
+    const fogColorNoche = new THREE.Color(0x04060d);
+    const fogColorDia   = new THREE.Color(0x1d4ed8);
+    scene.fog = new THREE.FogExp2(fogColorNoche.getHex(), 0.0085);
+
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.set(0, 6.2, 18.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = params.exposicionHD;
     document.body.appendChild(renderer.domElement);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.72));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.95);
-    dirLight.position.set(10, 22, 14);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
 
-    // --- CORREDOR EN U ---
-    const LANE_WIDTH = 2.0;
-    const STEP_HEIGHT = 1.15;
+    const ambientLuz = new THREE.AmbientLight(0xdbeafe, 0.30);
+    scene.add(ambientLuz);
 
-    function getBaseHeightForLane(laneIndex) {
-      const absLane = Math.abs(laneIndex);
-      if (absLane <= 1) return 0;
-      return (absLane - 1) * STEP_HEIGHT;
-    }
+    const solDireccional = new THREE.DirectionalLight(0xfff3d1, 1.4);
+    scene.add(solDireccional);
 
-    const trackGroup = new THREE.Group();
-    scene.add(trackGroup);
+    const solPuntual = new THREE.PointLight(0xff9d2e, 4.5, 110);
+    scene.add(solPuntual);
 
-    const segmentLength = 4;
-    const numSegments = 24;
-    const segments = [];
+    const blastLight = new THREE.PointLight(0xffffff, 0, 65);
+    scene.add(blastLight);
 
-    const floorMatA = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.7 });
-    const floorMatB = new THREE.MeshStandardMaterial({ color: 0x26323d, roughness: 0.7 });
-    const provPathMat1 = new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.45 });
-    const provPathMat2 = new THREE.MeshStandardMaterial({ color: 0x34495e, roughness: 0.45 });
-    const provDeckMat = new THREE.MeshStandardMaterial({ color: 0xffa502, emissive: 0x332000, roughness: 0.35 });
-    const provEdgeMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x3742fa, roughness: 0.4 });
-
-    for (let s = 0; s < numSegments; s++) {
-      const seg = new THREE.Group();
-      seg.position.z = -s * segmentLength + 12;
-
-      const mat = s % 2 === 0 ? floorMatA : floorMatB;
-      const centerFloor = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH * 3, 0.5, segmentLength), mat);
-      centerFloor.position.y = -0.25;
-      centerFloor.receiveShadow = true;
-      seg.add(centerFloor);
-
-      [-1, 1].forEach(side => {
-        const line = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, segmentLength), provEdgeMat);
-        line.position.set(side * LANE_WIDTH * 0.5, 0.01, 0);
-        seg.add(line);
-      });
-
-      [-1, 1].forEach(side => {
-        const step1 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH, STEP_HEIGHT + 0.5, segmentLength), provPathMat1);
-        step1.position.set(side * LANE_WIDTH * 2, (STEP_HEIGHT - 0.5) / 2, 0);
-        step1.receiveShadow = true;
-
-        const deck1 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH - 0.25, 0.08, segmentLength * 0.72), provDeckMat);
-        deck1.position.set(side * LANE_WIDTH * 2, STEP_HEIGHT + 0.02, 0);
-
-        const edge1 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, segmentLength), provEdgeMat);
-        edge1.position.set(side * (LANE_WIDTH * 1.5), STEP_HEIGHT + 0.03, 0);
-
-        const step2 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH, STEP_HEIGHT * 2 + 0.5, segmentLength), provPathMat2);
-        step2.position.set(side * LANE_WIDTH * 3, (STEP_HEIGHT * 2 - 0.5) / 2, 0);
-        step2.receiveShadow = true;
-
-        const deck2 = new THREE.Mesh(new THREE.BoxGeometry(LANE_WIDTH - 0.25, 0.08, segmentLength * 0.72), provDeckMat);
-        deck2.position.set(side * LANE_WIDTH * 3, STEP_HEIGHT * 2 + 0.02, 0);
-
-        const edge2 = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, segmentLength), provEdgeMat);
-        edge2.position.set(side * (LANE_WIDTH * 2.5), STEP_HEIGHT * 2 + 0.03, 0);
-
-        const outerWall = new THREE.Mesh(new THREE.BoxGeometry(0.45, 4.8, segmentLength), wallMat);
-        outerWall.position.set(side * (LANE_WIDTH * 3.5 + 0.22), STEP_HEIGHT * 2 + 1.9, 0);
-
-        seg.add(step1, deck1, edge1, step2, deck2, edge2, outerWall);
-      });
-
-      trackGroup.add(seg);
-      segments.push(seg);
-    }
-
-    // --- AGENTE 3D ---
-    const agent = new THREE.Group();
-    scene.add(agent);
-
-    const pivotBody = new THREE.Group();
-    pivotBody.position.y = 1.1;
-    agent.add(pivotBody);
-
-    const skinMat = new THREE.MeshStandardMaterial({ color: 0xffcca8, roughness: 0.45 });
-    const hairMat = new THREE.MeshStandardMaterial({ color: 0x2d1e17, roughness: 0.8 });
-    const capMat = new THREE.MeshStandardMaterial({ color: 0xff4757, roughness: 0.4 });
-    const capVisorMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
-    const jacketMainMat = new THREE.MeshStandardMaterial({ color: 0x1e90ff, roughness: 0.45 });
-    const jacketDarkMat = new THREE.MeshStandardMaterial({ color: 0x0c2461, roughness: 0.5 });
-    const zipperMat = new THREE.MeshStandardMaterial({ color: 0xdcdde1, metalness: 0.7, roughness: 0.2 });
-    const backpackMat = new THREE.MeshStandardMaterial({ color: 0x2f3542, roughness: 0.6 });
-    const gloveMat = new THREE.MeshStandardMaterial({ color: 0x1e272e, roughness: 0.5 });
-    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x2f3640, roughness: 0.65 });
-    const kneePadMat = new THREE.MeshStandardMaterial({ color: 0xffa502, roughness: 0.4 });
-    const shoeUpperMat = new THREE.MeshStandardMaterial({ color: 0xff4757, roughness: 0.35 });
-    const shoeSoleMat = new THREE.MeshStandardMaterial({ color: 0xf1f2f6, roughness: 0.6 });
-    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-    const mouthMat = new THREE.MeshBasicMaterial({ color: 0x2c0e0e });
-
-    const torsoGroup = new THREE.Group();
-    pivotBody.add(torsoGroup);
-
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.94, 1.0, 0.56), jacketMainMat);
-    torso.castShadow = true;
-    const chestPanel = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.96, 0.58), jacketDarkMat);
-    const zipper = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.98, 0.6), zipperMat);
-    const collar = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.18, 0.62), jacketDarkMat);
-    collar.position.y = 0.54;
-    const backpack = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.72, 0.26), backpackMat);
-    backpack.position.set(0, 0.04, 0.38);
-    torsoGroup.add(torso, chestPanel, zipper, collar, backpack);
-
-    const headGroup = new THREE.Group();
-    headGroup.position.set(0, 1.05, 0);
-    torsoGroup.add(headGroup);
-
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.94, 0.88, 0.88), skinMat);
-    head.castShadow = true;
-    const hairBack = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.55, 0.35), hairMat);
-    hairBack.position.set(0, 0.15, 0.32);
-    const capCrown = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.34, 0.94), capMat);
-    capCrown.position.set(0, 0.44, 0);
-    const capVisor = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.08, 0.48), capVisorMat);
-    capVisor.position.set(0, 0.31, -0.58);
-    headGroup.add(head, hairBack, capCrown, capVisor);
-
-    const earGeo = new THREE.BoxGeometry(0.16, 0.28, 0.2);
-    const leftEar = new THREE.Mesh(earGeo, skinMat);
-    leftEar.position.set(-0.54, -0.02, 0);
-    const rightEar = new THREE.Mesh(earGeo, skinMat);
-    rightEar.position.set(0.54, -0.02, 0);
-    headGroup.add(leftEar, rightEar);
-
-    function createEye(xPos) {
-      const eyeGroup = new THREE.Group();
-      eyeGroup.position.set(xPos, 0.06, -0.45);
-      const sclera = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.04), eyeWhiteMat);
-      const pupil = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.11, 0.05), pupilMat);
-      pupil.position.z = -0.01;
-      eyeGroup.add(sclera, pupil);
-      headGroup.add(eyeGroup);
-      return { eyeGroup, sclera, pupil };
-    }
-    const leftEye = createEye(-0.22);
-    const rightEye = createEye(0.22);
-
-    const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.08, 0.05), mouthMat);
-    mouth.position.set(0, -0.24, -0.45);
-    headGroup.add(mouth);
-
-    function createArm(xPos) {
-      const shoulder = new THREE.Group();
-      shoulder.position.set(xPos, 0.42, 0);
-      const shoulderPad = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.22, 0.36), jacketDarkMat);
-      shoulderPad.position.y = -0.05;
-      const sleeve = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.34, 0.32), jacketMainMat);
-      sleeve.position.y = -0.24;
-      const forearm = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.34, 0.24), skinMat);
-      forearm.position.y = -0.52;
-      const glove = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.18, 0.27), gloveMat);
-      glove.position.y = -0.72;
-      shoulder.add(shoulderPad, sleeve, forearm, glove);
-      torsoGroup.add(shoulder);
-      return shoulder;
-    }
-    const leftArm = createArm(-0.67);
-    const rightArm = createArm(0.67);
-
-    function createLeg(xPos) {
-      const hip = new THREE.Group();
-      hip.position.set(xPos, -0.48, 0);
-      const pantLeg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.48, 0.38), pantsMat);
-      pantLeg.position.y = -0.22;
-      const kneePad = new THREE.Mesh(new THREE.BoxGeometry(0.37, 0.15, 0.12), kneePadMat);
-      kneePad.position.set(0, -0.24, -0.17);
-      const shoeGroup = new THREE.Group();
-      shoeGroup.position.set(0, -0.52, -0.08);
-      const sole = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.09, 0.64), shoeSoleMat);
-      sole.position.y = -0.05;
-      const upper = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.16, 0.6), shoeUpperMat);
-      upper.position.y = 0.06;
-      const toeCap = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.11, 0.18), shoeSoleMat);
-      toeCap.position.set(0, 0.02, -0.24);
-      shoeGroup.add(sole, upper, toeCap);
-      hip.add(pantLeg, kneePad, shoeGroup);
-      pivotBody.add(hip);
-      return hip;
-    }
-    const leftLeg = createLeg(-0.25);
-    const rightLeg = createLeg(0.25);
-
-    const slideTrail = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.1, 2.2),
-      new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.0, side: THREE.DoubleSide })
+    const centroFoco = new THREE.Mesh(
+      new THREE.SphereGeometry(0.32, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0xfbbf24 })
     );
-    slideTrail.rotation.x = -Math.PI / 2;
-    slideTrail.position.set(0, 0.02, 0.6);
-    agent.add(slideTrail);
+    scene.add(centroFoco);
 
-    // --- PLANTAS, PERSONAJES RIVALES Y REDES ---
-    const obstaclesGroup = new THREE.Group();
-    scene.add(obstaclesGroup);
+    const geoOrbita = new THREE.RingGeometry(params.radioOrbita - 0.025, params.radioOrbita + 0.025, 128);
+    geoOrbita.rotateX(Math.PI / 2);
+    const lineaOrbita = new THREE.Mesh(
+      geoOrbita,
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.25 })
+    );
+    scene.add(lineaOrbita);
 
-    const potMat = new THREE.MeshStandardMaterial({ color: 0xd35400, roughness: 0.65 });
-    const stemMat = new THREE.MeshStandardMaterial({ color: 0x27ae60, roughness: 0.5 });
-    const leafMatA = new THREE.MeshStandardMaterial({ color: 0x2ecc71, roughness: 0.45 });
-    const leafMatB = new THREE.MeshStandardMaterial({ color: 0x1abc9c, roughness: 0.45 });
-    const flowerMat = new THREE.MeshStandardMaterial({ color: 0xfeca57, emissive: 0x332200, roughness: 0.4 });
+    // =========================================================================
+    // 1. TIERRA: CONTINENTES, MARES, NUBES, ATMÓSFERA Y HOLOGRAMA
+    // =========================================================================
+    const grupoOrbital = new THREE.Group();
+    scene.add(grupoOrbital);
 
-    function createPlantMesh() {
-      const plant = new THREE.Group();
-      const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.24, 0.45, 8), potMat);
-      pot.position.y = 0.225;
-      pot.castShadow = true;
+    const grupoAxial = new THREE.Group();
+    grupoAxial.rotation.z = THREE.MathUtils.degToRad(params.inclinacionAxialDeg);
+    grupoOrbital.add(grupoAxial);
 
-      const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.65, 6), stemMat);
-      stem.position.y = 0.65;
+    const grupoTierra = new THREE.Group();
+    grupoAxial.add(grupoTierra);
 
-      const leaf1 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.24), leafMatA);
-      leaf1.position.set(0.26, 0.72, 0);
-      leaf1.rotation.z = -0.45;
-
-      const leaf2 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.24), leafMatB);
-      leaf2.position.set(-0.26, 0.82, 0);
-      leaf2.rotation.z = 0.45;
-
-      const leaf3 = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.55), leafMatA);
-      leaf3.position.set(0, 0.92, 0.22);
-      leaf3.rotation.x = 0.4;
-
-      const bud = new THREE.Mesh(new THREE.OctahedronGeometry(0.18, 0), flowerMat);
-      bud.position.y = 1.05;
-
-      plant.add(pot, stem, leaf1, leaf2, leaf3, bud);
-      return plant;
+    function ruidoContinental(v) {
+      const n1 = Math.sin(v.x * 2.3 + 0.6) * Math.cos(v.y * 2.1 - 0.4) * Math.sin(v.z * 2.4 + 1.1);
+      const n2 = Math.sin(v.x * 5.2 - v.z * 3.8) * Math.cos(v.y * 4.7 + v.x * 2.5) * 0.45;
+      const n3 = Math.cos(v.x * 11.0 + v.y * 9.5) * Math.sin(v.z * 10.5) * 0.18;
+      return n1 + n2 + n3;
     }
 
-    // Decoración de plantas laterales en el corredor
-    for (let i = 0; i < 14; i++) {
-      [-1, 1].forEach(side => {
-        const sidePlant = createPlantMesh();
-        const pLane = side * (i % 2 === 0 ? 2 : 3);
-        sidePlant.position.set(
-          pLane * LANE_WIDTH + (side * 0.45),
-          getBaseHeightForLane(pLane),
-          -i * 6.5 + 6
-        );
-        sidePlant.userData.isSidePlant = true;
-        sidePlant.userData.phase = i * 0.7;
-        obstaclesGroup.add(sidePlant);
-      });
-    }
+    function crearGeometriaTerrestre(radio) {
+      const geo = new THREE.SphereGeometry(radio, 96, 96);
+      const pos = geo.attributes.position;
+      const colores = new Float32Array(pos.count * 3);
+      const v = new THREE.Vector3();
+      const col = new THREE.Color();
 
-    const RIVAL_COLORS = [0xff4757, 0xa55eea, 0xff9f43, 0x00d2d3, 0xff6b81];
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i).normalize();
+        const elevRaw = ruidoContinental(v);
+        const nivelMar = 0.04;
+        const latitudAbs = Math.abs(v.y);
 
-    function createColoredCharacter(colorHex) {
-      const charGroup = new THREE.Group();
-      const bodyMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.4 });
-      const trimMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
-      const visorMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+        let despl = 0;
+        if (elevRaw > nivelMar) {
+          const alturaTierra = (elevRaw - nivelMar) / 0.95;
+          despl = Math.min(0.065, alturaTierra * 0.075);
 
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.95, 0.52), bodyMat);
-      body.position.y = 0.95;
-      body.castShadow = true;
-
-      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.18, 0.56), trimMat);
-      stripe.position.y = 1.02;
-
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.68, 0.72), bodyMat);
-      head.position.y = 1.8;
-      head.castShadow = true;
-
-      const eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.05), visorMat);
-      eyeL.position.set(-0.18, 1.82, 0.37);
-      const eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.05), visorMat);
-      eyeR.position.set(0.18, 1.82, 0.37);
-
-      const armL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.65, 0.24), bodyMat);
-      armL.position.set(-0.56, 0.95, 0);
-      const armR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.65, 0.24), bodyMat);
-      armR.position.set(0.56, 0.95, 0);
-
-      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.5, 0.3), trimMat);
-      legL.position.set(-0.22, 0.25, 0);
-      const legR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.5, 0.3), trimMat);
-      legR.position.set(0.22, 0.25, 0);
-
-      charGroup.add(body, stripe, head, eyeL, eyeR, armL, armR, legL, legR);
-      return charGroup;
-    }
-
-    function createNetMesh(colorHex = 0xff3838) {
-      const netGroup = new THREE.Group();
-      const wireMat = new THREE.MeshBasicMaterial({ color: colorHex, wireframe: true });
-      const frameMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.35 });
-
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.15, 0.35), wireMat);
-      mesh.position.y = 0.85;
-
-      const topBar = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.08, 0.12), frameMat);
-      topBar.position.y = 1.42;
-
-      const botBar = new THREE.Mesh(new THREE.BoxGeometry(1.62, 0.08, 0.12), frameMat);
-      botBar.position.y = 0.28;
-
-      netGroup.add(mesh, topBar, botBar);
-      return netGroup;
-    }
-
-    const activeThreats = [];
-    let spawnTimer = 0.9;
-    let lives = 3;
-    let score = 0;
-    let invulnTimer = 0;
-
-    function spawnThreat() {
-      const possibleLanes = [-2, -1, 0, 1, 2];
-      const chosenLane = possibleLanes[Math.floor(Math.random() * possibleLanes.length)];
-      const baseY = getBaseHeightForLane(chosenLane);
-      const colorHex = RIVAL_COLORS[Math.floor(Math.random() * RIVAL_COLORS.length)];
-
-      // 0: Planta obstáculo, 1: Personaje rival de color, 2: Red que ataca hacia el jugador
-      const kind = Math.floor(Math.random() * 3);
-
-      let obj;
-      let speedZ = 0.26;
-      let yOffset = 0;
-      let dodgeHint = 'Salta o cambia de carril';
-
-      if (kind === 0) {
-        obj = createPlantMesh();
-        obj.scale.setScalar(1.15);
-        dodgeHint = 'Salta o esquiva la planta';
-      } else if (kind === 1) {
-        obj = createColoredCharacter(colorHex);
-        speedZ = 0.34;
-        dodgeHint = '¡Esquiva al rival!';
-      } else {
-        obj = createNetMesh(colorHex);
-        speedZ = 0.44;
-        // Alterna entre red baja (saltar) y red media/alta (agacharse/deslizarse)
-        const highNet = Math.random() > 0.5;
-        yOffset = highNet ? 0.55 : 0.0;
-        dodgeHint = highNet ? '¡Agáchate o deslízate bajo la red!' : '¡Salta sobre la red!';
-      }
-
-      obj.position.set(chosenLane * LANE_WIDTH, baseY + yOffset, -68);
-      obstaclesGroup.add(obj);
-
-      activeThreats.push({
-        mesh: obj,
-        kind,
-        lane: chosenLane,
-        baseY,
-        yOffset,
-        speedZ,
-        dodgeHint,
-        passed: false,
-        phase: Math.random() * Math.PI * 2
-      });
-    }
-
-    // --- CONTROLES Y ESTADO ---
-    let lane = 0;
-    let lastMoveDir = 0;
-    let currentGroundY = 0;
-    let jumpOffsetY = 0;
-    let velocityY = 0;
-    let isJumping = false;
-    let isCrouching = false;
-    let isFlipping = false;
-    let flipDir = 0;
-    let flipProgress = 0;
-    let isSliding = false;
-    let slideTimer = 0;
-    let bumpFeedback = 0;
-    let runCycle = 0;
-
-    let blinkTimer = 2.4;
-    let blinkDuration = 0;
-
-    function resetGame() {
-      lives = 3;
-      score = 0;
-      invulnTimer = 0;
-      lane = 0;
-      jumpOffsetY = 0;
-      velocityY = 0;
-      isJumping = false;
-      isSliding = false;
-      isFlipping = false;
-      for (let i = activeThreats.length - 1; i >= 0; i--) {
-        obstaclesGroup.remove(activeThreats[i].mesh);
-        activeThreats.splice(i, 1);
-      }
-      document.getElementById('livesStatus').textContent = lives;
-      document.getElementById('scoreStatus').textContent = score;
-    }
-
-    function triggerSlide() {
-      if (isSliding || isFlipping) return;
-      isSliding = true;
-      slideTimer = 0.65;
-      if (isJumping) velocityY = -0.35;
-    }
-
-    function triggerSideFlip(dir) {
-      if (isFlipping) return;
-      isFlipping = true;
-      isSliding = false;
-      flipProgress = 0;
-      flipDir = dir;
-      lane = THREE.MathUtils.clamp(lane + dir, -3, 3);
-      velocityY = 0.34;
-      isJumping = true;
-    }
-
-    function moveLane(dir) {
-      lastMoveDir = dir;
-      const nextLane = THREE.MathUtils.clamp(lane + dir, -3, 3);
-      if (nextLane === lane) return;
-
-      const nextGround = getBaseHeightForLane(nextLane);
-      const needsFlipToClimb = nextGround > currentGroundY + 0.2;
-
-      if (needsFlipToClimb && !isFlipping) {
-        bumpFeedback = dir * 0.35;
-        return;
-      }
-      lane = nextLane;
-    }
-
-    window.addEventListener('keydown', (e) => {
-      const key = e.key.toLowerCase();
-      if (e.key === 'ArrowLeft' || key === 'a') moveLane(-1);
-      if (e.key === 'ArrowRight' || key === 'd') moveLane(1);
-      if (key === 'q') triggerSideFlip(-1);
-      if (key === 'e') triggerSideFlip(1);
-      if (e.key === 'Shift') triggerSideFlip(lastMoveDir !== 0 ? lastMoveDir : 0);
-
-      if ((e.key === 'ArrowUp' || key === 'w' || key === ' ') && !isJumping && !isCrouching) {
-        isSliding = false;
-        velocityY = 0.30;
-        isJumping = true;
-      }
-
-      if (e.key === 'ArrowDown' || key === 's') isCrouching = true;
-      if (key === 'z' || key === 'x') triggerSlide();
-      if (key === 'c') frontView = !frontView;
-      if (key === 'r') resetGame();
-    });
-
-    window.addEventListener('keyup', (e) => {
-      const key = e.key.toLowerCase();
-      if (e.key === 'ArrowDown' || key === 's') isCrouching = false;
-    });
-
-    function updateBlink(dt) {
-      if (blinkDuration > 0) {
-        blinkDuration -= dt;
-        leftEye.sclera.scale.y = 0.08;
-        rightEye.sclera.scale.y = 0.08;
-        return;
-      }
-      blinkTimer -= dt;
-      if (blinkTimer <= 0) {
-        blinkDuration = 0.14;
-        blinkTimer = 2.2 + Math.random() * 2.5;
-      } else {
-        leftEye.sclera.scale.y = THREE.MathUtils.lerp(leftEye.sclera.scale.y, 1.0, 0.25);
-        rightEye.sclera.scale.y = THREE.MathUtils.lerp(rightEye.sclera.scale.y, 1.0, 0.25);
-      }
-    }
-
-    let lastTime = performance.now();
-
-    function animate(now) {
-      requestAnimationFrame(animate);
-      const dt = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
-
-      if (invulnTimer > 0) {
-        invulnTimer -= dt;
-        agent.visible = Math.floor(invulnTimer * 18) % 2 === 0;
-      } else {
-        agent.visible = true;
-      }
-
-      const baseSpeed = 0.26;
-      const currentSpeed = isSliding ? baseSpeed * 1.65 : baseSpeed;
-
-      for (let i = 0; i < segments.length; i++) {
-        segments[i].position.z += currentSpeed;
-        if (segments[i].position.z > 16) {
-          segments[i].position.z -= numSegments * segmentLength;
-        }
-      }
-
-      // Animar plantas laterales
-      obstaclesGroup.children.forEach(child => {
-        if (child.userData.isSidePlant) {
-          child.position.z += currentSpeed;
-          if (child.position.z > 16) child.position.z -= 91;
-          child.rotation.z = Math.sin(now * 0.003 + child.userData.phase) * 0.06;
-        }
-      });
-
-      // Generar y mover amenazas (plantas, personajes de colores y redes)
-      spawnTimer -= dt;
-      if (spawnTimer <= 0) {
-        spawnThreat();
-        spawnTimer = Math.max(0.75, 1.45 - Math.min(0.55, score * 0.015));
-      }
-
-      const playerLow = isSliding || (isCrouching && !isJumping);
-      const playerBottomY = agent.position.y;
-      const playerTopY = agent.position.y + (playerLow ? 0.85 : 1.85);
-
-      let activeHint = '';
-
-      for (let i = activeThreats.length - 1; i >= 0; i--) {
-        const t = activeThreats[i];
-        t.phase += dt * 7;
-
-        if (t.kind === 2) {
-          // Red que avanza atacando con ligera oscilación
-          t.mesh.position.z += t.speedZ + currentSpeed * 0.45;
-          t.mesh.position.y = t.baseY + t.yOffset + Math.sin(t.phase) * 0.12;
-        } else if (t.kind === 1) {
-          // Personaje rival que corre hacia el jugador
-          t.mesh.position.z += t.speedZ + currentSpeed * 0.35;
-          t.mesh.position.y = t.baseY + Math.abs(Math.sin(t.phase)) * 0.14;
+          if (latitudAbs > 0.82) col.setHex(0xf1f5f9);
+          else if (alturaTierra < 0.18) col.setHex(0x16a34a);
+          else if (alturaTierra < 0.48) col.setHex(0x15803d);
+          else if (alturaTierra < 0.72) col.setHex(0xa16207);
+          else col.setHex(0xe2e8f0);
         } else {
-          // Planta en el camino
-          t.mesh.position.z += currentSpeed;
-          t.mesh.rotation.z = Math.sin(t.phase * 0.6) * 0.08;
+          const prof = Math.max(0, (nivelMar - elevRaw) / 0.5);
+          if (latitudAbs > 0.86) col.setHex(0xe2e8f0);
+          else if (prof < 0.08) col.setHex(0x0ea5e9);
+          else col.setHex(0x0b3c78);
         }
 
-        const distZ = Math.abs(t.mesh.position.z - agent.position.z);
-        const distX = Math.abs(t.mesh.position.x - agent.position.x);
+        const rFinal = radio * (1.0 + despl);
+        pos.setXYZ(i, v.x * rFinal, v.y * rFinal, v.z * rFinal);
 
-        if (t.mesh.position.z > -14 && t.mesh.position.z < 2 && distX < 1.3) {
-          activeHint = t.dodgeHint;
+        colores[i * 3] = col.r;
+        colores[i * 3 + 1] = col.g;
+        colores[i * 3 + 2] = col.b;
+      }
+
+      geo.setAttribute('color', new THREE.BufferAttribute(colores, 3));
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    const tierraMesh = new THREE.Mesh(
+      crearGeometriaTerrestre(params.radioTierra),
+      new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        emissive: 0x082f49,
+        emissiveIntensity: 0.2,
+        roughness: 0.62,
+        metalness: 0.12
+      })
+    );
+    grupoTierra.add(tierraMesh);
+
+    const nubesMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioTierra * 1.032, 64, 64),
+      new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.24,
+        roughness: 0.95,
+        depthWrite: false
+      })
+    );
+    grupoTierra.add(nubesMesh);
+
+    const atmosferaMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioTierra * 1.075, 48, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.BackSide
+      })
+    );
+    grupoAxial.add(atmosferaMesh);
+
+    // =========================================================================
+    // 1B. MALLA ZODIACAL ALREDEDOR DE LA TIERRA Y ASTROS PALPITANTES (CAPRICORNIO)
+    // =========================================================================
+    const grupoZodiaco = new THREE.Group();
+    grupoAxial.add(grupoZodiaco);
+
+    const mallaZodiacal = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioMallaZodiacal, 24, 16),
+      new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.16
+      })
+    );
+    grupoZodiaco.add(mallaZodiacal);
+
+    const bandaEcliptica = new THREE.Mesh(
+      new THREE.RingGeometry(params.radioMallaZodiacal * 0.995, params.radioMallaZodiacal * 1.01, 96),
+      new THREE.MeshBasicMaterial({
+        color: 0xfbbf24,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.34
+      })
+    );
+    bandaEcliptica.rotation.x = Math.PI * 0.5;
+    grupoZodiaco.add(bandaEcliptica);
+
+    const grupoSignoActivo = new THREE.Group();
+    grupoZodiaco.add(grupoSignoActivo);
+
+    let meshesAstrosSigno = [];
+    let halosAstrosSigno = [];
+    let lineasConstelacionSigno = null;
+
+    function posEnEsferaZodiacal(lat, lon, radio) {
+      const phi = Math.PI * 0.5 - lat;
+      const theta = lon;
+      return new THREE.Vector3(
+        radio * Math.sin(phi) * Math.cos(theta),
+        radio * Math.cos(phi),
+        radio * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+
+    function construirSignoZodiacal(idx) {
+      const signo = SIGNOS_ZODIACALES[idx % SIGNOS_ZODIACALES.length];
+
+      meshesAstrosSigno.forEach(m => grupoSignoActivo.remove(m));
+      halosAstrosSigno.forEach(h => grupoSignoActivo.remove(h));
+      if (lineasConstelacionSigno) grupoSignoActivo.remove(lineasConstelacionSigno);
+      meshesAstrosSigno = [];
+      halosAstrosSigno = [];
+
+      const r = params.radioMallaZodiacal * 1.015;
+      const puntosAstros = signo.astros.map(a => posEnEsferaZodiacal(a.lat, a.lon, r));
+
+      signo.astros.forEach((astro, i) => {
+        const pos = puntosAstros[i];
+        const astroMesh = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.085 * astro.mag, 1),
+          new THREE.MeshBasicMaterial({ color: signo.color })
+        );
+        astroMesh.position.copy(pos);
+        grupoSignoActivo.add(astroMesh);
+        meshesAstrosSigno.push(astroMesh);
+
+        const haloMesh = new THREE.Mesh(
+          new THREE.RingGeometry(0.11 * astro.mag, 0.16 * astro.mag, 24),
+          new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.75
+          })
+        );
+        haloMesh.position.copy(pos);
+        haloMesh.lookAt(pos.clone().multiplyScalar(2));
+        grupoSignoActivo.add(haloMesh);
+        halosAstrosSigno.push(haloMesh);
+      });
+
+      const verts = [];
+      signo.enlaces.forEach(([iA, iB]) => {
+        const pA = puntosAstros[iA];
+        const pB = puntosAstros[iB];
+        if (pA && pB) {
+          verts.push(pA.x, pA.y, pA.z, pB.x, pB.y, pB.z);
+        }
+      });
+
+      const geoLineas = new THREE.BufferGeometry();
+      geoLineas.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+      lineasConstelacionSigno = new THREE.LineSegments(
+        geoLineas,
+        new THREE.LineBasicMaterial({
+          color: signo.color,
+          transparent: true,
+          opacity: 0.85
+        })
+      );
+      grupoSignoActivo.add(lineasConstelacionSigno);
+
+      // Orientar el grupo del signo según su sector zodiacal (Capricornio = 270°)
+      grupoSignoActivo.rotation.y = THREE.MathUtils.degToRad(signo.sectorDeg);
+    }
+
+    function ciclarSignoZodiacal() {
+      params.indiceSigno = (params.indiceSigno + 1) % SIGNOS_ZODIACALES.length;
+      construirSignoZodiacal(params.indiceSigno);
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    // =========================================================================
+    // 1C. LUNA EN SU ÓRBITA Y GIRO SÍNCRONO FRENTE A LA TIERRA
+    // =========================================================================
+    const grupoPlanoOrbitaLuna = new THREE.Group();
+    grupoPlanoOrbitaLuna.rotation.z = THREE.MathUtils.degToRad(params.inclinacionOrbitaLunaDeg);
+    grupoOrbital.add(grupoPlanoOrbitaLuna);
+
+    const geoOrbitaLuna = new THREE.RingGeometry(params.radioOrbitaLuna - 0.018, params.radioOrbitaLuna + 0.018, 96);
+    geoOrbitaLuna.rotateX(Math.PI / 2);
+    const lineaOrbitaLuna = new THREE.Mesh(
+      geoOrbitaLuna,
+      new THREE.MeshBasicMaterial({ color: 0xe2e8f0, side: THREE.DoubleSide, transparent: true, opacity: 0.22 })
+    );
+    grupoPlanoOrbitaLuna.add(lineaOrbitaLuna);
+
+    const grupoLuna = new THREE.Group();
+    grupoPlanoOrbitaLuna.add(grupoLuna);
+
+    function crearGeometriaLunar(radio) {
+      const geo = new THREE.SphereGeometry(radio, 56, 56);
+      const pos = geo.attributes.position;
+      const v = new THREE.Vector3();
+      const crateres = [
+        new THREE.Vector3(0.55, 0.35, 0.75).normalize(),
+        new THREE.Vector3(-0.45, 0.5, 0.73).normalize(),
+        new THREE.Vector3(0.15, -0.55, 0.82).normalize(),
+        new THREE.Vector3(-0.7, -0.25, 0.66).normalize(),
+        new THREE.Vector3(0.8, -0.1, 0.58).normalize(),
+        new THREE.Vector3(0.0, 0.85, 0.52).normalize()
+      ];
+
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i).normalize();
+        let elev =
+          Math.sin(v.x * 7.0) * Math.cos(v.y * 6.5) * 0.045 +
+          Math.sin(v.z * 11.0 + v.x * 4.0) * 0.025;
+
+        crateres.forEach((c, idx) => {
+          const ang = v.angleTo(c);
+          const rCrater = 0.22 + (idx % 3) * 0.07;
+          if (ang < rCrater * 1.35) {
+            const norm = ang / rCrater;
+            if (norm < 0.85) elev -= (1.0 - norm / 0.85) * 0.11;
+            else elev += Math.sin(((norm - 0.85) / 0.5) * Math.PI) * 0.055;
+          }
+        });
+
+        const rFinal = radio * (1.0 + elev);
+        pos.setXYZ(i, v.x * rFinal, v.y * rFinal, v.z * rFinal);
+      }
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    const lunaMesh = new THREE.Mesh(
+      crearGeometriaLunar(params.radioLuna),
+      new THREE.MeshStandardMaterial({
+        color: 0xcbd5e1,
+        emissive: 0x1e293b,
+        emissiveIntensity: 0.22,
+        roughness: 0.85,
+        metalness: 0.06
+      })
+    );
+    grupoLuna.add(lunaMesh);
+
+    const anilloLunar = new THREE.Mesh(
+      new THREE.RingGeometry(params.radioLuna * 1.26, params.radioLuna * 1.31, 64),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.45 })
+    );
+    anilloLunar.rotation.x = Math.PI * 0.42;
+    grupoLuna.add(anilloLunar);
+
+    // Capa holográfica terrestre y nodos gravitatorios
+    const grupoHolo = new THREE.Group();
+    grupoAxial.add(grupoHolo);
+
+    const anilloEcuatorial = new THREE.Mesh(
+      new THREE.RingGeometry(params.radioTierra * 1.24, params.radioTierra * 1.27, 96),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.65 })
+    );
+    anilloEcuatorial.rotation.x = Math.PI * 0.5;
+    grupoHolo.add(anilloEcuatorial);
+
+    const anilloPolar = new THREE.Mesh(
+      new THREE.RingGeometry(params.radioTierra * 1.14, params.radioTierra * 1.155, 72),
+      new THREE.MeshBasicMaterial({ color: 0x34d399, side: THREE.DoubleSide, transparent: true, opacity: 0.45 })
+    );
+    anilloPolar.rotation.set(Math.PI * 0.25, Math.PI * 0.35, 0);
+    grupoHolo.add(anilloPolar);
+
+    const jaulaHolo = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioTierra * 1.09, 20, 14),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.14 })
+    );
+    grupoHolo.add(jaulaHolo);
+
+    const NUM_NODOS_HOLO = 80;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+    const meshNodosHolo = new THREE.InstancedMesh(
+      new THREE.OctahedronGeometry(0.06, 0),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 }),
+      NUM_NODOS_HOLO
+    );
+    grupoHolo.add(meshNodosHolo);
+
+    const nodosHolo = [];
+    for (let i = 0; i < NUM_NODOS_HOLO; i++) {
+      nodosHolo.push({
+        angulo: (i / NUM_NODOS_HOLO) * Math.PI * 2,
+        radioBase: params.radioTierra * (1.2 + (i % 4) * 0.05),
+        inclinacion: ((i % 5) - 2) * 0.2,
+        velBase: 0.35 + (i % 7) * 0.1,
+        fase: i * 0.35
+      });
+    }
+
+    // =========================================================================
+    // 2. COMPONENTE DE AGUA MOLECULAR EN MARES Y GOTAS
+    // =========================================================================
+    const grupoAguaMol = new THREE.Group();
+    grupoTierra.add(grupoAguaMol);
+
+    const TIPOS_OTROS = ['CO2', 'NH3', 'CH4'];
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.17;
+
+    const MAX_MOL_AGUA = 160;
+    const MAX_SAT_AGUA = MAX_MOL_AGUA * 4;
+    const MAX_ENL_AGUA = MAX_MOL_AGUA * 4;
+    const MAX_PUENTES_VERTS = MAX_MOL_AGUA * 8;
+
+    const meshCentroAgua = new THREE.InstancedMesh(
+      new THREE.SphereGeometry(0.075, 8, 8),
+      new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x0284c7, emissiveIntensity: 0.22 }),
+      MAX_MOL_AGUA
+    );
+    meshCentroAgua.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+    const meshSatAgua = new THREE.InstancedMesh(
+      new THREE.SphereGeometry(0.048, 7, 7),
+      new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x38bdf8, emissiveIntensity: 0.15 }),
+      MAX_SAT_AGUA
+    );
+    meshSatAgua.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+    const meshEnlAgua = new THREE.InstancedMesh(
+      new THREE.CylinderGeometry(0.016, 0.016, LONG_ENLACE, 5),
+      new THREE.MeshBasicMaterial({ color: 0x7dd3fc }),
+      MAX_ENL_AGUA
+    );
+    meshEnlAgua.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+    const puenteBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+    const geoPuentes = new THREE.BufferGeometry();
+    geoPuentes.setAttribute('position', new THREE.BufferAttribute(puenteBuffer, 3));
+    const lineasPuentesAgua = new THREE.LineSegments(
+      geoPuentes,
+      new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.25 })
+    );
+
+    grupoAguaMol.add(meshCentroAgua, meshSatAgua, meshEnlAgua, lineasPuentesAgua);
+
+    let moleculasMar = [];
+    function reconstruirAguaMolecular() {
+      moleculasMar = [];
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      const total = Math.min(MAX_MOL_AGUA, params.moleculasOceano);
+
+      for (let i = 0; i < total; i++) {
+        const theta = (2 * Math.PI * i) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (i + 0.5)) / total);
+        const dir = new THREE.Vector3(
+          Math.sin(phi) * Math.cos(theta),
+          Math.cos(phi),
+          Math.sin(phi) * Math.sin(theta)
+        ).normalize();
+
+        const esGotaOrbital = i % 10 === 0;
+        const rBase = esGotaOrbital ? params.radioTierra * 1.13 : params.radioTierra * 1.012;
+        const posEquil = dir.clone().multiplyScalar(rBase);
+        const esOtra = Math.random() < params.proporcionOtrasMoleculas;
+        const tipo = esOtra ? TIPOS_OTROS[i % TIPOS_OTROS.length] : 'H2O';
+
+        moleculasMar.push({
+          tipo,
+          posLocal: posEquil.clone(),
+          velLocal: new THREE.Vector3(),
+          posEquilibrio: posEquil,
+          eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+          velAngular: new THREE.Vector3(
+            (Math.random() - 0.5) * 2.0,
+            (Math.random() - 0.5) * 2.0,
+            (Math.random() - 0.5) * 2.0
+          )
+        });
+      }
+    }
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlaceAgua(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatAgua.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlAgua.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarAguaMolecular(dt, tSim) {
+      grupoAguaMol.visible = params.mostrarAguaMolecular;
+      if (!params.mostrarAguaMolecular) {
+        meshCentroAgua.count = 0;
+        meshSatAgua.count = 0;
+        meshEnlAgua.count = 0;
+        lineasPuentesAgua.geometry.setDrawRange(0, 0);
+        return;
+      }
+
+      const agitacion = Math.max(0, (params.temperaturaK - 273) * 0.018);
+      const coords = lineasPuentesAgua.geometry.attributes.position.array;
+      let idxP = 0, idxC = 0, idxS = 0, idxE = 0;
+
+      for (let i = 0; i < moleculasMar.length && idxC < MAX_MOL_AGUA; i++) {
+        const m = moleculasMar[i];
+        const fuerzaLocal = new THREE.Vector3()
+          .subVectors(m.posEquilibrio, m.posLocal)
+          .multiplyScalar(params.tensionSuperficial);
+
+        const ola = Math.sin(tSim * 2.4 + i * 0.7) * 0.025 / Math.max(0.4, params.gravedadG);
+        fuerzaLocal.addScaledVector(m.posLocal.clone().normalize(), ola);
+
+        if (agitacion > 0.01) {
+          fuerzaLocal.x += (Math.random() - 0.5) * agitacion * 8;
+          fuerzaLocal.y += (Math.random() - 0.5) * agitacion * 8;
+          fuerzaLocal.z += (Math.random() - 0.5) * agitacion * 8;
         }
 
-        // Comprobar colisión
-        const threatMinY = t.mesh.position.y;
-        const threatMaxY = t.mesh.position.y + (t.kind === 2 ? 1.4 : 1.65);
-
-        if (distZ < 0.85 && distX < 0.82 && invulnTimer <= 0 && !isFlipping) {
-          const overlapsY = playerTopY > threatMinY + 0.15 && playerBottomY < threatMaxY - 0.15;
-          if (overlapsY) {
-            invulnTimer = 1.25;
-            lives = Math.max(0, lives - 1);
-            document.getElementById('livesStatus').textContent = lives;
-            bumpFeedback = (agent.position.x >= t.mesh.position.x ? 1 : -1) * 0.45;
-            obstaclesGroup.remove(t.mesh);
-            activeThreats.splice(i, 1);
-            continue;
+        for (let j = i + 1; j < moleculasMar.length; j++) {
+          const mB = moleculasMar[j];
+          const dVec = new THREE.Vector3().subVectors(mB.posLocal, m.posLocal);
+          const dist = dVec.length();
+          if (dist > 0.001 && dist < 0.75 && (m.tipo === 'H2O' || m.tipo === 'NH3')) {
+            const atr = ((0.75 - dist) / 0.75) * params.cohesionPuentes * 0.45;
+            fuerzaLocal.addScaledVector(dVec.normalize(), atr);
+            if (idxP + 6 < MAX_PUENTES_VERTS * 3) {
+              coords[idxP++] = m.posLocal.x; coords[idxP++] = m.posLocal.y; coords[idxP++] = m.posLocal.z;
+              coords[idxP++] = mB.posLocal.x; coords[idxP++] = mB.posLocal.y; coords[idxP++] = mB.posLocal.z;
+            }
           }
         }
 
-        if (!t.passed && t.mesh.position.z > agent.position.z + 0.8) {
-          t.passed = true;
-          score += 1;
-          document.getElementById('scoreStatus').textContent = score;
+        m.velLocal.addScaledVector(fuerzaLocal, dt);
+        m.velLocal.multiplyScalar(0.94);
+        m.posLocal.addScaledVector(m.velLocal, dt);
+
+        m.eulerPropia.x += m.velAngular.x * dt;
+        m.eulerPropia.y += m.velAngular.y * dt;
+        m.eulerPropia.z += m.velAngular.z * dt;
+
+        if (m.tipo === 'H2O') colTmp.setHex(0xef4444);
+        else if (m.tipo === 'NH3') colTmp.setHex(0x38bdf8);
+        else colTmp.setHex(0x64748b);
+
+        meshCentroAgua.setColorAt(idxC, colTmp);
+        dummy.position.copy(m.posLocal);
+        dummy.rotation.set(0, 0, 0);
+        dummy.scale.set(1, 1, 1);
+        dummy.updateMatrix();
+        meshCentroAgua.setMatrixAt(idxC, dummy.matrix);
+
+        if (m.tipo === 'H2O') {
+          const mAng = ANGULO_HOH * 0.5;
+          colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), m.eulerPropia);
+          colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), m.eulerPropia);
+        } else if (m.tipo === 'CO2') {
+          colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(1, 0, 0), m.eulerPropia);
+          colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(-1, 0, 0), m.eulerPropia);
+        } else if (m.tipo === 'NH3') {
+          for (let k = 0; k < 3; k++) {
+            const ang = (k / 3) * Math.PI * 2;
+            colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(Math.cos(ang) * 0.9, -0.45, Math.sin(ang) * 0.9).normalize(), m.eulerPropia);
+          }
+        } else {
+          const dirs = [[1,1,1],[-1,-1,1],[-1,1,-1],[1,-1,-1]];
+          dirs.forEach(d => colocarSateliteYEnlaceAgua(idxS++, idxE++, m.posLocal, new THREE.Vector3(d[0], d[1], d[2]).normalize(), m.eulerPropia));
         }
-
-        if (t.mesh.position.z > 18) {
-          obstaclesGroup.remove(t.mesh);
-          activeThreats.splice(i, 1);
-        }
+        idxC++;
       }
 
-      bumpFeedback = THREE.MathUtils.lerp(bumpFeedback, 0, 0.2);
-
-      const targetX = lane * LANE_WIDTH + bumpFeedback;
-      const deltaX = targetX - agent.position.x;
-      agent.position.x += deltaX * 0.18;
-
-      const targetGroundY = getBaseHeightForLane(lane);
-      currentGroundY = THREE.MathUtils.lerp(currentGroundY, targetGroundY, 0.22);
-
-      jumpOffsetY += velocityY;
-      if (jumpOffsetY > 0) {
-        velocityY -= 0.016;
-      } else {
-        jumpOffsetY = 0;
-        velocityY = 0;
-        isJumping = false;
-      }
-
-      agent.position.y = currentGroundY + jumpOffsetY;
-
-      const sectorName = lane === 0 ? 'Centro' : (Math.abs(lane) === 1 ? 'Borde Centro' : `Camino Lateral ${lane > 0 ? 'Der' : 'Izq'} (${Math.abs(lane) - 1})`);
-      document.getElementById('laneStatus').textContent = `${lane} - ${sectorName}`;
-
-      const targetZ = isSliding ? -1.15 : 0;
-      agent.position.z = THREE.MathUtils.lerp(agent.position.z, targetZ, 0.2);
-
-      agent.rotation.z = -deltaX * 0.2;
-      agent.rotation.y = -deltaX * 0.28;
-
-      const lookX = THREE.MathUtils.clamp(deltaX * 0.05, -0.045, 0.045);
-      leftEye.pupil.position.x = lookX;
-      rightEye.pupil.position.x = lookX;
-
-      const actionLabel = document.getElementById('actionStatus');
-
-      if (lives <= 0) {
-        actionLabel.textContent = '¡Sin vidas! Pulsa R para reiniciar';
-      } else if (isFlipping) {
-        actionLabel.textContent = flipDir === 0 ? 'Voltereta frontal' : (flipDir < 0 ? 'Voltereta Izquierda' : 'Voltereta Derecha');
-        flipProgress += dt * 3.2;
-        pivotBody.rotation.x = -flipProgress * Math.PI * 2;
-        pivotBody.rotation.z = -flipDir * Math.sin(flipProgress * Math.PI) * 0.8;
-        leftArm.rotation.x = -2.4;
-        rightArm.rotation.x = -2.4;
-        leftLeg.rotation.x = 1.1;
-        rightLeg.rotation.x = 1.1;
-        mouth.scale.set(0.8, 2.2, 1);
-        slideTrail.material.opacity = 0;
-        if (flipProgress >= 1) {
-          isFlipping = false;
-          flipProgress = 0;
-          pivotBody.rotation.x = 0;
-          pivotBody.rotation.z = 0;
-        }
-      } else if (isSliding) {
-        actionLabel.textContent = activeHint || 'Deslizamiento';
-        slideTimer -= dt;
-        slideTrail.material.opacity = 0.45;
-        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 0.42, 0.35);
-        pivotBody.rotation.x = THREE.MathUtils.lerp(pivotBody.rotation.x, 0.85, 0.35);
-        pivotBody.rotation.z = 0;
-        torsoGroup.rotation.x = 0;
-        headGroup.rotation.x = -0.65;
-        rightLeg.rotation.x = THREE.MathUtils.lerp(rightLeg.rotation.x, 0.75, 0.35);
-        leftLeg.rotation.x = THREE.MathUtils.lerp(leftLeg.rotation.x, -1.35, 0.35);
-        leftArm.rotation.x = -0.9;
-        rightArm.rotation.x = -0.5;
-        mouth.scale.set(1.3, 0.8, 1);
-        if (slideTimer <= 0) isSliding = false;
-      } else if (isCrouching && !isJumping) {
-        actionLabel.textContent = activeHint || 'Agachado';
-        slideTrail.material.opacity = 0;
-        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 0.65, 0.25);
-        pivotBody.rotation.x = 0;
-        pivotBody.rotation.z = 0;
-        torsoGroup.rotation.x = THREE.MathUtils.lerp(torsoGroup.rotation.x, -0.55, 0.25);
-        headGroup.rotation.x = THREE.MathUtils.lerp(headGroup.rotation.x, 0.45, 0.25);
-        leftArm.rotation.x = -0.8;
-        rightArm.rotation.x = -0.8;
-        leftLeg.rotation.x = 0.9;
-        rightLeg.rotation.x = 0.9;
-        mouth.scale.set(1.2, 0.7, 1);
-      } else if (isJumping) {
-        actionLabel.textContent = activeHint || 'Saltando';
-        slideTrail.material.opacity = 0;
-        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 1.1, 0.2);
-        pivotBody.rotation.x = 0;
-        pivotBody.rotation.z = 0;
-        torsoGroup.rotation.x = -0.1;
-        headGroup.rotation.x = 0.15;
-        leftArm.rotation.x = Math.PI * 0.85;
-        rightArm.rotation.x = Math.PI * 0.85;
-        leftLeg.rotation.x = 0.65;
-        rightLeg.rotation.x = -0.45;
-        mouth.scale.set(0.75, 2.6, 1);
-      } else {
-        actionLabel.textContent = bumpFeedback !== 0 ? '¡Usa voltereta (Q/E)!' : (activeHint || 'Corriendo');
-        slideTrail.material.opacity = THREE.MathUtils.lerp(slideTrail.material.opacity, 0, 0.2);
-        runCycle += 0.22;
-        pivotBody.position.y = THREE.MathUtils.lerp(pivotBody.position.y, 1.1 + Math.abs(Math.cos(runCycle)) * 0.06, 0.25);
-        pivotBody.rotation.x = 0;
-        pivotBody.rotation.z = 0;
-        torsoGroup.rotation.x = 0;
-        headGroup.rotation.x = 0;
-        leftArm.rotation.x = Math.sin(runCycle) * 0.7;
-        rightArm.rotation.x = -Math.sin(runCycle) * 0.7;
-        leftLeg.rotation.x = -Math.sin(runCycle) * 0.8;
-        rightLeg.rotation.x = Math.sin(runCycle) * 0.8;
-        mouth.scale.set(1, 1, 1);
-      }
-
-      updateBlink(dt);
-
-      if (frontView) {
-        camera.position.lerp(new THREE.Vector3(agent.position.x * 0.6, agent.position.y + 2.6, -7.2), 0.12);
-        camera.lookAt(agent.position.x, agent.position.y + 1.0, 0);
-      } else {
-        const camX = agent.position.x * 0.5;
-        const camY = 5.2 + agent.position.y * 0.75;
-        const camZ = 9.4 + Math.abs(agent.position.x) * 0.25 + jumpOffsetY * 0.35;
-        camera.position.lerp(new THREE.Vector3(camX, camY, camZ), 0.12);
-        camera.lookAt(agent.position.x * 0.4, agent.position.y + 1.2, -8);
-      }
-
-      renderer.render(scene, camera);
+      meshCentroAgua.count = idxC;
+      meshSatAgua.count = idxS;
+      meshEnlAgua.count = idxE;
+      meshCentroAgua.instanceMatrix.needsUpdate = true;
+      if (meshCentroAgua.instanceColor) meshCentroAgua.instanceColor.needsUpdate = true;
+      meshSatAgua.instanceMatrix.needsUpdate = true;
+      meshEnlAgua.instanceMatrix.needsUpdate = true;
+      lineasPuentesAgua.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesAgua.geometry.setDrawRange(0, idxP / 3);
     }
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    // =========================================================================
+    // 3. SISTEMA SOLAR + COMBUSTIÓN POR ETAPAS
+    // =========================================================================
+    const grupoSol = new THREE.Group();
+    scene.add(grupoSol);
 
-    requestAnimationFrame(animate);
+    const fotosferaMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioSol * 0.92, 56, 56),
+      new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        emissive: 0xff7b00,
+        emissiveIntensity: 1.45,
+        roughness: 0.25,
+        metalness: 0.05
+      })
+    );
+    grupoSol.add(fotosferaMesh);
+
+    const coronaMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(params.radioSol * 1.18, 40, 40),
+      new THREE.MeshBasicMaterial({
+        color: 0xf97316,
+        transparent: true,
+        opacity: 0.16,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+    grupoSol.add(coronaMesh);
+
+    const ondaEstallidoMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 24, 18),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0 })
+    );
+    grupoSol.add(ondaEstallidoMesh);
+
+    const COL_BLANCO_HD   = new THREE.Color(0xffffff);
+    const COL_AZUL_HD     = new THREE.Color(0x38bdf8);
+    const COL_AZUL_PROFUN = new THREE.Color(0x2563eb);
+    const COL_AMARILLO_HD = new THREE.Color(0xfde047);
+    const COL_NARANJA_HD  = new THREE.Color(0xf97316);
+    const COL_ROJO_HD     = new THREE.Color(0xdc2626);
+    const COL_HOLLIN_HD   = new THREE.Color(0x1e293b);
+    const COL_CIAN_PLASMA = new THREE.Color(0x7dd3fc);
+
+    const meshPlasma = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.16, 0.16, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xff6a00, emissiveIntensity: 0.85, roughness: 0.22 }),
+      params.numCeldasPlasma
+    );
+    meshPlasma.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    grupoSol.add(meshPlasma);
+
+    const celdasPlasma = [];
+    for (let i = 0; i < params.numCeldasPlasma; i++) {
+      celdasPlasma.push({
+        theta: Math.random() * Math.PI * 2,
+        phi: Math.acos(2.0 * Math.random() - 1.0),
+        profundidadNorm: Math.random(),
+        velRadial: 0.28 + Math.random() * 0.45,
+        fase: Math.random() * Math.PI * 2
+      });
+    }
+
+    const meshProminencias = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.13, 0.13, 0.13),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xff4500, emissiveIntensity: 0.9, roughness: 0.3 }),
+      params.numProminencias
+    );
+    meshProminencias.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    grupoSol.add(meshProminencias);
+
+    const prominencias = [];
+    for (let i = 0; i < params.numProminencias; i++) {
+      const arcoIdx = i % 8;
+      prominencias.push({
+        baseTheta: (arcoIdx / 8) * Math.PI * 2 + (Math.random() - 0.5) * 0.35,
+        basePhi: (Math.random() - 0.5) * Math.PI * 0.65 + Math.PI * 0.5,
+        progreso: Math.random(),
+        vel: 0.35 + Math.random() * 0.55,
+        alturaBucle: 0.65 + Math.random() * 1.15,
+        fase: Math.random() * Math.PI * 2
+      });
+    }
+
+    const MAX_AGENTES_FUEGO = 500;
+    const meshAgentesFuego = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(0.15, 0.15, 0.15),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xff6a00, emissiveIntensity: 0.72, roughness: 0.28 }),
+      MAX_AGENTES_FUEGO
+    );
+    meshAgentesFuego.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    grupoSol.add(meshAgentesFuego);
+
+    let agentesFuego = [];
+    function reconstruirAgentesFuego() {
+      agentesFuego = [];
+      const count = Math.min(MAX_AGENTES_FUEGO, params.numAgentesFuego);
+      for (let i = 0; i < count; i++) {
+        const canal = i % 7;
+        agentesFuego.push({
+          angulo: Math.random() * Math.PI * 2,
+          anguloCanal: (canal / 7) * Math.PI * 2 + (Math.random() - 0.5) * 0.45,
+          radioNorm: Math.pow(Math.random(), 0.65),
+          cicloVida: Math.random(),
+          velCiclo: 0.35 + Math.random() * 0.65,
+          velGiro: (Math.random() - 0.5) * 2.0,
+          fase: Math.random() * Math.PI * 2,
+          esProductoDenso: i % 5 === 0,
+          impulsoRadial: 0
+        });
+      }
+    }
+
+    function calcularColorPorEtapaCombustion(t, ratioO2, esProductoDenso, radioNorm, estallido, outColor) {
+      if (estallido > 0.35 && radioNorm < 0.72) {
+        outColor.copy(COL_BLANCO_HD).lerp(COL_AMARILLO_HD, (1 - estallido) * 1.3);
+        return;
+      }
+      if (estallido > 0.08 && radioNorm < 0.85) {
+        outColor.copy(COL_AMARILLO_HD).lerp(COL_NARANJA_HD, 1 - estallido);
+        return;
+      }
+      if (t < 0.22) {
+        const k = t / 0.22;
+        if (ratioO2 > 0.42) {
+          outColor.copy(COL_AZUL_PROFUN).lerp(COL_AZUL_HD, Math.min(1, ratioO2 * 1.25));
+          outColor.lerp(COL_AMARILLO_HD, Math.max(0, (k - 0.55) / 0.45));
+        } else {
+          outColor.copy(COL_ROJO_HD).lerp(COL_NARANJA_HD, k * 0.65);
+        }
+        return;
+      }
+      if (t < 0.55) {
+        outColor.copy(COL_ROJO_HD).lerp(COL_NARANJA_HD, (t - 0.22) / 0.33);
+        return;
+      }
+      if (t < 0.80) {
+        const k = (t - 0.55) / 0.25;
+        outColor.copy(COL_NARANJA_HD).lerp(COL_AMARILLO_HD, k);
+        if (k > 0.65 && ratioO2 > 0.5) outColor.lerp(COL_BLANCO_HD, (k - 0.65) * 1.2);
+        return;
+      }
+      const kFin = (t - 0.80) / 0.20;
+      if (esProductoDenso || ratioO2 < 0.28) {
+        outColor.copy(COL_ROJO_HD).lerp(COL_HOLLIN_HD, Math.min(1, kFin * 1.15));
+      } else {
+        outColor.copy(COL_AMARILLO_HD).lerp(COL_ROJO_HD, Math.min(1, kFin * 1.35));
+      }
+    }
+
+    // =========================================================================
+    // 4. ESTRELLAS, FUGACES, COMETAS Y ASTEROIDES RODEANDO AL SOL Y LA LUNA
+    // =========================================================================
+    const grupoCeleste = new THREE.Group();
+    scene.add(grupoCeleste);
+
+    const geoEstrellas = new THREE.BufferGeometry();
+    const posEstrellas = new Float32Array(params.numEstrellas * 3);
+    const colEstrellas = new Float32Array(params.numEstrellas * 3);
+    for (let i = 0; i < params.numEstrellas; i++) {
+      const r = 38 + Math.random() * 140;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2.0 * Math.random() - 1.0);
+      posEstrellas[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+      posEstrellas[i * 3 + 1] = r * Math.cos(phi);
+      posEstrellas[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+
+      const matiz = Math.random();
+      if (matiz < 0.25) colTmp.setHex(0x93c5fd);
+      else if (matiz < 0.75) colTmp.setHex(0xf8fafc);
+      else colTmp.setHex(0xfde68a);
+      colEstrellas[i * 3]     = colTmp.r;
+      colEstrellas[i * 3 + 1] = colTmp.g;
+      colEstrellas[i * 3 + 2] = colTmp.b;
+    }
+    geoEstrellas.setAttribute('position', new THREE.BufferAttribute(posEstrellas, 3));
+    geoEstrellas.setAttribute('color', new THREE.BufferAttribute(colEstrellas, 3));
+    const puntosEstrellas = new THREE.Points(
+      geoEstrellas,
+      new THREE.PointsMaterial({ size: 0.55, vertexColors: true, transparent: true, opacity: 0.88 })
+    );
+    grupoCeleste.add(puntosEstrellas);
+
+    const meshAsteroides = new THREE.InstancedMesh(
+      new THREE.DodecahedronGeometry(0.14, 0),
+      new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.88, metalness: 0.15 }),
+      params.numAsteroides
+    );
+    meshAsteroides.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    grupoCeleste.add(meshAsteroides);
+
+    const asteroides = [];
+    for (let i = 0; i < params.numAsteroides; i++) {
+      const alrededorLuna = i % 3 === 0;
+      asteroides.push({
+        alrededorLuna,
+        angulo: Math.random() * Math.PI * 2,
+        radio: alrededorLuna ? (1.35 + Math.random() * 1.45) : (10.5 + Math.random() * 18.0),
+        velAngular: (alrededorLuna ? (0.9 + Math.random() * 0.9) : (0.14 + Math.random() * 0.28)) * (Math.random() < 0.5 ? 1 : -1),
+        inclinacionY: (Math.random() - 0.5) * (alrededorLuna ? 0.65 : 3.2),
+        escala: 0.45 + Math.random() * 1.25,
+        rotVel: new THREE.Vector3(Math.random() * 2, Math.random() * 2, Math.random() * 2)
+      });
+    }
+
+    const cometas = [];
+    for (let i = 0; i < params.numCometas; i++) {
+      const alrededorLuna = i % 2 === 0;
+      const nucleo = new THREE.Mesh(
+        new THREE.SphereGeometry(0.13, 10, 10),
+        new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
+      );
+      const colaGeo = new THREE.ConeGeometry(0.18, 1.85, 10, 1, true);
+      colaGeo.rotateX(-Math.PI / 2);
+      colaGeo.translate(0, 0, -0.92);
+      const cola = new THREE.Mesh(
+        colaGeo,
+        new THREE.MeshBasicMaterial({
+          color: 0x38bdf8,
+          transparent: true,
+          opacity: 0.52,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      nucleo.add(cola);
+      grupoCeleste.add(nucleo);
+
+      cometas.push({
+        alrededorLuna,
+        mesh: nucleo,
+        angulo: (i / params.numCometas) * Math.PI * 2,
+        radioX: alrededorLuna ? (1.8 + Math.random() * 1.2) : (14.0 + Math.random() * 13.0),
+        radioZ: alrededorLuna ? (1.3 + Math.random() * 0.9) : (9.5 + Math.random() * 11.0),
+        velAngular: alrededorLuna ? (1.15 + Math.random() * 0.6) : (0.28 + Math.random() * 0.22),
+        inclinacion: (Math.random() - 0.5) * 0.7
+      });
+    }
+
+    const fugaces = [];
+    for (let i = 0; i < params.numFugaces; i++) {
+      const geoF = new THREE.CylinderGeometry(0.015, 0.06, 2.6, 6);
+      geoF.rotateX(Math.PI / 2);
+      const matF = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.0,
+        blending: THREE.AdditiveBlending
+      });
+      const meshF = new THREE.Mesh(geoF, matF);
+      grupoCeleste.add(meshF);
+
+      fugaces.push({
+        mesh: meshF,
+        progreso: Math.random(),
+        vel: 0.55 + Math.random() * 0.65,
+        inicio: new THREE.Vector3(),
+        dir: new THREE.Vector3(),
+        focoCercaLuna: i % 2 === 0
+      });
+    }
+
+    function reiniciarFugaz(f, posLunaMundo, posSolMundo) {
+      f.progreso = 0;
+      const base = f.focoCercaLuna ? posLunaMundo : posSolMundo;
+      const spread = f.focoCercaLuna ? 5.5 : 14.0;
+      f.inicio.set(
+        base.x + (Math.random() - 0.5) * spread,
+        base.y + 2.0 + Math.random() * (spread * 0.5),
+        base.z + (Math.random() - 0.5) * spread
+      );
+      f.dir.set(
+        -0.7 - Math.random() * 0.6,
+        -0.55 - Math.random() * 0.5,
+        (Math.random() - 0.5) * 0.9
+      ).normalize();
+    }
+
+    let energiaEstallido = 0;
+    let anguloOrbita = 0;
+    let anguloOrbitaLuna = 0;
+    let tiempoSimulado = 0;
+
+    function ciclarVelocidadTiempo() {
+      idxVelTiempo = (idxVelTiempo + 1) % VELOCIDADES_TIEMPO.length;
+      params.velocidadTiempo = VELOCIDADES_TIEMPO[idxVelTiempo];
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function estallarCombustion() {
+      energiaEstallido = 1.0;
+      blastLight.intensity = 11.0;
+      ondaEstallidoMesh.scale.set(1, 1, 1);
+      ondaEstallidoMesh.material.opacity = 0.9;
+      agentesFuego.forEach((a, idx) => {
+        a.impulsoRadial = 1.4 + Math.random() * 1.5;
+        if (idx % 3 === 0) a.cicloVida = Math.min(0.95, a.cicloVida + 0.2);
+      });
+    }
+
+    function lanzarFugazYCometa() {
+      fugaces.forEach(f => { f.progreso = 0.01; });
+      cometas.forEach(c => { c.angulo += 0.45; });
+    }
+
+    function alternarDiaNoche() {
+      params.modoDia = !params.modoDia;
+      document.body.classList.toggle('modo-dia', params.modoDia);
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function alternarCapaAguaMolecular() {
+      params.mostrarAguaMolecular = !params.mostrarAguaMolecular;
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function alternarHolograma() {
+      params.intensidadHolograma = params.intensidadHolograma > 0.2 ? 0.12 : 0.95;
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function colorPlasmaFusion(profundidad, fusionNorm, estallido) {
+      if (estallido > 0.35 && profundidad < 0.75) {
+        colTmp.copy(COL_BLANCO_HD).lerp(COL_CIAN_PLASMA, 0.35 * fusionNorm);
+        return;
+      }
+      if (profundidad < 0.35) colTmp.copy(COL_BLANCO_HD).lerp(COL_AMARILLO_HD, profundidad / 0.35);
+      else if (profundidad < 0.75) colTmp.copy(COL_AMARILLO_HD).lerp(COL_NARANJA_HD, (profundidad - 0.35) / 0.40);
+      else colTmp.copy(COL_NARANJA_HD).lerp(COL_ROJO_HD, (profundidad - 0.75) / 0.25);
+    }
+
+    const posLunaMundo = new THREE.Vector3();
+    const posSolMundo = new THREE.Vector3();
+
+    function actualizarSistemaCompleto(dtReal, dtSim, tSim) {
+      renderer.toneMappingExposure = params.exposicionHD;
+
+      if (energiaEstallido > 0.005) {
+        energiaEstallido = Math.max(0, energiaEstallido - dtReal * 0.85);
+        const escOnda = 1 + (1 - energiaEstallido) * params.radioSol * 1.4;
+        ondaEstallidoMesh.scale.set(escOnda, escOnda * 0.75, escOnda);
+        ondaEstallidoMesh.material.opacity = energiaEstallido * 0.85;
+        blastLight.intensity = energiaEstallido * 11.0;
+      } else {
+        ondaEstallidoMesh.material.opacity = 0;
+        blastLight.intensity = 0;
+      }
+
+      // 1. Órbita de la Tierra y gravedad
+      const factorOrbitaGravedad = Math.sqrt(Math.max(0.2, params.gravedadG) / Math.max(2.0, params.radioOrbita / 6.0));
+      if (params.orbitaActiva) {
+        anguloOrbita += params.velocidadOrbita * factorOrbitaGravedad * dtSim;
+      }
+      const ox = Math.cos(anguloOrbita) * params.radioOrbita;
+      const oz = Math.sin(anguloOrbita) * params.radioOrbita;
+      const oy = Math.sin(tSim * 0.9) * 0.14;
+      grupoOrbital.position.set(ox, oy, oz);
+
+      // 2. Malla zodiacal alrededor de la Tierra y astros palpitantes del signo activo
+      const signoActivo = SIGNOS_ZODIACALES[params.indiceSigno % SIGNOS_ZODIACALES.length];
+      mallaZodiacal.material.opacity = Math.min(0.45, params.intensidadMallaZodiacal * 0.18);
+      bandaEcliptica.material.opacity = Math.min(0.65, params.intensidadMallaZodiacal * 0.38);
+      if (lineasConstelacionSigno) {
+        lineasConstelacionSigno.material.opacity = Math.min(1.0, params.intensidadMallaZodiacal * 0.9);
+      }
+
+      signoActivo.astros.forEach((astro, i) => {
+        const latido = 0.5 + 0.5 * Math.sin(tSim * params.frecuenciaLatidoZodiaco + astro.fase);
+        const escAstro = (0.75 + latido * 0.65) * params.intensidadMallaZodiacal;
+        if (meshesAstrosSigno[i]) {
+          meshesAstrosSigno[i].scale.setScalar(escAstro);
+          meshesAstrosSigno[i].rotation.y += 1.4 * dtSim;
+        }
+        if (halosAstrosSigno[i]) {
+          const escHalo = (0.85 + latido * 0.95) * params.intensidadMallaZodiacal;
+          halosAstrosSigno[i].scale.setScalar(escHalo);
+          halosAstrosSigno[i].material.opacity = Math.min(1.0, (0.35 + latido * 0.65) * params.intensidadMallaZodiacal);
+        }
+      });
+
+      // 3. Órbita y giro síncrono de la Luna frente a la Tierra
+      grupoPlanoOrbitaLuna.rotation.z = THREE.MathUtils.degToRad(params.inclinacionOrbitaLunaDeg);
+      const velOrbitaLunaAjustada = params.velocidadOrbitaLuna * Math.sqrt(Math.max(0.2, params.gravedadG));
+      anguloOrbitaLuna += velOrbitaLunaAjustada * dtSim;
+
+      const lx = Math.cos(anguloOrbitaLuna) * params.radioOrbitaLuna;
+      const lz = Math.sin(anguloOrbitaLuna) * params.radioOrbitaLuna;
+      const ly = Math.sin(anguloOrbitaLuna * 2.0) * 0.08;
+      grupoLuna.position.set(lx, ly, lz);
+      lunaMesh.rotation.y = -anguloOrbitaLuna + Math.PI * 0.5;
+      anilloLunar.rotation.z += 0.35 * dtSim;
+      anilloLunar.material.opacity = Math.min(0.85, params.intensidadHolograma * 0.5);
+      grupoLuna.getWorldPosition(posLunaMundo);
+
+      // 4. Posición del Sol y ciclo Noche / Día
+      const radElev = THREE.MathUtils.degToRad(params.anguloElevacionDeg);
+      const radAcim = THREE.MathUtils.degToRad(params.anguloAcimutDeg);
+      const dist = params.distanciaSolar;
+      const sx = Math.cos(radElev) * Math.cos(radAcim) * dist;
+      const sy = Math.max(-1.5, Math.sin(radElev) * dist);
+      const sz = Math.cos(radElev) * Math.sin(radAcim) * dist;
+
+      grupoSol.position.set(sx, sy, sz);
+      posSolMundo.set(sx, sy, sz);
+      solPuntual.position.set(sx, sy, sz);
+      blastLight.position.set(sx, sy, sz);
+      solDireccional.position.set(sx, Math.max(2.0, sy), sz);
+      solDireccional.target.position.set(ox, oy, oz);
+      solDireccional.target.updateMatrixWorld();
+
+      const fusionNorm = THREE.MathUtils.clamp((params.tasaFusion - 0.3) / 1.9, 0, 1);
+      const poder = params.tasaFusion * (1.0 + energiaEstallido * 0.65);
+
+      if (params.modoDia) {
+        scene.fog.color.lerp(fogColorDia, 5 * dtReal);
+        ambientLuz.color.setHex(0xbae6fd);
+        ambientLuz.intensity = THREE.MathUtils.lerp(ambientLuz.intensity, 0.85, 5 * dtReal);
+        solDireccional.color.setHex(0xfffbeb);
+        solDireccional.intensity = THREE.MathUtils.lerp(solDireccional.intensity, 3.6 * poder, 5 * dtReal);
+        solPuntual.intensity = THREE.MathUtils.lerp(solPuntual.intensity, 8.5 * poder, 5 * dtReal);
+      } else {
+        scene.fog.color.lerp(fogColorNoche, 5 * dtReal);
+        ambientLuz.color.setHex(0x3b82f6);
+        ambientLuz.intensity = THREE.MathUtils.lerp(ambientLuz.intensity, 0.24, 5 * dtReal);
+        solDireccional.color.setHex(0xfdba74);
+        solDireccional.intensity = THREE.MathUtils.lerp(solDireccional.intensity, 1.15 * poder, 5 * dtReal);
+        solPuntual.intensity = THREE.MathUtils.lerp(solPuntual.intensity, 4.6 * poder, 5 * dtReal);
+      }
+
+      // 5. Giro axial de la Tierra y nubes
+      grupoAxial.rotation.z = THREE.MathUtils.degToRad(params.inclinacionAxialDeg);
+      grupoTierra.rotation.y += params.velocidadRotacion * dtSim;
+      nubesMesh.rotation.y += params.velocidadRotacion * 1.28 * dtSim;
+
+      // 6. Agua molecular y holograma
+      actualizarAguaMolecular(dtSim, tSim);
+
+      const opHolo = params.intensidadHolograma * (0.85 + 0.15 * Math.sin(tSim * 4.0) + energiaEstallido * 0.35);
+      anilloEcuatorial.material.opacity = Math.min(1.0, opHolo * 0.72);
+      anilloPolar.material.opacity = Math.min(1.0, opHolo * 0.52);
+      jaulaHolo.material.opacity = Math.min(0.65, opHolo * 0.22);
+      anilloEcuatorial.rotation.z += 0.28 * dtSim * (1 + energiaEstallido);
+      anilloPolar.rotation.z -= 0.42 * dtSim * (1 + energiaEstallido);
+      jaulaHolo.rotation.y -= params.velocidadRotacion * 0.5 * dtSim;
+
+      const compresionGravedad = 1.0 / (0.82 + params.gravedadG * 0.22);
+      const velGravedad = Math.sqrt(Math.max(0.15, params.gravedadG));
+
+      nodosHolo.forEach((n, i) => {
+        n.angulo += n.velBase * velGravedad * dtSim * (1 + energiaEstallido * 1.2);
+        const rActual = n.radioBase * compresionGravedad * (1.0 + Math.sin(tSim * 2.5 + n.fase) * 0.02 + energiaEstallido * 0.14);
+        dummy.position.set(
+          Math.cos(n.angulo) * rActual,
+          Math.sin(n.angulo * 2 + n.fase) * n.inclinacion * params.radioTierra,
+          Math.sin(n.angulo) * rActual
+        );
+        dummy.rotation.set(tSim + n.fase, n.angulo, 0);
+        const s = (0.75 + 0.4 * Math.sin(tSim * 5 + n.fase)) * (1 + energiaEstallido * 0.65) * Math.max(0.15, params.intensidadHolograma);
+        dummy.scale.setScalar(s);
+        dummy.updateMatrix();
+        meshNodosHolo.setMatrixAt(i, dummy.matrix);
+        colTmp.setHSL(0.45 + 0.1 * Math.sin(n.fase + energiaEstallido * 3), 0.85, 0.58 + energiaEstallido * 0.28);
+        meshNodosHolo.setColorAt(i, colTmp);
+      });
+      meshNodosHolo.instanceMatrix.needsUpdate = true;
+      if (meshNodosHolo.instanceColor) meshNodosHolo.instanceColor.needsUpdate = true;
+
+      // 7. Plasma, prominencias y combustión por etapas
+      const pulso = 0.9 + 0.1 * Math.sin(tSim * 4.5 + fusionNorm * 6.0);
+      fotosferaMesh.material.emissiveIntensity = (1.15 + fusionNorm * 0.95 + energiaEstallido * 0.8) * pulso;
+      coronaMesh.material.opacity = Math.min(0.45, (0.12 + params.actividadMagnetica * 0.14 + energiaEstallido * 0.15) * pulso);
+      coronaMesh.scale.setScalar(1.0 + Math.sin(tSim * 2.2) * 0.03 + energiaEstallido * 0.16);
+
+      celdasPlasma.forEach((c, i) => {
+        c.profundidadNorm += c.velRadial * params.tasaFusion * 0.45 * dtSim;
+        if (c.profundidadNorm > 1.0) c.profundidadNorm = 0.0;
+        const factorEcuatorial = Math.pow(Math.sin(c.phi), 1.6);
+        c.theta += params.rotacionEcuatorial * (0.35 + 0.95 * factorEcuatorial) * dtSim;
+
+        const rCelda = params.radioSol * (0.45 + c.profundidadNorm * 0.56 + energiaEstallido * 0.14 * c.profundidadNorm) + Math.sin(tSim * 5.0 + c.fase) * 0.05;
+        const x = rCelda * Math.sin(c.phi) * Math.cos(c.theta);
+        const y = rCelda * Math.cos(c.phi);
+        const z = rCelda * Math.sin(c.phi) * Math.sin(c.theta);
+        const reduccionBorde = 1.0 - Math.pow(Math.max(0, c.profundidadNorm - 0.72) / 0.28, 1.4) * 0.55;
+        const esc = Math.max(0.25, (0.65 + c.profundidadNorm * 0.65) * reduccionBorde * (0.8 + fusionNorm * 0.4));
+
+        dummy.position.set(x, y, z);
+        dummy.lookAt(posSolMundo.clone().add(new THREE.Vector3(x * 2, y * 2, z * 2)));
+        dummy.scale.set(esc, esc, esc);
+        dummy.updateMatrix();
+        meshPlasma.setMatrixAt(i, dummy.matrix);
+        colorPlasmaFusion(c.profundidadNorm, fusionNorm, energiaEstallido);
+        meshPlasma.setColorAt(i, colTmp);
+      });
+      meshPlasma.instanceMatrix.needsUpdate = true;
+      if (meshPlasma.instanceColor) meshPlasma.instanceColor.needsUpdate = true;
+
+      prominencias.forEach((p, i) => {
+        p.progreso += p.vel * (0.45 + params.actividadMagnetica * 0.85 + energiaEstallido * 1.2) * dtSim;
+        if (p.progreso > 1.0) p.progreso = 0.0;
+        const factorEcuatorial = Math.pow(Math.sin(p.basePhi), 1.6);
+        const thetaActual = p.baseTheta + params.rotacionEcuatorial * (0.35 + 0.95 * factorEcuatorial) * tSim * 0.4;
+        const arco = Math.sin(p.progreso * Math.PI);
+        const rArco = params.radioSol * (0.94 + arco * p.alturaBucle * params.actividadMagnetica * 0.45 + energiaEstallido * arco * 0.35);
+        const thetaArco = thetaActual + (p.progreso - 0.5) * 0.45;
+
+        const x = rArco * Math.sin(p.basePhi) * Math.cos(thetaArco);
+        const y = rArco * Math.cos(p.basePhi);
+        const z = rArco * Math.sin(p.basePhi) * Math.sin(thetaArco);
+        const escP = Math.max(0.15, (1.0 - p.progreso * 0.65) * (0.55 + params.actividadMagnetica * 0.6));
+
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(tSim * 2 + p.fase, thetaArco, 0);
+        dummy.scale.set(escP, escP, escP);
+        dummy.updateMatrix();
+        meshProminencias.setMatrixAt(i, dummy.matrix);
+        colTmp.copy(COL_NARANJA_HD).lerp(COL_ROJO_HD, p.progreso);
+        if (energiaEstallido > 0.35) colTmp.lerp(COL_AMARILLO_HD, energiaEstallido * 0.6);
+        meshProminencias.setColorAt(i, colTmp);
+      });
+      meshProminencias.instanceMatrix.needsUpdate = true;
+      if (meshProminencias.instanceColor) meshProminencias.instanceColor.needsUpdate = true;
+
+      const ratioO2 = THREE.MathUtils.clamp((params.oxigenoPct - 8) / 38, 0, 1);
+      const radBrisa = THREE.MathUtils.degToRad(params.anguloBrisaDeg);
+      const brisaX = Math.cos(radBrisa) * params.intensidadBrisa;
+      const brisaZ = Math.sin(radBrisa) * params.intensidadBrisa;
+      meshAgentesFuego.material.emissiveIntensity = THREE.MathUtils.clamp(0.45 + params.intensidadCombustion * 0.35, 0.25, 1.35);
+
+      agentesFuego.forEach((a, i) => {
+        const factorGravedad = a.esProductoDenso && a.cicloVida > 0.55 ? params.gravedadG * 0.35 : 0;
+        a.cicloVida += (a.velCiclo * params.flujoTermico * (0.55 + params.intensidadCombustion * 0.45) * 0.42 - factorGravedad * 0.25) * dtSim;
+        if (a.cicloVida >= 1.0) {
+          a.cicloVida = 0.0;
+          a.radioNorm = Math.pow(Math.random(), 0.5 + params.concentracion * 0.75);
+          a.angulo = Math.random() * Math.PI * 2;
+        } else if (a.cicloVida < 0.0) {
+          a.cicloVida = 0.02;
+        }
+
+        const tExistencia = a.cicloVida;
+        const remolino = params.intensidadBrisa * (0.35 + tExistencia * 0.85);
+        a.angulo += (a.velGiro + remolino + (1 - tExistencia) * 0.8) * dtSim;
+
+        if (a.impulsoRadial > 0) {
+          a.radioNorm = Math.min(1.0, a.radioNorm + a.impulsoRadial * dtSim * 0.55);
+          a.impulsoRadial = Math.max(0, a.impulsoRadial - dtSim * 1.4);
+        }
+
+        const aperturaSup = Math.pow(Math.max(0, tExistencia - 0.35) / 0.65, 1.3) * params.aperturaLlama;
+        const estrechamientoBase = (1.0 - Math.min(0.45, tExistencia * 0.55)) * (1.05 - params.concentracion * 0.3);
+        const radioEfectivo = Math.min(
+          params.radioSol * 1.45,
+          (0.35 + a.radioNorm * params.radioSol * 0.52) * estrechamientoBase + aperturaSup * 1.1 + energiaEstallido * a.radioNorm * 1.8
+        );
+
+        const derivaX = brisaX * (0.25 + tExistencia * 1.2) + Math.sin(tSim * 2.2 + a.fase) * params.intensidadBrisa * 0.2;
+        const derivaZ = brisaZ * (0.25 + tExistencia * 1.2) + Math.cos(tSim * 2.0 + a.fase) * params.intensidadBrisa * 0.2;
+        const x = Math.cos(a.angulo) * radioEfectivo + derivaX;
+        const z = Math.sin(a.angulo) * radioEfectivo + derivaZ;
+        const y = -params.radioSol * 0.55 + tExistencia * (params.radioSol * 1.35 + params.flujoTermico * 0.45);
+
+        const progExt = Math.max(0, (tExistencia - 0.58) / 0.42);
+        const factorRed = 1.0 - Math.pow(progExt, 1.35) * params.reduccionExtincion;
+        const escala = Math.max(0.03, (0.55 + (1 - tExistencia) * 0.6 + energiaEstallido * 0.6) * (0.45 + params.intensidadCombustion * 0.55) * Math.max(0.05, factorRed));
+
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(tSim * 2 + a.fase, a.angulo, 0);
+        dummy.scale.set(escala, escala * (0.9 + (1 - progExt) * 0.3), escala);
+        dummy.updateMatrix();
+        meshAgentesFuego.setMatrixAt(i, dummy.matrix);
+
+        calcularColorPorEtapaCombustion(tExistencia, ratioO2, a.esProductoDenso, a.radioNorm, energiaEstallido, colTmp);
+        meshAgentesFuego.setColorAt(i, colTmp);
+      });
+      meshAgentesFuego.instanceMatrix.needsUpdate = true;
+      if (meshAgentesFuego.instanceColor) meshAgentesFuego.instanceColor.needsUpdate = true;
+
+      // 8. Estrellas, asteroides, cometas y fugaces rodeando Sol y Luna
+      puntosEstrellas.rotation.y += 0.012 * params.actividadCeleste * dtSim;
+
+      asteroides.forEach((ast, i) => {
+        ast.angulo += ast.velAngular * params.actividadCeleste * dtSim;
+        const centroRef = ast.alrededorLuna ? posLunaMundo : posSolMundo;
+        const ax = centroRef.x + Math.cos(ast.angulo) * ast.radio;
+        const az = centroRef.z + Math.sin(ast.angulo) * ast.radio;
+        const ay = centroRef.y + ast.inclinacionY + Math.sin(ast.angulo * 2 + i) * 0.25;
+
+        dummy.position.set(ax, ay, az);
+        dummy.rotation.set(tSim * ast.rotVel.x, tSim * ast.rotVel.y, tSim * ast.rotVel.z);
+        dummy.scale.setScalar(ast.escala);
+        dummy.updateMatrix();
+        meshAsteroides.setMatrixAt(i, dummy.matrix);
+      });
+      meshAsteroides.instanceMatrix.needsUpdate = true;
+
+      cometas.forEach((com) => {
+        com.angulo += com.velAngular * params.actividadCeleste * dtSim;
+        const centroRef = com.alrededorLuna ? posLunaMundo : posSolMundo;
+        const cx = centroRef.x + Math.cos(com.angulo) * com.radioX;
+        const cz = centroRef.z + Math.sin(com.angulo) * com.radioZ;
+        const cy = centroRef.y + Math.sin(com.angulo) * com.radioX * com.inclinacion;
+
+        com.mesh.position.set(cx, cy, cz);
+        const tangX = -Math.sin(com.angulo) * com.radioX;
+        const tangZ = Math.cos(com.angulo) * com.radioZ;
+        const tangY = Math.cos(com.angulo) * com.radioX * com.inclinacion;
+        com.mesh.lookAt(cx - tangX, cy - tangY, cz - tangZ);
+      });
+
+      fugaces.forEach((f) => {
+        f.progreso += f.vel * params.actividadCeleste * dtSim;
+        if (f.progreso >= 1.0) {
+          reiniciarFugaz(f, posLunaMundo, posSolMundo);
+        }
+        const distRecorrida = f.progreso * 9.5;
+        f.mesh.position.copy(f.inicio).addScaledVector(f.dir, distRecorrida);
+        f.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), f.dir);
+        const opF = Math.sin(f.progreso * Math.PI) * 0.92;
+        f.mesh.material.opacity = Math.max(0, opF);
+      });
+
+      // 9. HUD
+      const badge = document.getElementById('badge-ciclo');
+      if (params.modoDia) {
+        badge.innerText = 'DÍA';
+        badge.style.background = 'rgba(251,191,36,0.22)';
+        badge.style.color = '#fbbf24';
+      } else {
+        badge.innerText = 'NOCHE';
+        badge.style.background = 'rgba(56,189,248,0.2)';
+        badge.style.color = '#38bdf8';
+      }
+
+      const degLuna = (((anguloOrbitaLuna * 180) / Math.PI) % 360 + 360) % 360;
+      const tempNucleoMK = (12.5 + params.tasaFusion * 2.8 + energiaEstallido * 3.5).toFixed(1);
+      document.getElementById('m-zodiaco').innerText = `${signoActivo.simbolo} ${signoActivo.nombre} (${signoActivo.elemento}) · Palpitando`;
+      document.getElementById('m-tiempo').innerText = `${params.velocidadTiempo.toFixed(2)}x · Sim: ${tSim.toFixed(1)}s`;
+      document.getElementById('m-fuego').innerText = `${Math.round(params.intensidadCombustion * 100)}% · O₂ ${params.oxigenoPct}%`;
+      document.getElementById('m-celestes').innerText = `${params.numEstrellas}★ · ${params.numAsteroides}☄ · ${cometas.length} Cometas`;
+      document.getElementById('m-luna').innerText = `R = ${params.radioOrbitaLuna.toFixed(1)} · Síncrona (${Math.round(degLuna)}°)`;
+      document.getElementById('m-sol').innerText = `${tempNucleoMK} MK · ${Math.round(params.anguloElevacionDeg)}°`;
+      document.getElementById('m-gravedad').innerText = `${(9.81 * params.gravedadG).toFixed(2)} m/s² · ${params.inclinacionAxialDeg.toFixed(1)}°`;
+      document.getElementById('m-orbita').innerText = `R = ${params.radioOrbita.toFixed(1)} · ${params.temperaturaK} K`;
+    }
+
+    const gui = new lil.GUI({ title: 'Controles Universales' });
+    const fZodiaco = gui.addFolder('Malla Zodiacal');
+    const nombresSignos = {};
+    SIGNOS_ZODIACALES.forEach((s, idx) => { nombresSignos[`${s.simbolo} ${s.nombre}`] = idx; });
+    fZodiaco.add(params, 'indiceSigno', nombresSignos).name('Signo Zodiacal').onChange(construirSignoZodiacal);
+    fZodiaco.add(params, 'frecuenciaLatidoZodiaco', 0.5, 8.0, 0.1).name('Ritmo Pulso');
+    fZodiaco.add(params, 'intensidadMallaZodiacal', 0.0, 1.5, 0.05).name('Intensidad Malla');
+
+    const fTiempo = gui.addFolder('Velocidad del Tiempo');
+    fTiempo.add(params, 'velocidadTiempo', 0.1, 15.0, 0.05).name('Escala Tiempo (x)');
+
+    const fCelestes = gui.addFolder('Estrellas, Cometas y Asteroides');
+    fCelestes.add(params, 'actividadCeleste', 0.0, 3.0, 0.05).name('Velocidad Celeste');
+
+    const fFuego = gui.addFolder('Combustión por Etapas');
+    fFuego.add(params, 'intensidadCombustion', 0.2, 2.2, 0.05).name('Intensidad Comb.');
+    fFuego.add(params, 'oxigenoPct', 8, 50, 1).name('Oxígeno O₂ (%)');
+    fFuego.add(params, 'flujoTermico', 0.4, 2.8, 0.05).name('Flujo Térmico');
+    fFuego.add(params, 'aperturaLlama', 0.0, 1.5, 0.05).name('Aberturas Flama');
+    fFuego.add(params, 'reduccionExtincion', 0.2, 1.0, 0.02).name('Reducción al Fin');
+    fFuego.add(params, 'intensidadBrisa', 0.0, 1.0, 0.02).name('Brisa / Remolino');
+    fFuego.add(params, 'numAgentesFuego', 50, MAX_AGENTES_FUEGO, 25).name('Agentes Fuego').onChange(reconstruirAgentesFuego);
+
+    const fLuna = gui.addFolder('Luna en Órbita');
+    fLuna.add(params, 'radioOrbitaLuna', 3.4, 6.2, 0.1).name('Distancia Luna');
+    fLuna.add(params, 'velocidadOrbitaLuna', 0.0, 2.5, 0.05).name('Velocidad Lunar');
+    fLuna.add(params, 'inclinacionOrbitaLunaDeg', -15, 15, 0.1).name('Inclinación (°)');
+
+    const fTierra = gui.addFolder('Tierra, Giro y Gravedad');
+    fTierra.add(params, 'gravedadG', 0.2, 2.5, 0.05).name('Gravedad (g)');
+    fTierra.add(params, 'inclinacionAxialDeg', -45, 45, 0.5).name('Inclinación Eje (°)');
+    fTierra.add(params, 'velocidadRotacion', 0.0, 2.0, 0.02).name('Giro Terrestre');
+    fTierra.add(params, 'velocidadOrbita', 0.0, 1.5, 0.02).name('Velocidad Órbita');
+    fTierra.add(params, 'radioOrbita', 4.5, 11.0, 0.1).name('Radio Orbital');
+    fTierra.add(params, 'orbitaActiva').name('Traslación Activa');
+    fTierra.add(params, 'intensidadHolograma', 0.0, 1.2, 0.05).name('Holograma');
+
+    const fAgua = gui.addFolder('Agua Molecular (H₂O)');
+    fAgua.add(params, 'mostrarAguaMolecular').name('Mostrar Moléculas');
+    fAgua.add(params, 'moleculasOceano', 30, MAX_MOL_AGUA, 10).name('Cant. Moléculas').onChange(reconstruirAguaMolecular);
+    fAgua.add(params, 'proporcionOtrasMoleculas', 0.0, 0.85, 0.05).name('Otras Moléculas').onChange(reconstruirAguaMolecular);
+    fAgua.add(params, 'tensionSuperficial', 0.8, 6.0, 0.1).name('Tensión Sup.');
+    fAgua.add(params, 'cohesionPuentes', 0.0, 3.0, 0.1).name('Puentes H');
+    fAgua.add(params, 'temperaturaK', 273, 350, 1).name('Temp. (K)');
+
+    const fSol = gui.addFolder('Sol en Fusión');
+    fSol.add(params, 'modoDia').name('Modo Día (Def. Noche)');
+    fSol.add(params, 'tasaFusion', 0.3, 2.2, 0.05).name('Tasa Fusión (H→He)');
+    fSol.add(params, 'actividadMagnetica', 0.1, 1.5, 0.05).name('Prominencias');
+    fSol.add(params, 'rotacionEcuatorial', 0.0, 1.5, 0.05).name('Rotación Ecuat.');
+    fSol.add(params, 'anguloAcimutDeg', 0, 360, 5).name('Acimut Solar (°)');
+    fSol.add(params, 'anguloElevacionDeg', 2, 75, 1).name('Elevación Solar (°)');
+    fSol.add(params, 'distanciaSolar', 16, 42, 1).name('Distancia Solar');
+    fSol.add(params, 'exposicionHD', 0.7, 1.8, 0.05).name('Exposición HD');
+
+    construirSignoZodiacal(params.indiceSigno);
+    reconstruirAguaMolecular();
+    reconstruirAgentesFuego();
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dtReal = Math.min((now - prevT) / 1000, 0.05);
+      const dtSim = dtReal * params.velocidadTiempo;
+      tiempoSimulado += dtSim;
+      prevT = now;
+
+      actualizarSistemaCompleto(dtReal, dtSim, tiempoSimulado);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
   </script>
 </body>
 </html>
