@@ -12,6 +12,7 @@
       --glass-bg: rgba(15, 23, 42, 0.65);
       --glass-border: rgba(56, 189, 248, 0.18);
       --glass-highlight: rgba(56, 189, 248, 0.35);
+      --glare-color: rgba(255, 255, 255, 0.12);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --accent-cyan: #38bdf8;
@@ -27,6 +28,7 @@
       --glass-bg: rgba(255, 255, 255, 0.78);
       --glass-border: rgba(2, 132, 199, 0.2);
       --glass-highlight: rgba(2, 132, 199, 0.3);
+      --glare-color: rgba(255, 255, 255, 0.65);
       --text-primary: #0f172a;
       --text-secondary: #475569;
       --accent-cyan: #0284c7;
@@ -209,12 +211,102 @@
       margin-bottom: 40px;
     }
 
+    /* =========================================
+       ANIMACIÓN DE ENTRADA (DE AFUERA HACIA ADENTRO)
+       ========================================= */
+    .reveal-block {
+      opacity: 0;
+      transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.35s ease,
+                  box-shadow 0.35s ease;
+      will-change: opacity, transform;
+    }
+
+    .reveal-left {
+      transform: translateX(-85px) scale(0.96);
+    }
+
+    .reveal-right {
+      transform: translateX(85px) scale(0.96);
+    }
+
+    .reveal-bottom {
+      transform: translateY(65px) scale(0.96);
+    }
+
+    .reveal-top {
+      transform: translateY(-45px) scale(0.96);
+    }
+
+    .reveal-block.is-visible {
+      opacity: 1;
+      transform: translate(0, 0) scale(1);
+    }
+
+    /* =========================================
+       EFECTO REFLEJO DE CRISTAL (GLARE & SHIMMER)
+       ========================================= */
+    .glass-reflective {
+      position: relative;
+      overflow: hidden;
+      --mouse-x: -500px;
+      --mouse-y: -500px;
+    }
+
+    /* Brillo superior sutil tipo borde de cristal */
+    .glass-reflective::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, transparent 45%, rgba(56, 189, 248, 0.25) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Reflejo dinámico que sigue el puntero */
+    .glass-reflective::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        480px circle at var(--mouse-x) var(--mouse-y),
+        var(--glare-color),
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .glass-reflective:hover::after {
+      opacity: 1;
+    }
+
     .panel-card {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
       padding: 32px;
       backdrop-filter: blur(20px);
+      box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.45);
+    }
+
+    .panel-card:hover {
+      border-color: var(--glass-highlight);
+      box-shadow: 0 20px 40px -12px rgba(56, 189, 248, 0.18);
+    }
+
+    .panel-card > *,
+    .creator-banner > * {
+      position: relative;
+      z-index: 3;
     }
 
     .panel-card h2 {
@@ -235,6 +327,13 @@
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    }
+
+    .channel-item:hover {
+      transform: translateX(4px);
+      background: rgba(56, 189, 248, 0.11);
+      border-color: var(--accent-cyan);
     }
 
     .channel-info strong {
@@ -276,6 +375,33 @@
       margin-top: 18px;
     }
 
+    /* Destello diagonal en botones */
+    .shimmer-btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.45),
+        transparent
+      );
+      transform: skewX(-25deg);
+      transition: left 0.65s ease;
+    }
+
+    .shimmer-btn:hover::after {
+      left: 140%;
+    }
+
     .bmac-btn {
       display: inline-block;
       margin-top: 12px;
@@ -286,11 +412,12 @@
       border-radius: 10px;
       text-decoration: none;
       font-size: 0.9rem;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .bmac-btn:hover {
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 221, 0, 0.35);
     }
 
     .instagram-btn {
@@ -303,12 +430,13 @@
       border-radius: 10px;
       text-decoration: none;
       font-size: 0.9rem;
-      transition: transform 0.2s ease, opacity 0.2s;
+      transition: transform 0.2s ease, opacity 0.2s, box-shadow 0.2s ease;
     }
 
     .instagram-btn:hover {
       transform: translateY(-2px);
       opacity: 0.95;
+      box-shadow: 0 6px 20px rgba(253, 29, 29, 0.35);
     }
 
     .form-group {
@@ -333,7 +461,7 @@
       color: var(--text-primary);
       font-size: 0.95rem;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     [data-theme="light"] .form-group input,
@@ -346,6 +474,7 @@
     .form-group select:focus,
     .form-group textarea:focus {
       border-color: var(--accent-cyan);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
     }
 
     .btn-primary {
@@ -358,12 +487,13 @@
       border-radius: 10px;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: opacity 0.25s, transform 0.2s;
+      transition: opacity 0.25s, transform 0.2s, box-shadow 0.25s;
     }
 
     .btn-primary:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
+      opacity: 0.95;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.35);
     }
 
     .creator-banner {
@@ -376,6 +506,8 @@
       justify-content: space-between;
       align-items: center;
       gap: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 12px 32px -10px rgba(168, 85, 247, 0.25);
     }
 
     footer {
@@ -389,6 +521,12 @@
       gap: 16px;
       color: var(--text-secondary);
       font-size: 0.88rem;
+    }
+
+    @media (max-width: 768px) {
+      .reveal-left, .reveal-right {
+        transform: translateY(45px) scale(0.97);
+      }
     }
   </style>
 </head>
@@ -421,15 +559,15 @@
   </header>
 
   <main class="container">
-    <div class="page-header">
+    <div class="page-header reveal-block reveal-top">
       <span class="hero-tag">Nodos de Comunicación</span>
       <h1>Contacto & Alianzas</h1>
       <p>Conecta directamente con el núcleo administrativo y el área de arte multidisciplinario de MultiversoLabs.</p>
     </div>
 
     <div class="contact-grid">
-      <!-- Columna 1: Canales Oficiales, Buy Me a Coffee e Instagram -->
-      <div class="panel-card">
+      <!-- Columna 1: Entra desde la izquierda hacia el centro -->
+      <div class="panel-card glass-reflective reveal-block reveal-left">
         <h2>Canales Oficiales</h2>
         <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
           Selecciona el nodo correspondiente según el propósito de tu mensaje:
@@ -453,24 +591,24 @@
           <button class="copy-btn" onclick="copyMail('mail-artista', this)">Copiar</button>
         </div>
 
-        <div class="bmac-card">
+        <div class="bmac-card glass-reflective">
           <strong style="font-size: 1rem; color: var(--text-primary);">☕ Apoya los Proyectos & Tienda Digital</strong>
           <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px; line-height: 1.5;">
             Accede a recursos creativos, herramientas experimentales o impulsa nuestras investigaciones en Buy Me a Coffee.
           </p>
-          <a href="https://www.buymeacoffee.com/Multiversolabs.space" target="_blank" rel="noopener" class="bmac-btn">
+          <a href="https://www.buymeacoffee.com/Multiversolabs.space" target="_blank" rel="noopener" class="bmac-btn shimmer-btn">
             ☕ Visitar Buy Me a Coffee
           </a>
           <br>
-          <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="instagram-btn">
+          <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="instagram-btn shimmer-btn">
              Conectar en Instagram
           </a>
         </div>
       </div>
 
-      <!-- Columna 2: Formulario Directo -->
-      <div class="panel-card">
-        <h2> Transmisión Directa</h2>
+      <!-- Columna 2: Entra desde la derecha hacia el centro -->
+      <div class="panel-card glass-reflective reveal-block reveal-right">
+        <h2>Transmisión Directa</h2>
         <form id="contactForm" onsubmit="handleContactSubmit(event)">
           <div class="form-group">
             <label for="senderName">Tu Nombre o Alias</label>
@@ -495,26 +633,26 @@
             <textarea id="message" rows="4" placeholder="Cuéntanos sobre tu idea, proyecto o consulta..." required></textarea>
           </div>
 
-          <button type="submit" class="btn-primary">Enviar Mensaje al Núcleo →</button>
+          <button type="submit" class="btn-primary shimmer-btn">Enviar Mensaje al Núcleo →</button>
           <p id="formFeedback" style="margin-top: 12px; font-size: 0.85rem; color: var(--accent-cyan); display: none;"></p>
         </form>
       </div>
     </div>
 
-    <!-- Banner de conexión hacia la web personal del Artista -->
-    <div class="creator-banner">
+    <!-- Banner inferior: Entra desde abajo hacia adentro -->
+    <div class="creator-banner glass-reflective reveal-block reveal-bottom">
       <div>
         <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-purple); font-weight: 700;">Autor & Creador</span>
         <h3 style="font-size: 1.3rem; margin: 4px 0;">¿Buscas conectar directamente con el espacio personal?</h3>
         <p style="color: var(--text-secondary); font-size: 0.92rem;">Visita el perfil de guía, acompañamiento y arte.</p>
       </div>
-      <a href="artista.html" class="btn-glass" style="border-color: var(--accent-purple); padding: 12px 20px; font-weight: 600;">
+      <a href="artista.html" class="btn-glass shimmer-btn" style="border-color: var(--accent-purple); padding: 12px 20px; font-weight: 600;">
         Ir a perfil Artista →
       </a>
     </div>
   </main>
 
-  <footer>
+  <footer class="reveal-block reveal-bottom">
     <div><strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions.</div>
     <div><a href="index.html" style="color: var(--accent-cyan); text-decoration: none;">← Volver a la plataforma principal</a></div>
   </footer>
@@ -554,14 +692,42 @@
       const feedback = document.getElementById('formFeedback');
 
       const subject = encodeURIComponent(`Contacto Web MultiversoLabs — ${name}`);
-      const body = encodeURIComponent(`De: ${name}
-
-${msg}`);
+      const body = encodeURIComponent(`De: ${name}\n\n${msg}`);
       window.location.href = `mailto:${targetMail}?subject=${subject}&body=${body}`;
 
       feedback.textContent = `Abriendo tu cliente de correo para enviar a ${targetMail}...`;
       feedback.style.display = 'block';
     }
+
+    // 1. Observador de Scroll: Aparecer de afuera hacia adentro por sector
+    const revealElements = document.querySelectorAll('.reveal-block');
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -40px 0px'
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // 2. Efecto de reflejo dinámico según posición del cursor
+    const reflectiveCards = document.querySelectorAll('.glass-reflective');
+    reflectiveCards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    });
   </script>
 </body>
 </html>
