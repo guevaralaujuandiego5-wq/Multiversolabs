@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Centro de Investigación — MultiversoLabs</title>
+  <title>Explora la Ciencia — MultiversoLabs</title>
   <style>
     /* ==========================================================================
-       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA (MULTIVERSOLABS)
+       VARIABLES DE DISEÑO Y ESTÉTICA HOLOGRÁFICA
        ========================================================================== */
     :root {
       --bg-mesh-1: #050814;
       --bg-mesh-2: #0b1120;
       --bg-mesh-3: #111827;
       --glass-bg: rgba(15, 23, 42, 0.68);
-      --glass-bg-elevated: rgba(15, 23, 42, 0.85);
-      --glass-border: rgba(56, 189, 248, 0.2);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.92);
+      --glass-border: rgba(56, 189, 248, 0.22);
       --glass-highlight: rgba(56, 189, 248, 0.35);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
@@ -28,8 +28,8 @@
       --bg-mesh-1: #f1f5f9;
       --bg-mesh-2: #e2e8f0;
       --bg-mesh-3: #cbd5e1;
-      --glass-bg: rgba(255, 255, 255, 0.78);
-      --glass-bg-elevated: rgba(255, 255, 255, 0.92);
+      --glass-bg: rgba(255, 255, 255, 0.8);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.95);
       --glass-border: rgba(2, 132, 199, 0.22);
       --glass-highlight: rgba(2, 132, 199, 0.28);
       --text-primary: #0f172a;
@@ -60,7 +60,32 @@
     }
 
     /* ==========================================================================
-       FONDO DINÁMICO HOLOGRÁFICO (VIVO)
+       ANIMACIÓN EFECTO CREMALLERA (DESCUADRE HACIA ADENTRO AL HACER SCROLL)
+       ========================================================================== */
+    .zipper-item {
+      opacity: 0;
+      transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.65s ease;
+      will-change: transform, opacity;
+    }
+
+    /* Diente izquierdo de la cremallera: empieza desplazado a la izquierda y ligeramente inclinado */
+    .zipper-left {
+      transform: translateX(-60px) translateY(20px) rotate(-1.4deg) scale(0.97);
+    }
+
+    /* Diente derecho de la cremallera: empieza desplazado a la derecha y ligeramente inclinado */
+    .zipper-right {
+      transform: translateX(60px) translateY(20px) rotate(1.4deg) scale(0.97);
+    }
+
+    /* Estado cerrado: encaja perfectamente en su sitio */
+    .zipper-item.zipped {
+      opacity: 1;
+      transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    }
+
+    /* ==========================================================================
+       FONDO DINÁMICO HOLOGRÁFICO
        ========================================================================== */
     .living-background {
       position: fixed;
@@ -87,14 +112,14 @@
     }
 
     /* ==========================================================================
-       BARRA DE NOTICIAS / TICKER SUPERIOR
+       BARRA SUPERIOR DE AVISOS
        ========================================================================== */
     .news-ticker {
       background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(244, 63, 94, 0.12));
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--glass-border);
       padding: 8px 20px;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -116,11 +141,11 @@
       border: none;
       color: var(--text-secondary);
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
 
     /* ==========================================================================
-       HEADER Y NAVEGACIÓN UNIVERSAL
+       HEADER Y NAVEGACIÓN
        ========================================================================== */
     header {
       position: sticky;
@@ -169,7 +194,7 @@
     .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
     .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
     .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
-    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); }
     .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
 
     @keyframes rotateCube {
@@ -186,7 +211,7 @@
     .nav-links a {
       color: var(--text-secondary);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       transition: color 0.2s ease;
     }
 
@@ -207,8 +232,8 @@
       border: 1px solid var(--glass-border);
       color: var(--text-primary);
       padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.84rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
       cursor: pointer;
       backdrop-filter: blur(10px);
       transition: all 0.25s ease;
@@ -225,27 +250,27 @@
     }
 
     .btn-glass.primary {
-      background: rgba(56, 189, 248, 0.14);
+      background: rgba(56, 189, 248, 0.16);
       border-color: var(--accent-cyan);
       color: var(--accent-cyan);
       font-weight: 600;
     }
 
     /* ==========================================================================
-       CONTENEDORES Y TIPOGRAFÍA DE SECCIÓN
+       CONTENEDORES Y TIPOGRAFÍA
        ========================================================================== */
     .container {
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 0 5%;
     }
 
     .section-block {
-      padding: 44px 0;
+      padding: 48px 0;
     }
 
     .section-header {
-      margin-bottom: 26px;
+      margin-bottom: 28px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
@@ -254,9 +279,9 @@
     }
 
     .section-kicker {
-      font-size: 0.74rem;
+      font-size: 0.78rem;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       color: var(--accent-cyan);
       font-weight: 700;
       display: block;
@@ -264,39 +289,37 @@
     }
 
     .section-title {
-      font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--text-primary);
     }
 
     /* ==========================================================================
-       0. INTRODUCCIÓN & MAPA DE SECTORES
+       0. INTRODUCCIÓN AMIGABLE
        ========================================================================== */
     .hero-research {
       padding: 56px 0 36px;
     }
 
     .hero-badge {
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
+      font-size: 0.8rem;
       color: var(--accent-cyan);
       font-weight: 700;
       display: inline-block;
       margin-bottom: 14px;
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(56, 189, 248, 0.12);
       padding: 6px 14px;
       border-radius: 99px;
       border: 1px solid var(--glass-border);
     }
 
     .hero-research h1 {
-      font-size: clamp(2.1rem, 4.5vw, 3.4rem);
+      font-size: clamp(2.1rem, 4.5vw, 3.3rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       margin-bottom: 16px;
-      line-height: 1.12;
+      line-height: 1.15;
       background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -304,8 +327,8 @@
 
     .hero-research p {
       color: var(--text-secondary);
-      font-size: clamp(1rem, 1.8vw, 1.15rem);
-      max-width: 800px;
+      font-size: clamp(1.02rem, 1.8vw, 1.16rem);
+      max-width: 780px;
       line-height: 1.65;
       margin-bottom: 24px;
     }
@@ -313,18 +336,18 @@
     .sector-jumpbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       padding: 14px;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      border-radius: 16px;
       backdrop-filter: blur(16px);
     }
 
     .jump-pill {
-      font-size: 0.78rem;
-      padding: 6px 12px;
-      border-radius: 8px;
+      font-size: 0.85rem;
+      padding: 7px 14px;
+      border-radius: 10px;
       text-decoration: none;
       color: var(--text-secondary);
       border: 1px solid transparent;
@@ -338,11 +361,11 @@
     }
 
     /* ==========================================================================
-       INTERACCIÓN 1: EXPLORADOR DE LOS 5 PILARES NUCLEARES
+       1. EXPLORADOR DE LAS 5 GRANDES IDEAS
        ========================================================================== */
     .pillars-tabs {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
       gap: 12px;
       margin-bottom: 22px;
     }
@@ -351,13 +374,11 @@
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: 14px;
-      padding: 16px 18px;
+      padding: 16px;
       text-align: left;
       cursor: pointer;
       color: var(--text-primary);
       transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
     }
 
     .pillar-tab:hover {
@@ -367,22 +388,20 @@
 
     .pillar-tab.active {
       border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.14);
+      background: rgba(56, 189, 248, 0.15);
       box-shadow: 0 0 22px rgba(56, 189, 248, 0.2);
     }
 
     .pillar-tab .p-num {
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
       display: block;
       margin-bottom: 4px;
     }
 
     .pillar-tab .p-name {
-      font-size: 0.98rem;
+      font-size: 1rem;
       font-weight: 700;
     }
 
@@ -390,14 +409,8 @@
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
-      padding: 32px;
+      padding: 30px;
       backdrop-filter: blur(22px);
-      animation: fadeSlide 0.3s ease;
-    }
-
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .stage-top {
@@ -407,20 +420,20 @@
       align-items: flex-start;
       gap: 16px;
       padding-bottom: 20px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       border-bottom: 1px solid var(--glass-border);
     }
 
     .stage-top h3 {
-      font-size: 1.55rem;
+      font-size: 1.45rem;
       margin-bottom: 8px;
     }
 
     .stage-top p {
       color: var(--text-secondary);
-      max-width: 740px;
-      line-height: 1.6;
-      font-size: 0.96rem;
+      max-width: 720px;
+      line-height: 1.65;
+      font-size: 0.98rem;
     }
 
     .submodules-grid {
@@ -434,44 +447,22 @@
       border: 1px solid var(--glass-border);
       border-radius: 14px;
       padding: 20px;
-      transition: border-color 0.25s ease;
-    }
-
-    .submodule-card:hover {
-      border-color: var(--accent-cyan);
     }
 
     .submodule-card h4 {
-      font-size: 1.02rem;
+      font-size: 1.05rem;
       color: var(--accent-cyan);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    .submodule-card ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .submodule-card li {
-      font-size: 0.88rem;
+    .submodule-card p {
+      font-size: 0.92rem;
       color: var(--text-secondary);
-      padding-left: 14px;
-      position: relative;
-      line-height: 1.45;
-    }
-
-    .submodule-card li::before {
-      content: "›";
-      position: absolute;
-      left: 0;
-      color: var(--accent-cyan);
-      font-weight: 700;
+      line-height: 1.55;
     }
 
     /* ==========================================================================
-       INTERACCIÓN 2: SANDBOX DE SIMULACIÓN & CONSOLA DE EXPERIMENTOS
+       2. LABORATORIO INTERACTIVO (JUEGA Y PRUEBA)
        ========================================================================== */
     .sandbox-grid {
       display: grid;
@@ -500,7 +491,7 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--glass-border);
-      background: rgba(5, 8, 20, 0.75);
+      background: rgba(5, 8, 20, 0.8);
       margin: 16px 0;
     }
 
@@ -517,16 +508,16 @@
       right: 12px;
       display: flex;
       justify-content: space-between;
-      font-size: 0.74rem;
+      font-size: 0.76rem;
       color: #38bdf8;
       pointer-events: none;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 600;
     }
 
     .sim-controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
       justify-content: space-between;
     }
@@ -535,7 +526,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 0.82rem;
+      font-size: 0.88rem;
       color: var(--text-secondary);
     }
 
@@ -554,7 +545,7 @@
     .exp-item {
       border: 1px solid var(--glass-border);
       border-radius: 12px;
-      padding: 14px 16px;
+      padding: 15px 16px;
       background: rgba(56, 189, 248, 0.03);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -563,7 +554,7 @@
     .exp-item:hover,
     .exp-item.selected {
       border-color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.09);
+      background: rgba(56, 189, 248, 0.1);
     }
 
     .exp-top {
@@ -574,14 +565,14 @@
     }
 
     .exp-code {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
       color: var(--accent-cyan);
     }
 
     .status-badge {
-      font-size: 0.7rem;
-      padding: 2px 8px;
+      font-size: 0.72rem;
+      padding: 3px 9px;
       border-radius: 99px;
       font-weight: 600;
     }
@@ -599,7 +590,7 @@
     }
 
     /* ==========================================================================
-       SOPORTE CONCEPTUAL (MARCO TEÓRICO & ARTE PROCEDURAL)
+       3. NUESTROS VALORES Y ARTE DIGITAL
        ========================================================================== */
     .support-grid {
       display: grid;
@@ -615,45 +606,21 @@
       padding: 26px;
       backdrop-filter: blur(20px);
       overflow: hidden;
-      transition: transform 0.3s ease, border-color 0.3s ease;
-    }
-
-    .spotlight-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        480px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        var(--glass-highlight),
-        transparent 40%
-      );
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-
-    .spotlight-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent-cyan);
-    }
-
-    .spotlight-card:hover::before {
-      opacity: 1;
     }
 
     .spotlight-card h3 {
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       margin-bottom: 10px;
     }
 
     .spotlight-card p {
-      font-size: 0.9rem;
+      font-size: 0.94rem;
       color: var(--text-secondary);
       line-height: 1.6;
     }
 
     /* ==========================================================================
-       INTERACCIÓN 3: BIBLIOTECA VIVA CON FILTROS Y LECTOR MODAL
+       4. LECTURAS Y ARTÍCULOS FÁCILES DE ENTENDER
        ========================================================================== */
     .library-toolbar {
       display: flex;
@@ -674,9 +641,9 @@
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       color: var(--text-secondary);
-      padding: 6px 14px;
+      padding: 7px 14px;
       border-radius: 99px;
-      font-size: 0.8rem;
+      font-size: 0.84rem;
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -692,9 +659,9 @@
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       color: var(--text-primary);
-      padding: 8px 14px;
+      padding: 9px 14px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       min-width: 240px;
       outline: none;
     }
@@ -719,24 +686,19 @@
       justify-content: space-between;
       align-items: center;
       gap: 14px;
-      transition: border-color 0.2s ease;
-    }
-
-    .doc-row:hover {
-      border-color: var(--accent-cyan);
     }
 
     .doc-meta-tag {
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.8px;
       color: var(--accent-cyan);
       font-weight: 700;
       margin-right: 10px;
     }
 
     /* ==========================================================================
-       SECTOR 10: ROADMAP CIENTÍFICO
+       5. ¿HACIA DÓNDE VAMOS? (PRÓXIMOS PASOS)
        ========================================================================== */
     .roadmap-grid {
       display: grid;
@@ -749,47 +711,46 @@
       border: 1px solid var(--glass-border);
       border-radius: 16px;
       padding: 24px;
-      position: relative;
     }
 
     .roadmap-col .horizon {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
       color: var(--accent-purple);
       margin-bottom: 8px;
       display: block;
     }
 
     .roadmap-col h3 {
-      font-size: 1.15rem;
-      margin-bottom: 14px;
+      font-size: 1.18rem;
+      margin-bottom: 12px;
     }
 
     .roadmap-col ul {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      font-size: 0.9rem;
+      gap: 10px;
+      font-size: 0.92rem;
       color: var(--text-secondary);
+      line-height: 1.5;
     }
 
     .roadmap-col li::before {
-      content: "◆ ";
+      content: "✦ ";
       color: var(--accent-cyan);
-      font-size: 0.75rem;
     }
 
     /* ==========================================================================
-       MODAL LECTOR DE DOCUMENTOS / PAPERS
+       MODAL LECTOR DE ARTÍCULOS
        ========================================================================== */
     .modal-backdrop {
       position: fixed;
       inset: 0;
       z-index: 100;
-      background: rgba(2, 6, 23, 0.78);
+      background: rgba(2, 6, 23, 0.8);
       backdrop-filter: blur(10px);
       display: none;
       align-items: center;
@@ -805,7 +766,7 @@
       background: var(--glass-bg-elevated);
       border: 1px solid var(--accent-cyan);
       border-radius: 20px;
-      max-width: 720px;
+      max-width: 680px;
       width: 100%;
       max-height: 85vh;
       overflow-y: auto;
@@ -827,14 +788,14 @@
       color: var(--text-secondary);
       line-height: 1.75;
       margin-bottom: 16px;
-      font-size: 0.96rem;
+      font-size: 1rem;
     }
 
     /* ==========================================================================
-       FOOTER INSTITUCIONAL OBLIGATORIO
+       FOOTER
        ========================================================================== */
     footer {
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 40px auto 0;
       padding: 36px 5%;
       border-top: 1px solid var(--glass-border);
@@ -858,182 +819,178 @@
 </head>
 <body>
 
-  <!-- Fondo vivo holográfico y partículas -->
   <div class="living-background"></div>
   <canvas id="particle-canvas"></canvas>
 
-  <!-- Barra de Noticias / Ticker Superior -->
+  <!-- Barra superior amigable -->
   <div class="news-ticker" id="newsTicker">
     <div>
-      <span class="news-badge">Centro I+D</span>
-      <span>Arquitectura Multidisciplinar Activa — 5 Pilares Nucleares & Laboratorio Experimental.</span>
+      <span class="news-badge">Novedad</span>
+      <span>¡Bienvenido! Prueba nuestros simuladores interactivos y descubre cómo imaginamos el futuro.</span>
     </div>
     <button class="close-ticker" onclick="document.getElementById('newsTicker').style.display='none'" title="Cerrar">&times;</button>
   </div>
 
-  <!-- Header / Barra de Navegación Universal -->
+  <!-- Navegación -->
   <header>
     <a href="index.html" class="brand-cluster">
-      <div class="cube-viewport" title="Núcleo Central MultiversoLabs">
+      <div class="cube-viewport">
         <div class="cube-sim">
           <span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
       </div>
       <div>
         <strong style="font-size: 0.95rem; letter-spacing: 0.5px;">MULTIVERSOLABS</strong>
-        <div style="font-size: 0.7rem; color: var(--text-secondary);">Exploring Dimensions</div>
+        <div style="font-size: 0.72rem; color: var(--text-secondary);">Explorando Nuevas Ideas</div>
       </div>
     </a>
 
     <nav class="nav-links">
-      <a href="empresa.html">Empresa</a>
+      <a href="empresa.html">Nosotros</a>
       <a href="division-entretenimiento.html">Juegos & Apps</a>
-      <a href="investigacion.html" class="active">Investigación</a>
+      <a href="investigacion.html" class="active">Laboratorio</a>
       <a href="contacto.html">Contacto</a>
     </nav>
 
     <div class="admin-controls">
-      <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
+      <button class="btn-glass" id="themeToggle" title="Cambiar luz de pantalla">
         <span id="themeIcon">🌙</span>
       </button>
-      <a href="admin.html" class="btn-glass">🔒 Admin</a>
     </div>
   </header>
 
   <main class="container">
 
     <!-- ========================================================================
-         00. INTRODUCCIÓN Y MAPA DE SECTORES
+         INTRODUCCIÓN CLARA Y CERCANA
          ======================================================================== -->
-    <section class="hero-research" id="sec-intro">
-      <span class="hero-badge">00 // Centro de Investigación Multidisciplinar</span>
-      <h1>Investigación MultiversoLabs</h1>
+    <section class="hero-research zipper-item zipper-left" id="sec-intro">
+      <span class="hero-badge">🚀 Ciencia para todos los curiosos</span>
+      <h1>¿Qué investigamos en MultiversoLabs?</h1>
       <p>
-        Exploración científica, simulación computacional y experimentación estética articuladas en torno a <strong>cinco pilares nucleares</strong>. Todo marco teórico, manifiesto ético y obra procedural opera como soporte y validación de nuestros entornos experimentales.
+        No hace falta ser científico para entender lo que hacemos. Aquí experimentamos con <strong>cinco grandes ideas</strong> sobre cómo funciona el universo, cómo pueden cobrar vida criaturas virtuales y cómo la inteligencia artificial puede trabajar junto a las personas para crear mundos increíbles.
       </p>
 
-      <nav class="sector-jumpbar" aria-label="Mapa de sectores">
-        <a href="#sec-pilares" class="jump-pill">02–06 // 5 Pilares Nucleares</a>
-        <a href="#sec-laboratorio" class="jump-pill">08 // Laboratorio Experimental</a>
-        <a href="#sec-soporte" class="jump-pill">01 & 07 // Marco Teórico y Arte Procedural</a>
-        <a href="#sec-biblioteca" class="jump-pill">09 // Biblioteca Viva</a>
-        <a href="#sec-roadmap" class="jump-pill">10 // Roadmap Científico</a>
+      <nav class="sector-jumpbar" aria-label="Atajos">
+        <a href="#sec-pilares" class="jump-pill">💡 Las 5 Grandes Ideas</a>
+        <a href="#sec-laboratorio" class="jump-pill">🎮 Simulador en Vivo</a>
+        <a href="#sec-soporte" class="jump-pill">🎨 Arte y Valores</a>
+        <a href="#sec-biblioteca" class="jump-pill">📖 Lecturas Rápidas</a>
+        <a href="#sec-roadmap" class="jump-pill">🗺️ Próximos Pasos</a>
       </nav>
     </section>
 
     <!-- ========================================================================
-         SECTORES 02–06: EXPLORADOR INTERACTIVO DE LOS 5 PILARES PRINCIPALES
+         LAS 5 GRANDES IDEAS (SIN JERGA TÉCNICA)
          ======================================================================== -->
     <section class="section-block" id="sec-pilares">
-      <div class="section-header">
+      <div class="section-header zipper-item zipper-right">
         <div>
-          <span class="section-kicker">Núcleo Científico // Sectores 02 a 06</span>
-          <h2 class="section-title">Los Cinco Pilares de Investigación</h2>
+          <span class="section-kicker">Nuestros Temas Favoritos</span>
+          <h2 class="section-title">Las 5 Grandes Ideas del Laboratorio</h2>
         </div>
-        <span style="font-size: 0.84rem; color: var(--text-secondary);">Selecciona un pilar para inspeccionar sus módulos y variables</span>
+        <span style="font-size: 0.9rem; color: var(--text-secondary);">Toca cada tarjeta para descubrir de qué trata</span>
       </div>
 
-      <!-- Pestañas de los 5 Pilares -->
-      <div class="pillars-tabs" role="tablist">
+      <div class="pillars-tabs zipper-item zipper-left" role="tablist">
         <button class="pillar-tab active" data-pillar="geometria" role="tab" aria-selected="true">
-          <span class="p-num">Pilar 01 · Sector 02</span>
-          <span class="p-name">Geometría Relacional</span>
+          <span class="p-num">Idea 01 · Espacio</span>
+          <span class="p-name">🌌 El Baile de los Planetas</span>
         </button>
         <button class="pillar-tab" data-pillar="vida" role="tab" aria-selected="false">
-          <span class="p-num">Pilar 02 · Sector 03</span>
-          <span class="p-name">Vida Artificial</span>
+          <span class="p-num">Idea 02 · Biología</span>
+          <span class="p-name">🧬 Criaturas Virtuales</span>
         </button>
         <button class="pillar-tab" data-pillar="ia" role="tab" aria-selected="false">
-          <span class="p-num">Pilar 03 · Sector 04</span>
-          <span class="p-name">IA Cooperativa</span>
+          <span class="p-num">Idea 03 · Tecnología</span>
+          <span class="p-name">🤝 IA en Equipo</span>
         </button>
         <button class="pillar-tab" data-pillar="holografia" role="tab" aria-selected="false">
-          <span class="p-num">Pilar 04 · Sector 05</span>
-          <span class="p-name">Simulación Holográfica</span>
+          <span class="p-num">Idea 04 · Diseño 3D</span>
+          <span class="p-name">🔮 Mundos Holográficos</span>
         </button>
         <button class="pillar-tab" data-pillar="emergencia" role="tab" aria-selected="false">
-          <span class="p-num">Pilar 05 · Sector 06</span>
-          <span class="p-name">Sistemas Emergentes</span>
+          <span class="p-num">Idea 05 · Naturaleza</span>
+          <span class="p-name">🐝 Inteligencia de Grupo</span>
         </button>
       </div>
 
-      <!-- Escenario Dinámico del Pilar Seleccionado -->
-      <div class="pillar-stage" id="pillarStage"></div>
+      <div class="pillar-stage zipper-item zipper-right" id="pillarStage"></div>
     </section>
 
     <!-- ========================================================================
-         SECTOR 08: LABORATORIO EXPERIMENTAL INTERACTIVO
+         LABORATORIO INTERACTIVO PARA EXPERIMENTAR
          ======================================================================== -->
     <section class="section-block" id="sec-laboratorio">
-      <div class="section-header">
+      <div class="section-header zipper-item zipper-left">
         <div>
-          <span class="section-kicker">Sector 08 // Validación en Tiempo Real</span>
-          <h2 class="section-title">Laboratorio Experimental</h2>
+          <span class="section-kicker">Zona Interactiva</span>
+          <h2 class="section-title">Juega con Nuestros Experimentos</h2>
         </div>
-        <span style="font-size: 0.84rem; color: var(--text-secondary);">Simulador activo conectado a las hipótesis del laboratorio</span>
+        <span style="font-size: 0.9rem; color: var(--text-secondary);">Mueve los controles y mira qué ocurre en pantalla</span>
       </div>
 
       <div class="sandbox-grid">
-        <!-- Visor Interactivo en Tiempo Real -->
-        <div class="glass-panel">
+        <!-- Visor Interactivo -->
+        <div class="glass-panel zipper-item zipper-left">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-            <strong id="simTitle" style="font-size:1.05rem;">EXP-001: Dinámica Jalar-Empujar & Órbitas Relacionales</strong>
-            <span class="status-badge status-active">Simulación Viva</span>
+            <strong id="simTitle" style="font-size:1.05rem;">Experimento 1: Atracción y Equilibrio</strong>
+            <span class="status-badge status-active">En Vivo</span>
           </div>
 
           <div class="sim-canvas-wrap">
             <canvas id="lab-sim-canvas"></canvas>
             <div class="sim-hud-overlay">
-              <span id="hudMode">MODO: GEOMETRÍA RELACIONAL</span>
-              <span id="hudMetrics">NODOS: 18 | ACOPLAMIENTO: 0.65</span>
+              <span id="hudMode">SIMULACIÓN: ÓRBITAS</span>
+              <span id="hudMetrics">ELEMENTOS: 16 | FUERZA: 65%</span>
             </div>
           </div>
 
           <div class="sim-controls">
             <div class="slider-group">
-              <label for="couplingSlider">Acoplamiento / Mutación:</label>
+              <label for="couplingSlider">Intensidad / Energía:</label>
               <input type="range" id="couplingSlider" min="10" max="100" value="65" />
             </div>
             <div style="display:flex; gap:8px;">
-              <button class="btn-glass" id="pulseBtn">⚡ Inyectar Pulso</button>
+              <button class="btn-glass" id="pulseBtn">⚡ Dar un Impulso</button>
               <button class="btn-glass primary" id="resetSimBtn">↻ Reiniciar</button>
             </div>
           </div>
         </div>
 
-        <!-- Selector de Experimentos Activos y Bitácora -->
-        <div class="glass-panel">
-          <strong style="font-size:1.05rem;">Experimentos Activos & Registro</strong>
-          <p style="font-size:0.84rem; color:var(--text-secondary); margin-top:4px;">
-            Haz clic en un experimento para cargar su modelo en el visor interactivo.
+        <!-- Selector de Experimentos -->
+        <div class="glass-panel zipper-item zipper-right">
+          <strong style="font-size:1.05rem;">Elige qué quieres probar</strong>
+          <p style="font-size:0.88rem; color:var(--text-secondary); margin-top:4px;">
+            Selecciona uno de los tres experimentos para verlo funcionar al instante.
           </p>
 
           <div class="exp-list" id="expList">
             <div class="exp-item selected" data-exp="0">
               <div class="exp-top">
-                <span class="exp-code">EXPERIMENTO 001 // SECTOR 02</span>
-                <span class="status-badge status-active">Activo</span>
+                <span class="exp-code">PRUEBA 01 // ESPACIO</span>
+                <span class="status-badge status-active">Listo</span>
               </div>
-              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Relaciones Sol-Tierra-Luna y Gravedad Residual</strong>
-              <span style="font-size:0.82rem; color:var(--text-secondary);">Evaluación de equilibrio orbital mediante dinámica de jalar y empujar.</span>
+              <strong style="font-size:0.96rem; display:block; margin-bottom:4px;">¿Por qué no chocan los planetas?</strong>
+              <span style="font-size:0.85rem; color:var(--text-secondary);">Observa cómo una fuerza que atrae y otra que empuja mantienen todo girando en armonía.</span>
             </div>
 
             <div class="exp-item" data-exp="1">
               <div class="exp-top">
-                <span class="exp-code">EXPERIMENTO 002 // SECTOR 03</span>
-                <span class="status-badge status-active">Activo</span>
+                <span class="exp-code">PRUEBA 02 // VIDA DIGITAL</span>
+                <span class="status-badge status-active">Listo</span>
               </div>
-              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Reactor Life: Ecologías y Mutación Genética</strong>
-              <span style="font-size:0.82rem; color:var(--text-secondary);">Selección adaptativa y cooperación entre agentes digitales autónomos.</span>
+              <strong style="font-size:0.96rem; display:block; margin-bottom:4px;">Células que crecen y cambian</strong>
+              <span style="font-size:0.85rem; color:var(--text-secondary);">Pequeñas partículas con energía propia que se mueven, crecen y se adaptan al entorno.</span>
             </div>
 
             <div class="exp-item" data-exp="2">
               <div class="exp-top">
-                <span class="exp-code">EXPERIMENTO 003 // SECTOR 06</span>
-                <span class="status-badge status-proto">En Calibración</span>
+                <span class="exp-code">PRUEBA 03 // ENJAMBRE</span>
+                <span class="status-badge status-proto">En pruebas</span>
               </div>
-              <strong style="font-size:0.95rem; display:block; margin-bottom:4px;">Enjambres Concurrentes & Sincronización de Hilos</strong>
-              <span style="font-size:0.82rem; color:var(--text-secondary);">Autoorganización colectiva sin controlador centralizado.</span>
+              <strong style="font-size:0.96rem; display:block; margin-bottom:4px;">Conexión como una bandada de aves</strong>
+              <span style="font-size:0.85rem; color:var(--text-secondary);">Mira cómo muchos puntos se conectan entre sí sin que nadie les dé órdenes.</span>
             </div>
           </div>
         </div>
@@ -1041,108 +998,106 @@
     </section>
 
     <!-- ========================================================================
-         SECTORES 01 & 07: ARQUITECTURA DE SOPORTE (MARCO TEÓRICO Y ARTE PROCEDURAL)
+         NUESTROS VALORES Y ARTE DIGITAL
          ======================================================================== -->
     <section class="section-block" id="sec-soporte">
-      <div class="section-header">
+      <div class="section-header zipper-item zipper-right">
         <div>
-          <span class="section-kicker">Estructuras de Soporte // Sectores 01 & 07</span>
-          <h2 class="section-title">Fundamentos Éticos y Expresión Procedural</h2>
+          <span class="section-kicker">Nuestra Filosofía</span>
+          <h2 class="section-title">Las Personas Primero, la Ciencia como Arte</h2>
         </div>
       </div>
 
       <div class="support-grid">
-        <article class="spotlight-card">
-          <span class="section-kicker">Sector 01.1 // Tesis Fundacional</span>
-          <h3>Creatividad Humana como Origen de Valor</h3>
+        <article class="spotlight-card zipper-item zipper-left">
+          <span class="section-kicker">Regla de Oro</span>
+          <h3>La imaginación humana manda</h3>
           <p>
-            Toda investigación parte de la primacía de la intención, autoría y supervisión ética humana. La IA actúa como amplificador cognitivo bajo transparencia algorítmica estricta.
+            La inteligencia artificial es una herramienta genial, como un pincel o un telescopio, pero las ideas, las emociones y las decisiones siempre nacen de las personas.
           </p>
         </article>
 
-        <article class="spotlight-card">
-          <span class="section-kicker">Sector 01.2 // Ontología del Laboratorio</span>
-          <h3>Observador, Multiverso y Simulación</h3>
+        <article class="spotlight-card zipper-item zipper-right">
+          <span class="section-kicker">Aprender jugando</span>
+          <h3>Simular para comprender</h3>
           <p>
-            Estudio de la realidad computacional como espacio de hipótesis: cómo el observador define marcos de referencia y permite observar fenómenos emergentes.
+            Creemos que la mejor forma de entender algo complejo no es memorizar fórmulas aburridas, sino crear un mundo virtual donde puedas verlo y tocarlo.
           </p>
         </article>
 
-        <article class="spotlight-card">
-          <span class="section-kicker">Sector 07 // Arte Generativo</span>
-          <h3>Fósiles Estelares & Geometría Procedural</h3>
+        <article class="spotlight-card zipper-item zipper-left">
+          <span class="section-kicker">Belleza Matemática</span>
+          <h3>Fósiles Estelares y Arte Digital</h3>
           <p>
-            Traducción estética de los modelos matemáticos del laboratorio en arquitecturas holográficas, fósiles estelares y sistemas visuales reactivos.
+            Cuando dibujamos el recorrido de los planetas o el movimiento de una bandada, aparecen formas que parecen obras de arte. Las llamamos "fósiles estelares".
           </p>
         </article>
       </div>
     </section>
 
     <!-- ========================================================================
-         SECTOR 09: BIBLIOTECA VIVA DE PUBLICACIONES
+         LECTURAS RÁPIDAS Y FÁCILES DE ENTENDER
          ======================================================================== -->
     <section class="section-block" id="sec-biblioteca">
-      <div class="section-header">
+      <div class="section-header zipper-item zipper-left">
         <div>
-          <span class="section-kicker">Sector 09 // Archivo Documental</span>
-          <h2 class="section-title">Biblioteca Viva de Publicaciones</h2>
+          <span class="section-kicker">Para Leer en 2 Minutos</span>
+          <h2 class="section-title">Historias y Apuntes del Laboratorio</h2>
         </div>
       </div>
 
-      <div class="library-toolbar">
+      <div class="library-toolbar zipper-item zipper-right">
         <div class="filter-pills" id="libraryFilters">
           <button class="filter-btn active" data-cat="todos">Todos</button>
-          <button class="filter-btn" data-cat="Manifiesto">Manifiestos</button>
-          <button class="filter-btn" data-cat="Paper">Papers</button>
-          <button class="filter-btn" data-cat="Nota Técnica">Notas Técnicas</button>
-          <button class="filter-btn" data-cat="Bitácora">Bitácoras</button>
-          <button class="filter-btn" data-cat="Ensayo">Ensayos</button>
+          <button class="filter-btn" data-cat="Valores">Valores</button>
+          <button class="filter-btn" data-cat="Espacio">Espacio</button>
+          <button class="filter-btn" data-cat="Vida Digital">Vida Digital</button>
+          <button class="filter-btn" data-cat="Curiosidades">Curiosidades</button>
         </div>
-        <input type="search" id="docSearch" class="search-input" placeholder="Buscar por título, pilar o concepto..." />
+        <input type="search" id="docSearch" class="search-input" placeholder="Buscar tema (ej. planetas, IA)..." />
       </div>
 
       <div class="library-list" id="libraryList"></div>
     </section>
 
     <!-- ========================================================================
-         SECTOR 10: ROADMAP CIENTÍFICO
+         PRÓXIMOS PASOS (ROADMAP)
          ======================================================================== -->
     <section class="section-block" id="sec-roadmap">
-      <div class="section-header">
+      <div class="section-header zipper-item zipper-right">
         <div>
-          <span class="section-kicker">Sector 10 // Proyección Evolutiva</span>
-          <h2 class="section-title">Roadmap Científico</h2>
+          <span class="section-kicker">Lo que viene</span>
+          <h2 class="section-title">Nuestros Próximos Pasos</h2>
         </div>
       </div>
 
       <div class="roadmap-grid">
-        <div class="roadmap-col">
-          <span class="horizon">Horizonte 01 // Corto Plazo</span>
-          <h3>Consolidación Modular</h3>
+        <div class="roadmap-col zipper-item zipper-left">
+          <span class="horizon">Paso 1 · Ahora mismo</span>
+          <h3>Mejorar nuestros asistentes</h3>
           <ul>
-            <li>Iteración estable de <strong>Reactor Life</strong> y ciclos evolutivos.</li>
-            <li>Despliegue operativo de los agentes cognitivos <strong>ASUMMA</strong> y <strong>ARIA</strong>.</li>
-            <li>Refinamiento del HUD y visualización holográfica en tiempo real.</li>
+            <li>Hacer que nuestras criaturas virtuales tengan comportamientos más variados.</li>
+            <li>Entrenar a <strong>ASUMMA</strong> y <strong>ARIA</strong>, nuestros guías virtuales, para que expliquen todo aún mejor.</li>
+            <li>Crear pantallas visuales más claras y divertidas de usar.</li>
           </ul>
         </div>
 
-        <div class="roadmap-col">
-          <span class="horizon">Horizonte 02 // Medio Plazo</span>
-          <h3>Acoplamiento Sistémico</h3>
+        <div class="roadmap-col zipper-item zipper-right">
+          <span class="horizon">Paso 2 · Muy pronto</span>
+          <h3>Conectar todos los mundos</h3>
           <ul>
-            <li>Ecosistemas digitales completos con poblaciones persistentes.</li>
-            <li>Simulación integral de <strong>Geometría Relacional</strong> y <em>Master Equation</em>.</li>
-            <li>Interconexión entre agentes multiagente y entornos reactivos.</li>
+            <li>Crear ecosistemas completos donde miles de criaturas convivan a la vez.</li>
+            <li>Simular sistemas solares enteros con reglas físicas súper precisas.</li>
+            <li>Permitir que varios asistentes inteligentes colaboren entre sí.</li>
           </ul>
         </div>
 
-        <div class="roadmap-col">
-          <span class="horizon">Horizonte 03 // Largo Plazo</span>
-          <h3>Motor Multiverso</h3>
+        <div class="roadmap-col zipper-item zipper-left">
+          <span class="horizon">Paso 3 · El gran sueño</span>
+          <h3>Un universo abierto para todos</h3>
           <ul>
-            <li>Arquitectura unificada del <strong>Motor Multiverso</strong>.</li>
-            <li>Entornos emergentes persistentes de alta concurrencia.</li>
-            <li>Plataforma abierta de investigación y publicación experimental.</li>
+            <li>Lanzar nuestro gran motor de simulación para que cualquiera pueda crear sus propios experimentos.</li>
+            <li>Abrir el laboratorio a estudiantes, curiosos y creadores de todo el mundo.</li>
           </ul>
         </div>
       </div>
@@ -1150,14 +1105,14 @@
 
   </main>
 
-  <!-- Modal Lector de Documentos -->
+  <!-- Ventana emergente de lectura -->
   <div class="modal-backdrop" id="docModal" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-header">
         <div>
-          <span class="section-kicker" id="modalCat">Categoría</span>
-          <h3 id="modalTitle" style="font-size:1.35rem;">Título del Documento</h3>
-          <span id="modalMeta" style="font-size:0.8rem; color:var(--text-secondary);"></span>
+          <span class="section-kicker" id="modalCat">Tema</span>
+          <h3 id="modalTitle" style="font-size:1.35rem;">Título</h3>
+          <span id="modalMeta" style="font-size:0.84rem; color:var(--text-secondary);"></span>
         </div>
         <button class="btn-glass" id="closeModalBtn">✕ Cerrar</button>
       </div>
@@ -1165,19 +1120,40 @@
     </div>
   </div>
 
-  <!-- Footer Institucional con Créditos Obligatorios -->
+  <!-- Footer -->
   <footer>
     <div>
-      <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions. Pioneering Solutions.
+      <strong>MultiversoLabs.space</strong> &copy; 2026 — Ciencia, creatividad y exploración para todos.
     </div>
-    <div style="font-size: 0.82rem; color: var(--text-secondary);">
-      Página creada y estructurada por MultiversoLabs.
+    <div style="font-size: 0.84rem; color: var(--text-secondary);">
+      Diseñado por MultiversoLabs.
     </div>
   </footer>
 
   <script>
     /* ==========================================================================
-       1. MODO NOCTURNO / DIURNO (SINCRONIZADO CON INDEX.HTML)
+       1. ANIMACIÓN CREMALLERA AL HACER SCROLL (INTERSECTION OBSERVER)
+       ========================================================================== */
+    const zipperObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('zipped');
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: "0px 0px -40px 0px"
+    });
+
+    function observeZipperElements() {
+      document.querySelectorAll('.zipper-item').forEach(el => {
+        zipperObserver.observe(el);
+      });
+    }
+    observeZipperElements();
+
+    /* ==========================================================================
+       2. MODO CLARO / OSCURO
        ========================================================================== */
     const rootEl = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
@@ -1203,166 +1179,106 @@
     });
 
     /* ==========================================================================
-       2. DATOS E INTERACTIVIDAD DE LOS 5 PILARES NUCLEARES
+       3. DATOS DE LAS 5 GRANDES IDEAS (LENGUAJE COTIDIANO)
        ========================================================================== */
     const pillarsData = {
       geometria: {
-        tag: "Pilar 01 // Sector 02 · Núcleo Cosmométrico",
-        title: "Geometría Relacional y Cosmometría",
-        desc: "Estudio de las interacciones espaciales y dinámicas de referencia sin depender de marcos absolutos rígidos, modelando cómo la masa, la radiación y el equilibrio orbital emergen de relaciones geométricas.",
+        tag: "Idea 01 · El Espacio y los Planetas",
+        title: "El Baile de los Planetas",
+        desc: "¿Cómo saben la Tierra y la Luna dónde deben estar sin salirse de su camino? Estudiamos el espacio como una red invisible donde cada planeta tira y empuja a los demás para mantener el equilibrio.",
         expLink: 0,
         modules: [
           {
-            title: "2.1 Geometría Relacional",
-            items: [
-              "Principios fundamentales de posición relativa.",
-              "Dinámica orbital y relaciones Sol-Tierra-Luna.",
-              "Sistemas de referencia acoplados."
-            ]
+            title: "Todo depende de dónde mires",
+            text: "En el universo no hay un 'arriba' o un 'abajo' fijo. Estudiamos cómo se mueven los astros comparándolos entre sí, como el baile constante entre el Sol, la Tierra y la Luna."
           },
           {
-            title: "2.2 Master Equation",
-            items: [
-              "Definición formal y variables de estado.",
-              "Masa emergente e interacción con fotones.",
-              "Gravedad residual y dinámica Jalar y Empujar."
-            ]
+            title: "El juego de jalar y empujar",
+            text: "Investigamos cómo la luz y la gravedad crean un equilibrio perfecto: una fuerza atrae a los cuerpos y otra evita que colapsen, manteniendo todo girando."
           },
           {
-            title: "2.3 Modelos Cosmométricos",
-            items: [
-              "Simulaciones numéricas de estabilidad.",
-              "Escenarios comparativos de perturbación.",
-              "Resultados preliminares y métricas de ajuste."
-            ]
+            title: "Universos de bolsillo",
+            text: "Creamos maquetas digitales en la computadora para probar qué pasaría si un planeta fuera más grande o estuviera más cerca de su estrella."
           }
         ]
       },
       vida: {
-        tag: "Pilar 02 // Sector 03 · Biología Computacional",
-        title: "Vida Artificial y Ecologías Digitales",
-        desc: "Derivado del módulo Reactor Life, este pilar investiga cómo entidades digitales dotadas de reglas metabólicas y genéticas desarrollan adaptación, competencia y cooperación sostenida.",
+        tag: "Idea 02 · Biología Digital",
+        title: "Criaturas Virtuales",
+        desc: "Imagina un videojuego donde los personajes no están programados para hacer siempre lo mismo, sino que tienen energía, buscan alimento y evolucionan solos con el tiempo.",
         expLink: 1,
         modules: [
           {
-            title: "3.1 Reactor Life",
-            items: [
-              "Arquitectura modular del entorno vital.",
-              "Ciclo de vida, energía y reproducción.",
-              "Operadores de mutación genética controlada."
-            ]
+            title: "Nuestro terrario digital",
+            text: "Creamos un entorno llamado 'Reactor Life' donde pequeñas partículas digitales nacen, gastan energía al moverse y se multiplican."
           },
           {
-            title: "3.2 Sistemas Evolutivos",
-            items: [
-              "Algoritmos genéticos de adaptación continua.",
-              "Presión selectiva y nichos dinámicos.",
-              "Emergencia de estrategias no programadas."
-            ]
+            title: "Aprender a sobrevivir",
+            text: "Cada generación cambia un poquito al azar. Las criaturas que mejor se adaptan al entorno sobreviven y pasan sus trucos a las siguientes."
           },
           {
-            title: "3.3 Ecologías Digitales",
-            items: [
-              "Dinámica de poblaciones y equilibrio trófico.",
-              "Mecanismos de competencia y simbiosis.",
-              "Resiliencia ante cambios ambientales."
-            ]
+            title: "Amigos o rivales",
+            text: "Observamos cómo, sin que nadie se lo ordene, estas criaturas a veces compiten por espacio y otras veces se ayudan para sobrevivir juntas."
           }
         ]
       },
       ia: {
-        tag: "Pilar 03 // Sector 04 · Cognición Simbiótica",
-        title: "Inteligencia Artificial Cooperativa",
-        desc: "Diseño de arquitecturas cognitivas donde los agentes artificiales asisten, navegan y razonan en colaboración directa con la supervisión y criterio ético del investigador humano.",
+        tag: "Idea 03 · Inteligencia Artificial",
+        title: "IA Trabajando en Equipo",
+        desc: "No queremos máquinas que reemplacen a las personas, sino asistentes inteligentes que nos ayuden a explorar ideas difíciles de forma segura y fácil de entender.",
         expLink: 2,
         modules: [
           {
-            title: "4.1 Modelo Humano-IA",
-            items: [
-              "Supervisión humana en el bucle de decisión.",
-              "Límites éticos y trazabilidad de acciones.",
-              "Responsabilidad autoral compartida."
-            ]
+            title: "Siempre bajo control humano",
+            text: "Cada herramienta inteligente que diseñamos tiene reglas claras y transparentes. Las personas siempre tienen la última palabra."
           },
           {
-            title: "4.2 Agentes Cognitivos (ASUMMA & ARIA)",
-            items: [
-              "ASUMMA: arquitectura conceptual, diálogo y rol experimental.",
-              "ARIA: navegación vectorial e interacción espacial.",
-              "Especialización funcional dentro del laboratorio."
-            ]
+            title: "Conoce a ASUMMA y ARIA",
+            text: "ASUMMA nos ayuda a resumir ideas y conversar sobre los experimentos, mientras que ARIA nos guía por los mapas en 3D del laboratorio."
           },
           {
-            title: "4.3 Sistemas Multiagente",
-            items: [
-              "Protocolos de coordinación distribuida.",
-              "Emergencia de consenso operativo.",
-              "Toma de decisiones en entornos cambiantes."
-            ]
+            title: "Varios cerebros piensan mejor",
+            text: "Probamos cómo distintos programas especializados pueden colaborar entre sí para resolver problemas complejos más rápido."
           }
         ]
       },
       holografia: {
-        tag: "Pilar 04 // Sector 05 · Visualización Espacial",
-        title: "Simulación Holográfica y Entornos Reactivos",
-        desc: "Construcción de espacios vectoriales interactivos e interfaces HUD que permiten observar, manipular y comprender sistemas complejos en tiempo real.",
+        tag: "Idea 04 · Diseño Visual",
+        title: "Mundos Holográficos en 3D",
+        desc: "Los números y datos aburridos son difíciles de entender. Por eso los transformamos en gráficos brillantes e interactivos que puedes girar, tocar y explorar.",
         expLink: 0,
         modules: [
           {
-            title: "5.1 Núcleo Holográfico 3D",
-            items: [
-              "Arquitectura del núcleo tridimensional.",
-              "Motor gráfico ligero y renderizado continuo.",
-              "Representación de espacios vectoriales."
-            ]
+            title: "Gráficos ligeros y rápidos",
+            text: "Construimos motores visuales que funcionan fluido en cualquier computadora o teléfono sin necesidad de equipos súper costosos."
           },
           {
-            title: "5.2 Interfaces Holográficas",
-            items: [
-              "Diseño de HUD de baja fricción cognitiva.",
-              "Visualización espacial de datos y estados.",
-              "Interacción inmersiva multi-dispositivo."
-            ]
+            title: "Pantallas intuitivas",
+            text: "Diseñamos paneles limpios, inspirados en las películas de ciencia ficción, para que cualquiera entienda qué pasa de un solo vistazo."
           },
           {
-            title: "5.3 Entornos Reactivos",
-            items: [
-              "Generación procedural sensible al contexto.",
-              "Eventos dinámicos en tiempo real.",
-              "Feedback visual inmediato ante estímulos."
-            ]
+            title: "Mundos que reaccionan a ti",
+            text: "Si haces clic o mueves un control, todo el entorno cambia de color y forma al instante para mostrarte el resultado."
           }
         ]
       },
       emergencia: {
-        tag: "Pilar 05 // Sector 06 · Complejidad & Paralelismo",
-        title: "Sistemas Emergentes y Concurrencia",
-        desc: "Investigación sobre cómo múltiples hilos concurrentes y agentes locales producen patrones globales coherentes e inteligencia colectiva escalable.",
+        tag: "Idea 05 · La Fuerza del Grupo",
+        title: "Inteligencia de Grupo",
+        desc: "¿Cómo logra una bandada de cientos de pájaros girar a la vez sin chocar y sin tener un líder? A eso lo llamamos 'emergencia', y lo estudiamos en profundidad.",
         expLink: 2,
         modules: [
           {
-            title: "6.1 Enjambres Digitales",
-            items: [
-              "Reglas locales de cohesión, alineación y separación.",
-              "Formación de patrones colectivos espontáneos.",
-              "Autoorganización sin jerarquía rígida."
-            ]
+            title: "Reglas simples, resultados increíbles",
+            text: "Si cada punto sigue tres reglas básicas (no chocar, ir al mismo ritmo y mantenerse cerca), todo el grupo forma figuras asombrosas."
           },
           {
-            title: "6.2 Hilos Concurrentes",
-            items: [
-              "Ejecución de procesos paralelos desacoplados.",
-              "Sincronización temporal y paso de mensajes.",
-              "Estabilidad de simulación en tiempo real."
-            ]
+            title: "Miles de tareas a la vez",
+            text: "Programamos nuestros sistemas para que miles de elementos piensen y se muevan al mismo tiempo sin que la pantalla se trabe."
           },
           {
-            title: "6.3 Inteligencia Colectiva",
-            items: [
-              "Topologías de redes adaptativas.",
-              "Comportamientos emergentes de orden superior.",
-              "Escalabilidad computacional del ecosistema."
-            ]
+            title: "El todo es más que las partes",
+            text: "Descubrimos cómo un grupo de elementos muy sencillos puede comportarse como un organismo inteligente cuando trabaja unido."
           }
         ]
       }
@@ -1381,16 +1297,14 @@
             <p>${p.desc}</p>
           </div>
           <a href="#sec-laboratorio" class="btn-glass primary" onclick="selectExperiment(${p.expLink})">
-            🔬 Probar en Laboratorio →
+            🎮 Probar esto en el Simulador →
           </a>
         </div>
         <div class="submodules-grid">
           ${p.modules.map(m => `
             <div class="submodule-card">
               <h4>${m.title}</h4>
-              <ul>
-                ${m.items.map(item => `<li>${item}</li>`).join('')}
-              </ul>
+              <p>${m.text}</p>
             </div>
           `).join('')}
         </div>
@@ -1412,7 +1326,7 @@
     renderPillar('geometria');
 
     /* ==========================================================================
-       3. LABORATORIO EXPERIMENTAL INTERACTIVO (CANVAS EN VIVO)
+       4. SIMULADOR INTERACTIVO EN VIVO
        ========================================================================== */
     const simCanvas = document.getElementById('lab-sim-canvas');
     const simCtx = simCanvas.getContext('2d');
@@ -1427,18 +1341,18 @@
 
     const experimentsMeta = [
       {
-        title: "EXP-001: Dinámica Jalar-Empujar & Órbitas Relacionales",
-        mode: "MODO: GEOMETRÍA RELACIONAL",
+        title: "Experimento 1: Atracción y Equilibrio",
+        mode: "SIMULACIÓN: ÓRBITAS",
         count: 16
       },
       {
-        title: "EXP-002: Reactor Life — Ecologías y Mutación Genética",
-        mode: "MODO: REACTOR LIFE (EVOLUTIVO)",
+        title: "Experimento 2: Células que crecen y cambian",
+        mode: "SIMULACIÓN: VIDA DIGITAL",
         count: 24
       },
       {
-        title: "EXP-003: Enjambres Concurrentes & Sincronización de Hilos",
-        mode: "MODO: ENJAMBRE CONCURRENTE",
+        title: "Experimento 3: Conexión como una bandada",
+        mode: "SIMULACIÓN: ENJAMBRE",
         count: 34
       }
     ];
@@ -1460,8 +1374,7 @@
           vx: (Math.random() - 0.5) * 2,
           vy: (Math.random() - 0.5) * 2,
           angle: (Math.PI * 2 * i) / count,
-          radius: 30 + (i % 5) * 22,
-          energy: Math.random()
+          radius: 30 + (i % 5) * 22
         });
       }
     }
@@ -1486,7 +1399,6 @@
       simNodes.forEach(n => {
         n.vx += (Math.random() - 0.5) * 6;
         n.vy += (Math.random() - 0.5) * 6;
-        n.energy = 1;
       });
     });
 
@@ -1500,17 +1412,17 @@
       const h = simCanvas.height;
       const cx = w / 2;
       const cy = h / 2;
-      const factor = parseInt(couplingSlider.value, 10) / 100;
+      const val = parseInt(couplingSlider.value, 10);
+      const factor = val / 100;
 
       simCtx.fillStyle = 'rgba(5, 8, 20, 0.28)';
       simCtx.fillRect(0, 0, w, h);
 
-      hudMetrics.textContent = `NODOS: ${simNodes.length} | ACOPLAMIENTO: ${factor.toFixed(2)}`;
+      hudMetrics.textContent = `ELEMENTOS: ${simNodes.length} | FUERZA: ${val}%`;
 
       if (currentExp === 0) {
-        // Geometría Relacional: núcleo central + cuerpos acoplados
         simCtx.beginPath();
-        simCtx.arc(cx, cy, 10 + Math.sin(simTick * 2) * 2, 0, Math.PI * 2);
+        simCtx.arc(cx, cy, 11 + Math.sin(simTick * 2) * 2, 0, Math.PI * 2);
         simCtx.fillStyle = '#f43f5e';
         simCtx.fill();
 
@@ -1520,33 +1432,31 @@
           const x = cx + Math.cos(n.angle) * r * 1.45;
           const y = cy + Math.sin(n.angle) * r * 0.85;
 
-          simCtx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
+          simCtx.strokeStyle = 'rgba(56, 189, 248, 0.18)';
           simCtx.beginPath();
           simCtx.moveTo(cx, cy);
           simCtx.lineTo(x, y);
           simCtx.stroke();
 
           simCtx.beginPath();
-          simCtx.arc(x, y, 3.2, 0, Math.PI * 2);
+          simCtx.arc(x, y, 3.5, 0, Math.PI * 2);
           simCtx.fillStyle = '#38bdf8';
           simCtx.fill();
         });
       } else if (currentExp === 1) {
-        // Reactor Life: células orgánicas con atracción y mutación
         simNodes.forEach((n, i) => {
           n.x += n.vx * (0.5 + factor);
           n.y += n.vy * (0.5 + factor);
           if (n.x < 12 || n.x > w - 12) n.vx *= -1;
           if (n.y < 12 || n.y > h - 12) n.vy *= -1;
 
-          const size = 3 + Math.sin(simTick * 3 + i) * 1.5 + factor * 2;
+          const size = 3.2 + Math.sin(simTick * 3 + i) * 1.5 + factor * 2;
           simCtx.beginPath();
           simCtx.arc(n.x, n.y, size, 0, Math.PI * 2);
           simCtx.fillStyle = i % 3 === 0 ? '#10b981' : '#38bdf8';
           simCtx.fill();
         });
       } else {
-        // Enjambres Concurrentes: redes de proximidad
         simNodes.forEach((n, i) => {
           n.x += n.vx * (0.6 + factor * 1.2);
           n.y += n.vy * (0.6 + factor * 1.2);
@@ -1557,7 +1467,7 @@
             const m = simNodes[j];
             const dist = Math.hypot(n.x - m.x, n.y - m.y);
             if (dist < 65 + factor * 45) {
-              simCtx.strokeStyle = `rgba(168, 85, 247, ${0.35 * (1 - dist / 110)})`;
+              simCtx.strokeStyle = `rgba(168, 85, 247, ${0.38 * (1 - dist / 110)})`;
               simCtx.beginPath();
               simCtx.moveTo(n.x, n.y);
               simCtx.lineTo(m.x, m.y);
@@ -1566,7 +1476,7 @@
           }
 
           simCtx.beginPath();
-          simCtx.arc(n.x, n.y, 2.6, 0, Math.PI * 2);
+          simCtx.arc(n.x, n.y, 2.8, 0, Math.PI * 2);
           simCtx.fillStyle = '#a855f7';
           simCtx.fill();
         });
@@ -1577,67 +1487,47 @@
     drawLabSimulation();
 
     /* ==========================================================================
-       4. BIBLIOTECA VIVA DE PUBLICACIONES Y MODAL LECTOR
+       5. LECTURAS RÁPIDAS (CON EFECTO CREMALLERA ALTERNO)
        ========================================================================== */
     const documentsDB = [
       {
-        cat: "Manifiesto",
-        title: "Manifiesto de Cooperación Humano-IA y Primacía Creativa",
-        meta: "Sector 01 · Versión 2.0 (2026)",
-        summary: "Marco ético que establece la creatividad humana como origen indiscutible de valor y delimita el rol operativo de los modelos algorítmicos.",
+        cat: "Valores",
+        title: "¿Por qué la creatividad humana siempre va primero?",
+        meta: "Lectura de 1 min",
+        summary: "Explicamos por qué usamos la inteligencia artificial como una herramienta de apoyo y nunca para reemplazar el talento de las personas.",
         content: [
-          "En MultiversoLabs concebimos la inteligencia artificial como un instrumento de amplificación técnica y exploratoria, subordinado siempre a la intención conceptual, sensibilidad estética y juicio ético del ser humano.",
-          "Toda obra, simulación o modelo teórico desarrollado en el laboratorio documenta explícitamente el grado de intervención procedural o asistida, garantizando trazabilidad y rigor intelectual."
+          "Hoy en día mucha gente se pregunta si las máquinas van a hacer todo el trabajo creativo. En MultiversoLabs tenemos una postura muy clara: la tecnología sirve para potenciar la imaginación humana, no para sustituirla.",
+          "Cada simulación o diseño que ves aquí nace de una pregunta hecha por una persona curiosa. La computadora simplemente nos ayuda a calcular y dibujar más rápido."
         ]
       },
       {
-        cat: "Paper",
-        title: "Fundamentos de Geometría Relacional y Dinámica Jalar-Empujar",
-        meta: "Sector 02 · Pilar 01 · Borrador de Trabajo",
-        summary: "Formulación preliminar de la Master Equation, relaciones Sol-Tierra-Luna, masa emergente y gravedad residual.",
+        cat: "Espacio",
+        title: "El universo como un juego de imanes gigantes",
+        meta: "Lectura de 2 min",
+        summary: "Una forma sencilla de entender cómo la Tierra, la Luna y el Sol mantienen su equilibrio sin salirse de su órbita.",
         content: [
-          "Este documento explora cómo las magnitudes observadas en sistemas orbitales acoplados pueden describirse mediante relaciones geométricas directas y tensiones de equilibrio entre atracción y repulsión.",
-          "Se presentan las variables principales de la Master Equation junto con las primeras simulaciones cosmométricas desarrolladas en el laboratorio experimental."
+          "Si atas una pelota a una cuerda y la haces girar, la cuerda tira hacia adentro mientras la velocidad de la pelota empuja hacia afuera. En el espacio pasa algo muy parecido.",
+          "En nuestro laboratorio estudiamos estas fuerzas de atracción y empuje para crear simulaciones espaciales donde cualquiera pueda ver cómo funciona la gravedad."
         ]
       },
       {
-        cat: "Nota Técnica",
-        title: "Arquitectura de Reactor Life: Mutación y Ecologías Digitales",
-        meta: "Sector 03 · Pilar 02 · Rev. Técnica",
-        summary: "Especificación del ciclo de vida, reglas de selección evolutiva y dinámica poblacional en entornos cerrados.",
+        cat: "Vida Digital",
+        title: "¿Puede un programa de computadora 'evolucionar'?",
+        meta: "Lectura de 2 min",
+        summary: "Descubre cómo funcionan nuestras criaturas virtuales en Reactor Life y cómo aprenden a sobrevivir por sí mismas.",
         content: [
-          "Reactor Life implementa entidades autónomas con parámetros heredables sujetos a mutación estocástica y presión energética.",
-          "Las observaciones iniciales muestran transiciones espontáneas desde competencia aislada hacia patrones de cooperación local cuando los recursos fluctúan."
+          "En la naturaleza, los animales que mejor se adaptan a su entorno tienen más posibilidades de sobrevivir. En Reactor Life recreamos esa misma idea dentro de una pantalla.",
+          "Creamos pequeños puntos con energía que deben moverse y ahorrar recursos. Con el paso de los minutos, verás cómo aparecen 'especies' digitales súper rápidas y otras que prefieren quedarse quietas para ahorrar energía."
         ]
       },
       {
-        cat: "Nota Técnica",
-        title: "Agentes Cognitivos ASUMMA y ARIA en el Núcleo Holográfico",
-        meta: "Sector 04 · Pilar 03 · Arquitectura",
-        summary: "Definición funcional de ASUMMA (interacción experimental) y ARIA (navegación vectorial y orientación espacial).",
+        cat: "Curiosidades",
+        title: "Fósiles Estelares: dibujando el rastro de las estrellas",
+        meta: "Lectura de 1 min",
+        summary: "Cuando grabamos el camino que recorre un planeta virtual durante horas, aparecen dibujos geométricos sorprendentes.",
         content: [
-          "La división de roles entre agentes especializados evita cajas negras monolíticas. ASUMMA articula la síntesis conceptual y el diálogo con el investigador, mientras ARIA gestiona la navegación vectorial dentro del espacio 3D.",
-          "Ambos agentes operan bajo supervisión humana directa y protocolos verificables."
-        ]
-      },
-      {
-        cat: "Bitácora",
-        title: "Bitácora #014: Sincronización de Hilos Concurrentes en Enjambres",
-        meta: "Sector 06 & 08 · Registro de Laboratorio",
-        summary: "Observaciones sobre latencia, autoorganización colectiva y estabilidad en simulaciones multi-hilo en tiempo real.",
-        content: [
-          "Durante las pruebas del Experimento 003 se ajustó el umbral de acoplamiento local para evitar oscilaciones caóticas en enjambres superiores a treinta nodos.",
-          "El desacoplamiento entre cálculo de estado y renderizado holográfico permitió sostener fluidez visual sin pérdida de coherencia en los patrones emergentes."
-        ]
-      },
-      {
-        cat: "Ensayo",
-        title: "Fósiles Estelares: Estética de los Sistemas Emergentes",
-        meta: "Sector 07 · Arte Generativo & Arquitectura Procedural",
-        summary: "Reflexión sobre cómo las trayectorias matemáticas dejan huellas visuales comparables a registros geológicos o astronómicos.",
-        content: [
-          "Cuando un sistema dinámico evoluciona bajo reglas deterministicas o semi-estocásticas, la acumulación de sus estados pasados conforma una estructura visual única: un fósil estelar.",
-          "El arte generativo en MultiversoLabs no es decorativo: constituye una herramienta de lectura intuitiva de la complejidad."
+          "Si pudieras ver la estela que deja un planeta en el espacio durante miles de años, verías espirales y flores geométricas casi perfectas.",
+          "Nosotros guardamos esas estelas digitales y las llamamos 'Fósiles Estelares', porque son como las huellas que deja el movimiento del universo."
         ]
       }
     ];
@@ -1652,29 +1542,33 @@
         const matchCat = activeCategory === 'todos' || doc.cat === activeCategory;
         const matchQuery = !q ||
           doc.title.toLowerCase().includes(q) ||
-          doc.summary.toLowerCase().includes(q) ||
-          doc.meta.toLowerCase().includes(q);
+          doc.summary.toLowerCase().includes(q);
         return matchCat && matchQuery;
       });
 
       if (filtered.length === 0) {
-        libraryList.innerHTML = `<div class="glass-panel" style="text-align:center; color:var(--text-secondary);">No se encontraron documentos con ese filtro.</div>`;
+        libraryList.innerHTML = `<div class="glass-panel" style="text-align:center; color:var(--text-secondary);">No encontramos artículos con esa palabra. Prueba con otra.</div>`;
         return;
       }
 
-      libraryList.innerHTML = filtered.map((doc, idx) => `
-        <div class="doc-row">
-          <div style="max-width:760px;">
-            <div style="margin-bottom:4px;">
-              <span class="doc-meta-tag">${doc.cat}</span>
-              <span style="font-size:0.78rem; color:var(--text-secondary);">${doc.meta}</span>
+      libraryList.innerHTML = filtered.map((doc, i) => {
+        const sideClass = i % 2 === 0 ? 'zipper-left' : 'zipper-right';
+        return `
+          <div class="doc-row zipper-item ${sideClass}">
+            <div style="max-width:740px;">
+              <div style="margin-bottom:4px;">
+                <span class="doc-meta-tag">${doc.cat}</span>
+                <span style="font-size:0.8rem; color:var(--text-secondary);">${doc.meta}</span>
+              </div>
+              <h4 style="font-size:1.08rem; margin-bottom:4px;">${doc.title}</h4>
+              <p style="font-size:0.9rem; color:var(--text-secondary);">${doc.summary}</p>
             </div>
-            <h4 style="font-size:1.05rem; margin-bottom:4px;">${doc.title}</h4>
-            <p style="font-size:0.88rem; color:var(--text-secondary);">${doc.summary}</p>
+            <button class="btn-glass primary" onclick="openDocModal(${documentsDB.indexOf(doc)})">Leer historia →</button>
           </div>
-          <button class="btn-glass primary" onclick="openDocModal(${documentsDB.indexOf(doc)})">Leer documento →</button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+
+      observeZipperElements();
     }
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1689,7 +1583,7 @@
     docSearch.addEventListener('input', renderLibrary);
     renderLibrary();
 
-    /* Modal Lector */
+    /* Modal */
     const docModal = document.getElementById('docModal');
     window.openDocModal = function(index) {
       const doc = documentsDB[index];
@@ -1709,18 +1603,7 @@
     });
 
     /* ==========================================================================
-       5. EFECTO SPOTLIGHT EN TARJETAS DE SOPORTE
-       ========================================================================== */
-    document.querySelectorAll('.spotlight-card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-      });
-    });
-
-    /* ==========================================================================
-       6. PARTÍCULAS HOLOGRÁFICAS DE FONDO EN CANVAS
+       6. PARTÍCULAS SUAVES DE FONDO
        ========================================================================== */
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
@@ -1733,20 +1616,20 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    for (let i = 0; i < 48; i++) {
+    for (let i = 0; i < 42; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         r: Math.random() * 1.6 + 0.4,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35
+        dx: (Math.random() - 0.5) * 0.3,
+        dy: (Math.random() - 0.5) * 0.3
       });
     }
 
     function animateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const isLight = rootEl.getAttribute('data-theme') === 'light';
-      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.26)';
 
       particles.forEach(p => {
         p.x += p.dx;
