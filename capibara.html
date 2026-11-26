@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Multiverso Entretenimientos — Laberinto del Capibara</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #593922;
+            font-family: Arial, sans-serif; touch-action: none;
+            display: flex; flex-direction: column;
+        }
+        #gameContainer {
+            position: relative; width: 100%; flex: 1; overflow: hidden;
+        }
+        #gameCanvas {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; display: block; z-index: 1;
+        }
+
+        /* HUD integrado con Estado, Costo de Nivel y Crédito Multiversolabs */
+        #hudWrapper {
+            position: absolute; top: 12px; left: 12px; right: 12px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            z-index: 10; pointer-events: none; gap: 8px;
+        }
+        #ui {
+            color: #fff; font-weight: bold; font-size: 11px;
+            background: rgba(74, 50, 31, 0.78);
+            padding: 6px 10px; border-radius: 8px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(115, 77, 49, 0.65);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+            line-height: 1.35;
+        }
+        #levelTaxNote {
+            margin-top: 2px;
+            font-size: 10px;
+            color: #fde68a;
+        }
+        #brandCredit {
+            color: #fde68a; font-weight: bold; font-size: 11px;
+            background: rgba(74, 50, 31, 0.72);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            padding: 5px 10px; border-radius: 99px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+
+        #settingsPanel {
+            position: absolute; top: 66px; left: 12px;
+            background: rgba(74, 50, 31, 0.95); color: white;
+            padding: 12px; border-radius: 8px; z-index: 30;
+            font-size: 13px; border: 1px solid #5c3a21; display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        #settingsPanel label { display: block; margin-bottom: 8px; }
+        #settingsPanel input { width: 110px; vertical-align: middle; }
+        #sensorStatus {
+            font-size: 11px; color: #ffbb55; margin-top: 6px;
+            border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px;
+        }
+
+        /* Pantalla de Presentación Inicial Azulada con Vidrio Translúcido */
+        #introModal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top, #1d4ed8 0%, #0f172a 58%, #082f49 100%);
+            z-index: 60;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; color: #f8fafc; text-align: center;
+            padding: 16px; overflow-y: auto;
+        }
+        .glass-panel {
+            width: 100%;
+            max-width: 370px;
+            background: rgba(15, 23, 42, 0.46);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(147, 197, 253, 0.34);
+            border-radius: 20px;
+            padding: 18px 16px;
+            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+        }
+        #introModal h1 {
+            font-size: 24px; margin: 6px 0 3px 0;
+            color: #e0f2fe; text-shadow: 0 2px 8px rgba(14, 165, 233, 0.45);
+        }
+        #introModal h2 {
+            font-size: 11px; margin: 0 0 10px 0;
+            color: #7dd3fc; font-weight: 700; letter-spacing: 1.5px;
+        }
+        #introModal p {
+            font-size: 13px; margin: 0 0 14px 0;
+            color: #e2e8f0; line-height: 1.4;
+        }
+
+        /* Pista de Capibara Caminando */
+        .capy-walk-stage {
+            position: relative;
+            width: 100%;
+            height: 64px;
+            margin-bottom: 10px;
+            background: rgba(125, 211, 252, 0.12);
+            border: 1px solid rgba(186, 230, 253, 0.25);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        .capy-walk-track {
+            position: absolute;
+            bottom: 8px;
+            left: 12px;
+            right: 12px;
+            height: 3px;
+            border-radius: 99px;
+            background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.55), transparent);
+        }
+        .capy-walker {
+            position: absolute;
+            left: 0;
+            bottom: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 32px;
+            animation: walkAcross 4.2s linear infinite;
+            filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.45));
+        }
+        .capy-sprite {
+            display: inline-block;
+            animation: stepBob 0.34s ease-in-out infinite alternate;
+        }
+        .capy-paws {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: #bae6fd;
+            opacity: 0.8;
+            animation: pawFade 0.68s ease-in-out infinite;
+        }
+        @keyframes walkAcross {
+            0% { transform: translateX(-48px); }
+            100% { transform: translateX(360px); }
+        }
+        @keyframes stepBob {
+            0% { transform: translateY(0px) rotate(-4deg); }
+            100% { transform: translateY(-6px) rotate(4deg); }
+        }
+        @keyframes pawFade {
+            0%, 100% { opacity: 0.25; transform: translateX(0); }
+            50% { opacity: 0.9; transform: translateX(-3px); }
+        }
+
+        /* Formulario de Acceso y Sala en Vidrio Azulado */
+        .auth-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            text-align: left;
+            margin-bottom: 12px;
+        }
+        .auth-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: bold;
+            color: #bae6fd;
+            margin-bottom: 3px;
+        }
+        .auth-field input {
+            width: 100%;
+            padding: 9px 11px;
+            border-radius: 10px;
+            border: 1px solid rgba(125, 211, 252, 0.38);
+            background: rgba(15, 23, 42, 0.58);
+            color: #f8fafc;
+            font-size: 13px;
+            user-select: text;
+            -webkit-user-select: text;
+            touch-action: manipulation;
+        }
+        .auth-field input:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+        }
+        .room-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .room-row input {
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .btn-glass-sm {
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(125, 211, 252, 0.45);
+            background: rgba(14, 165, 233, 0.25);
+            color: #e0f2fe;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-glass-sm:active { transform: scale(0.96); }
+        #authFeedback {
+            min-height: 16px;
+            font-size: 11px;
+            color: #fde047;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .intro-credit {
+            margin-top: 12px;
+            font-size: 11px;
+            color: #bae6fd;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 5px 12px;
+            border-radius: 99px;
+            border: 1px solid rgba(125, 211, 252, 0.3);
+            display: inline-block;
+        }
+
+        /* Joystick Flotante Opcional */
+        #floatingJoystickContainer {
+            position: absolute; bottom: 85px; right: 25px;
+            width: 110px; height: 110px; z-index: 25;
+            background: rgba(46, 28, 16, 0.45);
+            border: 2px dashed rgba(255, 255, 255, 0.35);
+            border-radius: 50%; display: none;
+            touch-action: none; pointer-events: auto;
+            backdrop-filter: blur(4px);
+        }
+        #joystickThumb {
+            position: absolute; top: 30px; left: 30px;
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: 2px solid #fbbf24; border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+            transition: transform 0.05s linear;
+        }
+
+        /* Pantalla de Game Over */
+        #gameOverModal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(30, 18, 10, 0.88); z-index: 50;
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; color: white; text-align: center;
+            padding: 16px;
+        }
+        #gameOverModal h1 { font-size: 32px; margin: 10px 0 5px 0; color: #ff5555; }
+        #gameOverModal p { font-size: 15px; margin-bottom: 14px; color: #dddddd; max-width: 320px; }
+        #gameOverCanvas { width: 160px; height: 160px; display: block; margin-bottom: 15px; }
+
+        .controls-bar {
+            height: 60px; background-color: #2e1c10;
+            display: flex; justify-content: center; align-items: center;
+            gap: 5px; z-index: 20; border-top: 2px solid #593922;
+            flex-shrink: 0; padding: 0 4px;
+        }
+        .btn {
+            padding: 8px 9px; background-color: #5c3a21; color: white;
+            border: 2px solid #734d31; border-radius: 8px;
+            font-size: 10px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7, #1d4ed8);
+            border: 1px solid #7dd3fc;
+            font-size: 15px;
+            padding: 12px 20px;
+            color: #f8fafc;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.42);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #toggleJoystickBtn {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-color: #38bdf8;
+        }
+    </style>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <!-- HUD integrado con Estado, Costo Visible por Nivel y Crédito Multiversolabs -->
+        <div id="hudWrapper">
+            <div id="ui">
+                Nivel: <span id="lvl">1</span> | Puntos: <span id="score">300</span> | Vidas: ❤️<span id="lives">3</span> | ⏱️<span id="time">0</span>s
+                <div id="levelTaxNote">Nivel aprobado: <span id="levelTaxInfo">-50 pts (0 pts = derrota)</span></div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                <div id="brandCredit">✨ multiversolabs.space</div>
+                <div id="netStatusBadge" style="color:#bae6fd; font-weight:bold; font-size:10px; background:rgba(15,23,42,0.72); border:1px solid rgba(125,211,252,0.35); padding:3px 8px; border-radius:99px;">Sala: Sin conectar</div>
+            </div>
+        </div>
+
+        <div id="settingsPanel">
+            <label>Sensibilidad: <input type="range" id="sensRange" min="0.02" max="0.25" step="0.01" value="0.09"></label>
+            <label>Velocidad: <input type="range" id="speedRange" min="0.3" max="1.4" step="0.1" value="0.8"></label>
+            <button id="permSensorsBtn" class="btn" style="width:100%; margin-top:4px; font-size:11px;">📡 Activar Sensores</button>
+            <div id="sensorStatus">Sensor: Esperando inicio...</div>
+        </div>
+
+        <!-- Joystick Flotante Opcional -->
+        <div id="floatingJoystickContainer">
+            <div id="joystickThumb"></div>
+        </div>
+
+        <!-- Pantalla de Presentación Inicial Azulada con Vidrio Translúcido -->
+        <div id="introModal">
+            <div class="glass-panel">
+                <div class="capy-walk-stage" aria-hidden="true">
+                    <div class="capy-walker">
+                        <span class="capy-paws">· ·</span>
+                        <span class="capy-sprite">🐾</span>
+                    </div>
+                    <div class="capy-walk-track"></div>
+                </div>
+
+                <h1>Laberinto del Capibara</h1>
+                <h2>MULTIVERSO ENTRETENIMIENTOS</h2>
+                <p>Compite hasta la meta: más velocidad da más empuje y menos retroceso. Al aprobar cada nivel pierdes puntos visibles y solo pierdes al llegar a 0.</p>
+
+                <div class="auth-grid">
+                    <div class="auth-field">
+                        <label for="playerUser">Usuario</label>
+                        <input type="text" id="playerUser" placeholder="Ej. capy_rider" autocomplete="username">
+                    </div>
+                    <div class="auth-field">
+                        <label for="playerPass">Contraseña única (mín. 4 caracteres)</label>
+                        <input type="password" id="playerPass" placeholder="Tu contraseña única" autocomplete="current-password">
+                    </div>
+                    <div class="auth-field">
+                        <label for="roomCodeInput">Código de sala único (2 celulares)</label>
+                        <div class="room-row">
+                            <input type="text" id="roomCodeInput" maxlength="10" placeholder="CAPY-101">
+                            <button type="button" id="genRoomBtn" class="btn-glass-sm">🎲 Sala</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="authFeedback"></div>
+
+                <button id="startBtn" class="btn-primary">¡Entrar y Comenzar! 🐾</button>
+                <div class="intro-credit">✨ Desarrollado por multiversolabs.space</div>
+            </div>
+        </div>
+
+        <!-- Ventana Modal de Game Over -->
+        <div id="gameOverModal">
+            <h1 id="gameOverTitle">¡GAME OVER!</h1>
+            <p id="gameOverReason">El capibara está agotado...</p>
+            <canvas id="gameOverCanvas" width="160" height="160"></canvas>
+            <button id="restartBtn" class="btn" style="font-size: 15px; padding: 10px 20px;">Reintentar 🐾</button>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div class="controls-bar">
+        <button id="toggleSettingsBtn" class="btn">⚙️ Ajustes</button>
+        <button id="avatarBtn" class="btn">Avatar: Capibara 🐾</button>
+        <button id="toggleJoystickBtn" class="btn">🕹️ Joystick: OFF</button>
+        <button id="calibrateBtn" class="btn">Calibrar</button>
+        <button id="fullscreenBtn" class="btn">⛶ Pantalla</button>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('gameContainer');
+            const sensorStatusEl = document.getElementById('sensorStatus');
+            const borderThickness = 20;
+
+            const INITIAL_SCORE = 300;
+            const BASE_LEVEL_TAX = 50;
+            const LEVEL_TAX_STEP = 25;
+
+            const swampBg = new Image();
+            swampBg.src = "pantano.jpg";
+
+            function resizeCanvas() {
+                let w = container.clientWidth || window.innerWidth;
+                let h = container.clientHeight || window.innerHeight;
+                canvas.width = (w > 0) ? w : 360;
+                canvas.height = (h > 0) ? h : 640;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(resizeCanvas, 150);
+            });
+            resizeCanvas();
+
+            let gameState = {
+                level: 1,
+                player: { name: '', roomCode: '' },
+                ball: { x: 80, y: 80, vx: 0, vy: 0, radius: 20 },
+                rivalBall: { x: 140, y: 80, vx: 0, vy: 0, radius: 20 },
+                winningHole: { x: canvas.width - 80, y: canvas.height - 100, radius: 32 },
+                compositeWalls: [],
+                movingWalls: [],
+                trapHoles: [],
+                decorativeBushes: [],
+                seaWaves: [],
+                heartItem: null,
+                invaderHole: null,
+                chaserEnemy: null,
+                score: INITIAL_SCORE,
+                lastLevelLoss: 0,
+                lives: 3,
+                deaths: 0, wins: 0,
+                isGameOver: false,
+                isGameStarted: false,
+                avatarType: 'capibara',
+                levelStartTime: Date.now(), elapsedTime: 0, levelTimes: [],
+                pathNorth: [], pathSouth: [],
+                prevPathNorth: [], prevPathSouth: []
+            };
+
+            function getLevelApprovalLoss(level) {
+                return BASE_LEVEL_TAX + Math.max(0, level - 1) * LEVEL_TAX_STEP;
+            }
+
+            function updateScoreHud() {
+                const lossNext = getLevelApprovalLoss(gameState.level);
+                document.getElementById('lvl').innerText = gameState.level;
+                document.getElementById('score').innerText = gameState.score;
+                document.getElementById('lives').innerText = gameState.lives;
+                document.getElementById('time').innerText = gameState.elapsedTime;
+                const lossLabel = gameState.lastLevelLoss > 0
+                    ? `Último nivel: -${gameState.lastLevelLoss} pts | Sig: -${lossNext} pts`
+                    : `Al aprobar nivel: -${lossNext} pts (pierdes solo en 0)`;
+                document.getElementById('levelTaxInfo').innerText = lossLabel;
+            }
+
+            function triggerZeroScoreDefeat(reasonText) {
+                gameState.score = 0;
+                gameState.isGameOver = true;
+                updateScoreHud();
+                document.getElementById('gameOverTitle').innerText = '¡PUNTAJE EN 0!';
+                document.getElementById('gameOverReason').innerText = reasonText;
+                drawTiredCapibaraGameOver();
+                document.getElementById('gameOverModal').style.display = 'flex';
+            }
+
+            function completeLevelGoal() {
+                const duration = (Date.now() - gameState.levelStartTime) / 1000;
+                gameState.levelTimes.push(duration);
+                gameState.wins++;
+
+                const reward = Math.max(80, 260 - Math.floor(duration * 8));
+                const levelLoss = getLevelApprovalLoss(gameState.level);
+                const netChange = reward - levelLoss;
+                const nextScore = Math.max(0, gameState.score + netChange);
+
+                gameState.lastLevelLoss = levelLoss;
+                gameState.score = nextScore;
+
+                if (gameState.score <= 0) {
+                    triggerZeroScoreDefeat(`Nivel ${gameState.level} aprobado (+${reward} / -${levelLoss} pts), pero tu puntaje llegó a 0.`);
+                    return;
+                }
+
+                gameState.level++;
+                gameState.prevPathNorth = [...gameState.pathNorth];
+                gameState.prevPathSouth = [...gameState.pathSouth];
+                resetBall();
+                generateLevelAI();
+                updateScoreHud();
+            }
+
+            // --- Paso 1 y 2: Contraseña única (SHA-256) y Sala por código único ---
+            const USER_STORE_KEY = 'multiverso_capy_users_v1';
+            const LAST_SESSION_KEY = 'multiverso_capy_session_v1';
+
+            function loadUserStore() {
+                try {
+                    return JSON.parse(localStorage.getItem(USER_STORE_KEY) || '{}');
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            function saveUserStore(store) {
+                try {
+                    localStorage.setItem(USER_STORE_KEY, JSON.stringify(store));
+                } catch (e) {}
+            }
+
+            async function hashPassword(username, password) {
+                const payload = new TextEncoder().encode(`${username.toLowerCase()}::${password}`);
+                if (window.crypto && window.crypto.subtle) {
+                    const digest = await crypto.subtle.digest('SHA-256', payload);
+                    return Array.from(new Uint8Array(digest))
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
+                }
+                let h = 2166136261;
+                for (let i = 0; i < payload.length; i++) {
+                    h ^= payload[i];
+                    h = Math.imul(h, 16777619);
+                }
+                return (h >>> 0).toString(16);
+            }
+
+            function generateRoomCode() {
+                const n = Math.floor(100 + Math.random() * 900);
+                return `CAPY-${n}`;
+            }
+
+            function normalizeRoomCode(raw) {
+                return (raw || '').trim().toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 10);
+            }
+
+            function createSeededRng(seedStr) {
+                let h = 1779033703 ^ seedStr.length;
+                for (let i = 0; i < seedStr.length; i++) {
+                    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
+                    h = (h << 13) | (h >>> 19);
+                }
+                return function() {
+                    h = Math.imul(h ^ (h >>> 16), 2246822507);
+                    h = Math.imul(h ^ (h >>> 13), 3266489909);
+                    return ((h ^= h >>> 16) >>> 0) / 4294967296;
+                };
+            }
+
+            const userInputEl = document.getElementById('playerUser');
+            const passInputEl = document.getElementById('playerPass');
+            const roomInputEl = document.getElementById('roomCodeInput');
+            const authFeedbackEl = document.getElementById('authFeedback');
+
+            (function prefillSession() {
+                try {
+                    const last = JSON.parse(localStorage.getItem(LAST_SESSION_KEY) || 'null');
+                    if (last && last.username) userInputEl.value = last.username;
+                    roomInputEl.value = (last && last.roomCode) ? last.roomCode : generateRoomCode();
+                } catch (e) {
+                    roomInputEl.value = generateRoomCode();
+                }
+            })();
+
+            document.getElementById('genRoomBtn').addEventListener('click', () => {
+                roomInputEl.value = generateRoomCode();
+                authFeedbackEl.textContent = `Sala generada: ${roomInputEl.value}`;
+            });
+
+            async function authenticateAndJoinRoom() {
+                const username = (userInputEl.value || '').trim();
+                const password = passInputEl.value || '';
+                const roomCode = normalizeRoomCode(roomInputEl.value);
+
+                if (username.length < 2) {
+                    authFeedbackEl.textContent = 'Escribe un usuario de al menos 2 caracteres.';
+                    return null;
+                }
+                if (password.length < 4) {
+                    authFeedbackEl.textContent = 'Ingresa tu contraseña única (mín. 4 caracteres).';
+                    return null;
+                }
+                if (roomCode.length < 4) {
+                    authFeedbackEl.textContent = 'Indica un código de sala válido (ej. CAPY-101).';
+                    return null;
+                }
+
+                const passHash = await hashPassword(username, password);
+                const store = loadUserStore();
+                const key = username.toLowerCase();
+
+                if (store[key]) {
+                    if (store[key].hash !== passHash) {
+                        authFeedbackEl.textContent = 'Contraseña distinta a la registrada para este usuario.';
+                        return null;
+                    }
+                } else {
+                    store[key] = { username, hash: passHash, createdAt: Date.now() };
+                    saveUserStore(store);
+                }
+
+                try {
+                    localStorage.setItem(LAST_SESSION_KEY, JSON.stringify({ username, roomCode }));
+                } catch (e) {}
+
+                return { username, roomCode };
+            }
+
+            
+            // --- Sincronización Online por Código de Sala (2 Celulares / PeerJS + Fallback BroadcastChannel) ---
+            const netState = {
+                peer: null,
+                conn: null,
+                channel: null,
+                role: 'solo',
+                status: 'Sin red',
+                lastSendTime: 0,
+                lastRemoteTime: 0
+            };
+
+            function setNetStatus(text) {
+                netState.status = text;
+                const el = document.getElementById('netStatusBadge');
+                if (el) el.innerText = text;
+            }
+
+            function applyRemoteState(msg) {
+                if (!msg || msg.roomCode !== gameState.player.roomCode) return;
+                if (msg.sender && gameState.player.name && msg.sender === gameState.player.name) return;
+
+                netState.lastRemoteTime = Date.now();
+                if (msg.type === 'state') {
+                    gameState.rivalBall.x = msg.x;
+                    gameState.rivalBall.y = msg.y;
+                    gameState.rivalBall.vx = msg.vx;
+                    gameState.rivalBall.vy = msg.vy;
+                    if (typeof msg.level === 'number' && msg.level > gameState.level) {
+                        gameState.level = msg.level;
+                        resetBall();
+                        generateLevelAI();
+                        updateScoreHud();
+                    }
+                } else if (msg.type === 'goal') {
+                    if (msg.level === gameState.level && !gameState.isGameOver) {
+                        const rivalPenalty = Math.max(25, Math.floor(getLevelApprovalLoss(gameState.level) * 0.6));
+                        gameState.lastLevelLoss = rivalPenalty;
+                        gameState.score = Math.max(0, gameState.score - rivalPenalty);
+                        if (gameState.score <= 0) {
+                            triggerZeroScoreDefeat('El rival llegó primero a la meta y tu puntaje cayó a 0.');
+                        } else {
+                            gameState.level++;
+                            resetBall();
+                            generateLevelAI();
+                            updateScoreHud();
+                        }
+                    }
+                }
+            }
+
+            function sendRoomMessage(payload) {
+                const full = Object.assign({ roomCode: gameState.player.roomCode, sender: gameState.player.name }, payload);
+                if (netState.conn && netState.conn.open) {
+                    try { netState.conn.send(full); } catch (e) {}
+                }
+                if (netState.channel) {
+                    try { netState.channel.postMessage(full); } catch (e) {}
+                }
+            }
+
+            function connectRoomNetwork(roomCode, username) {
+                if (netState.channel) {
+                    try { netState.channel.close(); } catch (e) {}
+                }
+                if (typeof BroadcastChannel !== 'undefined') {
+                    netState.channel = new BroadcastChannel(`multiverso_capy_${roomCode}`);
+                    netState.channel.onmessage = (ev) => applyRemoteState(ev.data);
+                }
+
+                if (typeof Peer === 'undefined') {
+                    netState.role = 'local-sim';
+                    setNetStatus(`Sala ${roomCode}: Simulación`);
+                    return;
+                }
+
+                if (netState.peer) {
+                    try { netState.peer.destroy(); } catch (e) {}
+                }
+
+                const cleanCode = roomCode.replace(/[^A-Z0-9]/g, '');
+                const hostId = `multiverso-capy-host-${cleanCode}`;
+                const peer = new Peer(hostId, { debug: 0 });
+                netState.peer = peer;
+
+                peer.on('open', () => {
+                    netState.role = 'host';
+                    setNetStatus(`Sala ${roomCode}: Esperando rival...`);
+                });
+
+                peer.on('connection', (conn) => {
+                    netState.conn = conn;
+                    netState.role = 'host';
+                    setNetStatus(`Sala ${roomCode}: 2 celulares unidos ✅`);
+                    conn.on('data', applyRemoteState);
+                    conn.on('close', () => setNetStatus(`Sala ${roomCode}: Rival desconectado`));
+                });
+
+                peer.on('error', (err) => {
+                    if (err && err.type === 'unavailable-id') {
+                        const guestPeer = new Peer(undefined, { debug: 0 });
+                        netState.peer = guestPeer;
+                        netState.role = 'guest';
+                        setNetStatus(`Sala ${roomCode}: Conectando...`);
+                        guestPeer.on('open', () => {
+                            const conn = guestPeer.connect(hostId, { reliable: false });
+                            netState.conn = conn;
+                            conn.on('open', () => {
+                                setNetStatus(`Sala ${roomCode}: 2 celulares unidos ✅`);
+                            });
+                            conn.on('data', applyRemoteState);
+                            conn.on('close', () => setNetStatus(`Sala ${roomCode}: Host desconectado`));
+                        });
+                        guestPeer.on('error', () => {
+                            netState.role = 'local-sim';
+                            setNetStatus(`Sala ${roomCode}: Modo duelo local`);
+                        });
+                    } else {
+                        netState.role = 'local-sim';
+                        setNetStatus(`Sala ${roomCode}: Modo duelo local`);
+                    }
+                });
+            }
+
+            function syncMultiplayerTick() {
+                if (!gameState.isGameStarted || gameState.isGameOver) return;
+                const now = Date.now();
+                if (now - netState.lastSendTime >= 50) {
+                    netState.lastSendTime = now;
+                    sendRoomMessage({
+                        type: 'state',
+                        x: gameState.ball.x,
+                        y: gameState.ball.y,
+                        vx: gameState.ball.vx,
+                        vy: gameState.ball.vy,
+                        level: gameState.level
+                    });
+                }
+            }
+
+            let rawTiltX = 0, rawTiltY = 0;
+            let offsetX = 0, offsetY = 0;
+            let sensorDataReceived = false;
+            let needsCalibration = false;
+
+            let joystickActive = false;
+            let joystickVector = { x: 0, y: 0 };
+            const joyContainer = document.getElementById('floatingJoystickContainer');
+            const joyThumb = document.getElementById('joystickThumb');
+            const toggleJoyBtn = document.getElementById('toggleJoystickBtn');
+
+            toggleJoyBtn.addEventListener('click', () => {
+                joystickActive = !joystickActive;
+                if (joystickActive) {
+                    joyContainer.style.display = 'block';
+                    toggleJoyBtn.innerText = "🕹️ Joystick: ON";
+                    toggleJoyBtn.style.background = "linear-gradient(135deg, #16a34a, #15803d)";
+                    toggleJoyBtn.style.borderColor = "#4ade80";
+                } else {
+                    joyContainer.style.display = 'none';
+                    toggleJoyBtn.innerText = "🕹️ Joystick: OFF";
+                    toggleJoyBtn.style.background = "linear-gradient(135deg, #0284c7, #0369a1)";
+                    toggleJoyBtn.style.borderColor = "#38bdf8";
+                    joystickVector = { x: 0, y: 0 };
+                }
+            });
+
+            let joyTouchId = null;
+            joyContainer.addEventListener('pointerdown', (e) => {
+                joyTouchId = e.pointerId;
+                joyContainer.setPointerCapture(joyTouchId);
+                updateJoystickPosition(e);
+            });
+
+            joyContainer.addEventListener('pointermove', (e) => {
+                if (e.pointerId === joyTouchId) {
+                    updateJoystickPosition(e);
+                }
+            });
+
+            function releaseJoystick(e) {
+                if (e.pointerId === joyTouchId) {
+                    joyTouchId = null;
+                    joystickVector = { x: 0, y: 0 };
+                    joyThumb.style.transform = `translate(0px, 0px)`;
+                }
+            }
+            joyContainer.addEventListener('pointerup', releaseJoystick);
+            joyContainer.addEventListener('pointercancel', releaseJoystick);
+
+            function updateJoystickPosition(e) {
+                const rect = joyContainer.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                let x = e.clientX - rect.left - centerX;
+                let y = e.clientY - rect.top - centerY;
+
+                const distance = Math.hypot(x, y);
+                const maxRadius = 35;
+
+                if (distance > maxRadius) {
+                    x = (x / distance) * maxRadius;
+                    y = (y / distance) * maxRadius;
+                }
+
+                joyThumb.style.transform = `translate(${x}px, ${y}px)`;
+                joystickVector = { x: x / maxRadius, y: y / maxRadius };
+            }
+
+            function handleOrientation(event) {
+                if (event.gamma !== null && event.beta !== null) {
+                    rawTiltX = event.gamma;
+                    rawTiltY = event.beta;
+                    if (!sensorDataReceived) {
+                        sensorDataReceived = true;
+                        sensorStatusEl.innerText = "Sensor: Activo ✅";
+                        sensorStatusEl.style.color = "#4ade80";
+                    }
+                    if (needsCalibration) {
+                        offsetX = rawTiltX;
+                        offsetY = rawTiltY;
+                        needsCalibration = false;
+                    }
+                }
+            }
+
+            async function requestMotionPermissions() {
+                try {
+                    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                        const response = await DeviceOrientationEvent.requestPermission();
+                        if (response === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                            needsCalibration = true;
+                            sensorStatusEl.innerText = "Sensor: Permiso concedido ✅";
+                        } else {
+                            sensorStatusEl.innerText = "Sensor: Permiso denegado ❌";
+                            sensorStatusEl.style.color = "#f87171";
+                        }
+                    } else {
+                        window.addEventListener('deviceorientation', handleOrientation);
+                        needsCalibration = true;
+                        sensorStatusEl.innerText = "Sensor: Escuchando inclinación...";
+                    }
+                } catch (err) {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                    needsCalibration = true;
+                    sensorStatusEl.innerText = "Sensor: Modo compatible activo";
+                }
+            }
+
+            window.addEventListener('deviceorientation', handleOrientation);
+
+            const keysPressed = {};
+            window.addEventListener('keydown', (e) => { keysPressed[e.key] = true; });
+            window.addEventListener('keyup', (e) => { keysPressed[e.key] = false; });
+
+            async function lockOrientation() {
+                try {
+                    if (screen.orientation && screen.orientation.lock) {
+                        await screen.orientation.lock('portrait');
+                    }
+                } catch (e) {}
+            }
+
+            document.getElementById('startBtn').addEventListener('click', async () => {
+                const session = await authenticateAndJoinRoom();
+                if (!session) return;
+
+                gameState.player = { name: session.username, roomCode: session.roomCode };
+                connectRoomNetwork(session.roomCode, session.username);
+                await requestMotionPermissions();
+                document.getElementById('introModal').style.display = 'none';
+                gameState.isGameStarted = true;
+                gameState.score = INITIAL_SCORE;
+                gameState.lastLevelLoss = 0;
+                resizeCanvas();
+                resetBall();
+                generateLevelAI();
+                updateScoreHud();
+                offsetX = rawTiltX;
+                offsetY = rawTiltY;
+                lockOrientation();
+            });
+
+            document.getElementById('permSensorsBtn').addEventListener('click', async () => {
+                await requestMotionPermissions();
+                offsetX = rawTiltX;
+                offsetY = rawTiltY;
+            });
+
+            const settingsPanel = document.getElementById('settingsPanel');
+            document.getElementById('toggleSettingsBtn').addEventListener('click', () => {
+                settingsPanel.style.display = (settingsPanel.style.display === 'block') ? 'none' : 'block';
+            });
+
+            const avatarBtn = document.getElementById('avatarBtn');
+            avatarBtn.addEventListener('click', () => {
+                if (gameState.avatarType === 'capibara') {
+                    gameState.avatarType = 'boat';
+                    avatarBtn.innerText = "Avatar: Barco ⛵";
+                } else if (gameState.avatarType === 'boat') {
+                    gameState.avatarType = 'car';
+                    avatarBtn.innerText = "Avatar: Carrito 🏎️";
+                } else if (gameState.avatarType === 'car') {
+                    gameState.avatarType = 'plane';
+                    avatarBtn.innerText = "Avatar: Avión ✈️";
+                } else if (gameState.avatarType === 'plane') {
+                    gameState.avatarType = 'sphere';
+                    avatarBtn.innerText = "Avatar: Esfera ⚪";
+                } else {
+                    gameState.avatarType = 'capibara';
+                    avatarBtn.innerText = "Avatar: Capibara 🐾";
+                }
+            });
+
+            document.getElementById('calibrateBtn').addEventListener('click', async () => {
+                await requestMotionPermissions();
+                offsetX = rawTiltX;
+                offsetY = rawTiltY;
+                lockOrientation();
+                const btn = document.getElementById('calibrateBtn');
+                const origText = btn.innerText;
+                btn.innerText = "¡Listo! ✓";
+                setTimeout(() => { btn.innerText = origText; }, 1000);
+            });
+
+            document.getElementById('fullscreenBtn').addEventListener('click', async () => {
+                if (!document.fullscreenElement) {
+                    await document.documentElement.requestFullscreen().catch(console.error);
+                    lockOrientation();
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+
+            document.getElementById('restartBtn').addEventListener('click', () => {
+                document.getElementById('gameOverModal').style.display = 'none';
+                document.getElementById('gameOverTitle').innerText = '¡GAME OVER!';
+                document.getElementById('gameOverReason').innerText = 'El capibara está agotado...';
+                gameState.lives = 3;
+                gameState.level = 1;
+                gameState.score = INITIAL_SCORE;
+                gameState.lastLevelLoss = 0;
+                gameState.isGameOver = false;
+                gameState.prevPathNorth = [];
+                gameState.prevPathSouth = [];
+                resetBall();
+                generateLevelAI();
+                updateScoreHud();
+            });
+
+            // --- Paso 3: Choque asimétrico entre dos capibaras (más velocidad = más empuje, menor retroceso proporcional) ---
+            function updateRivalCapibara(rng) {
+                const rival = gameState.rivalBall;
+                const dxGoal = gameState.winningHole.x - rival.x;
+                const dyGoal = gameState.winningHole.y - rival.y;
+                const distGoal = Math.hypot(dxGoal, dyGoal) || 1;
+
+                const steerX = (dxGoal / distGoal) * 0.24 + (rng() - 0.5) * 0.14;
+                const steerY = (dyGoal / distGoal) * 0.24 + (rng() - 0.5) * 0.14;
+
+                rival.vx = (rival.vx + steerX) * 0.955;
+                rival.vy = (rival.vy + steerY) * 0.955;
+                rival.x += rival.vx;
+                rival.y += rival.vy;
+
+                const minX = borderThickness + rival.radius;
+                const maxX = canvas.width - borderThickness - rival.radius;
+                const minY = borderThickness + rival.radius;
+                const maxY = canvas.height - borderThickness - rival.radius;
+
+                if (rival.x < minX) { rival.x = minX; rival.vx *= -0.45; }
+                else if (rival.x > maxX) { rival.x = maxX; rival.vx *= -0.45; }
+                if (rival.y < minY) { rival.y = minY; rival.vy *= -0.45; }
+                else if (rival.y > maxY) { rival.y = maxY; rival.vy *= -0.45; }
+
+                gameState.compositeWalls.forEach(cw => resolveCompositeCollision(rival, cw));
+                gameState.movingWalls.forEach(mw => resolveWallCollision(rival, mw));
+            }
+
+            function resolveCapibaraClash(ballA, ballB) {
+                const dx = ballB.x - ballA.x;
+                const dy = ballB.y - ballA.y;
+                const dist = Math.hypot(dx, dy);
+                const minDist = ballA.radius + ballB.radius;
+
+                if (dist <= 0 || dist >= minDist) return;
+
+                const nx = dx / dist;
+                const ny = dy / dist;
+                const overlap = minDist - dist;
+
+                const speedA = Math.hypot(ballA.vx, ballA.vy);
+                const speedB = Math.hypot(ballB.vx, ballB.vy);
+                const totalSpeed = Math.max(0.001, speedA + speedB);
+
+                // Quien lleva mayor velocidad empuja más y sufre menor retroceso proporcional
+                const shareA = speedA / totalSpeed;
+                const shareB = speedB / totalSpeed;
+
+                const pushScaleA = 0.65 + shareA * 1.45;
+                const pushScaleB = 0.65 + shareB * 1.45;
+                const recoilFactorA = Math.max(0.18, 0.72 - shareA * 0.52);
+                const recoilFactorB = Math.max(0.18, 0.72 - shareB * 0.52);
+
+                const posShareA = recoilFactorA / (recoilFactorA + recoilFactorB);
+                const posShareB = recoilFactorB / (recoilFactorA + recoilFactorB);
+                ballA.x -= nx * overlap * posShareA;
+                ballA.y -= ny * overlap * posShareA;
+                ballB.x += nx * overlap * posShareB;
+                ballB.y += ny * overlap * posShareB;
+
+                const relVx = ballA.vx - ballB.vx;
+                const relVy = ballA.vy - ballB.vy;
+                const relNormalVel = relVx * nx + relVy * ny;
+
+                const minImpact = 2.2;
+                const impulseMag = Math.max(minImpact, Math.abs(relNormalVel) * 1.15);
+
+                if (speedA >= speedB) {
+                    const ratio = Math.min(2.2, speedA / Math.max(0.35, speedB + 0.35));
+                    ballB.vx += nx * impulseMag * pushScaleA * ratio * 0.65;
+                    ballB.vy += ny * impulseMag * pushScaleA * ratio * 0.65;
+                    ballA.vx -= nx * impulseMag * recoilFactorA * 0.45;
+                    ballA.vy -= ny * impulseMag * recoilFactorA * 0.45;
+                } else {
+                    const ratio = Math.min(2.2, speedB / Math.max(0.35, speedA + 0.35));
+                    ballA.vx -= nx * impulseMag * pushScaleB * ratio * 0.65;
+                    ballA.vy -= ny * impulseMag * pushScaleB * ratio * 0.65;
+                    ballB.vx += nx * impulseMag * recoilFactorB * 0.45;
+                    ballB.vy += ny * impulseMag * recoilFactorB * 0.45;
+                }
+            }
+
+            function createCompositeWall(cx, cy, type, rng) {
+                let subRects = [];
+                const t = 18, l = 70;
+
+                if (type === 'L') {
+                    subRects = [
+                        {x: -l/2, y: -l/2, w: l, h: t},
+                        {x: l/2 - t, y: -l/2, w: t, h: l}
+                    ];
+                } else if (type === 'ZIGZAG') {
+                    subRects = [
+                        {x: -l, y: -t/2, w: l, h: t},
+                        {x: 0, y: -l/2, w: t, h: l},
+                        {x: 0, y: l/2 - t, w: l, h: t}
+                    ];
+                } else if (type === 'PLUS') {
+                    subRects = [
+                        {x: -l/2, y: -t/2, w: l, h: t},
+                        {x: -t/2, y: -l/2, w: t, h: l}
+                    ];
+                }
+
+                return {
+                    cx: cx, cy: cy,
+                    angle: rng() * Math.PI,
+                    rotSpeed: (0.005 + rng() * 0.008) * (rng() < 0.5 ? 1 : -1),
+                    subRects: subRects
+                };
+            }
+
+            function generateLevelAI() {
+                resizeCanvas();
+                const roomSeed = `${gameState.player.roomCode || 'SOLO'}:${gameState.level}`;
+                const rng = createSeededRng(roomSeed);
+
+                const innerW = canvas.width - (borderThickness * 2);
+                const innerH = canvas.height - (borderThickness * 2);
+                const halfH = canvas.height / 2;
+
+                const corners = [
+                    { x: canvas.width - borderThickness - 60, y: canvas.height - borderThickness - 80 },
+                    { x: borderThickness + 60, y: canvas.height - borderThickness - 80 },
+                    { x: canvas.width - borderThickness - 60, y: borderThickness + 80 }
+                ];
+                const selectedCorner = corners[(gameState.level - 1) % corners.length];
+                gameState.winningHole = { x: selectedCorner.x, y: selectedCorner.y, radius: 32 };
+
+                gameState.compositeWalls = [];
+                gameState.movingWalls = [];
+                gameState.trapHoles = [];
+                gameState.decorativeBushes = [];
+                gameState.seaWaves = [];
+
+                const startX = borderThickness + 60;
+                const startY = borderThickness + 60;
+
+                if (gameState.avatarType === 'capibara') {
+                    const types = ['L', 'ZIGZAG', 'PLUS'];
+                    const totalStructures = Math.min(8, 2 + Math.floor(gameState.level / 2));
+                    const halfCount = Math.floor(totalStructures / 2);
+
+                    for (let i = 0; i < halfCount; i++) {
+                        let wx = borderThickness + 80 + (i * 110) % Math.max(80, innerW - 140);
+                        let wy = borderThickness + 40 + (i * 70) % Math.max(60, halfH - 100);
+                        gameState.compositeWalls.push(createCompositeWall(wx, wy, types[i % types.length], rng));
+                    }
+
+                    if (gameState.prevPathNorth.length > 3) {
+                        const pt = gameState.prevPathNorth[Math.floor(gameState.prevPathNorth.length / 2)];
+                        if (pt && Math.hypot(pt.x - startX, pt.y - startY) > 100) {
+                            gameState.trapHoles.push({ x: pt.x, y: pt.y, radius: 22 });
+                        }
+                    }
+
+                    for (let i = 0; i < (totalStructures - halfCount); i++) {
+                        let wx = borderThickness + 80 + (i * 120) % Math.max(80, innerW - 140);
+                        let wy = halfH + 20 + (i * 70) % Math.max(60, halfH - 120);
+                        gameState.compositeWalls.push(createCompositeWall(wx, wy, types[(i + 1) % types.length], rng));
+                    }
+
+                    if (gameState.prevPathSouth.length > 3) {
+                        const pt = gameState.prevPathSouth[Math.floor(gameState.prevPathSouth.length / 2)];
+                        if (pt && Math.hypot(pt.x - startX, pt.y - startY) > 100) {
+                            gameState.trapHoles.push({ x: pt.x, y: pt.y, radius: 22 });
+                        }
+                    }
+                } else {
+                    const types = ['L', 'ZIGZAG', 'PLUS'];
+                    const count = Math.min(5, 2 + Math.floor(gameState.level / 3));
+                    for (let i = 0; i < count; i++) {
+                        let wx = borderThickness + 100 + (i * 130) % Math.max(100, innerW - 180);
+                        let wy = borderThickness + 120 + (i * 140) % Math.max(100, innerH - 240);
+                        gameState.compositeWalls.push(createCompositeWall(wx, wy, types[i % types.length], rng));
+                    }
+                }
+
+                let bushCount = gameState.level <= 3 ? 6 : (gameState.level <= 8 ? 10 : 15);
+                for (let b = 0; b < bushCount; b++) {
+                    let bx = borderThickness + 40 + rng() * Math.max(50, innerW - 80);
+                    let by = borderThickness + 40 + rng() * Math.max(50, innerH - 80);
+                    let bSize = 14 + rng() * 16;
+
+                    let safeFromStart = Math.hypot(bx - startX, by - startY) > 55;
+                    let safeFromWin = Math.hypot(bx - gameState.winningHole.x, by - gameState.winningHole.y) > 55;
+
+                    if (safeFromStart && safeFromWin) {
+                        gameState.decorativeBushes.push({ x: bx, y: by, size: bSize });
+                    }
+                }
+
+                for (let w = 0; w < 25; w++) {
+                    gameState.seaWaves.push({
+                        x: borderThickness + rng() * innerW,
+                        y: borderThickness + rng() * innerH,
+                        length: 15 + rng() * 20,
+                        speed: 0.2 + rng() * 0.4,
+                        phase: rng() * Math.PI * 2
+                    });
+                }
+
+                const movingCount = Math.min(4, Math.floor(gameState.level / 4));
+                for (let i = 0; i < movingCount; i++) {
+                    let mwWidth = 70;
+                    let minX = borderThickness + 30;
+                    let maxX = Math.max(minX + 50, canvas.width - borderThickness - 30 - mwWidth);
+                    gameState.movingWalls.push({
+                        x: minX + rng() * (maxX - minX),
+                        y: borderThickness + 150 + (i * 120),
+                        w: mwWidth, h: 18,
+                        vx: (0.8 + rng() * 1.0) * (rng() < 0.5 ? 1 : -1),
+                        minX: minX, maxX: maxX
+                    });
+                }
+
+                if (gameState.level >= 6 && (gameState.level - 6) % 2 === 0) {
+                    gameState.chaserEnemy = {
+                        x: canvas.width - borderThickness - 80,
+                        y: borderThickness + 120,
+                        radius: 24,
+                        speed: 0.5 + Math.min(0.9, gameState.level * 0.03)
+                    };
+                } else {
+                    gameState.chaserEnemy = null;
+                }
+
+                if (gameState.level >= 3 && Math.hypot(gameState.winningHole.x - startX, gameState.winningHole.y - startY) > 200) {
+                    gameState.invaderHole = {
+                        centerX: gameState.winningHole.x,
+                        centerY: gameState.winningHole.y,
+                        angle: 0,
+                        orbitRadius: 75,
+                        radius: 24,
+                        speed: 0.02
+                    };
+                } else {
+                    gameState.invaderHole = null;
+                }
+
+                if (gameState.level % 2 !== 0) {
+                    gameState.heartItem = {
+                        x: borderThickness + 100 + rng() * Math.max(50, innerW - 160),
+                        y: borderThickness + 100 + rng() * Math.max(50, innerH - 160),
+                        size: 20
+                    };
+                } else {
+                    gameState.heartItem = null;
+                }
+
+                gameState.levelStartTime = Date.now();
+                gameState.pathNorth = [];
+                gameState.pathSouth = [];
+            }
+
+            function resolveCompositeCollision(ball, cw) {
+                const cos = Math.cos(-cw.angle);
+                const sin = Math.sin(-cw.angle);
+                const dx = ball.x - cw.cx;
+                const dy = ball.y - cw.cy;
+                const localX = cos * dx - sin * dy;
+                const localY = sin * dx + cos * dy;
+
+                cw.subRects.forEach(rect => {
+                    let closestX = Math.max(rect.x, Math.min(localX, rect.x + rect.w));
+                    let closestY = Math.max(rect.y, Math.min(localY, rect.y + rect.h));
+
+                    let distX = localX - closestX;
+                    let distY = localY - closestY;
+                    let distance = Math.sqrt(distX * distX + distY * distY);
+
+                    if (distance < ball.radius) {
+                        if (distance === 0) { distX = 1; distY = 0; distance = 1; }
+                        let overlap = ball.radius - distance;
+                        let nx = distX / distance;
+                        let ny = distY / distance;
+
+                        const gCos = Math.cos(cw.angle);
+                        const gSin = Math.sin(cw.angle);
+                        ball.x += (gCos * nx - gSin * ny) * overlap;
+                        ball.y += (gSin * nx + gCos * ny) * overlap;
+
+                        let dot = ball.vx * (gCos * nx - gSin * ny) + ball.vy * (gSin * nx + gCos * ny);
+                        ball.vx = (ball.vx - 2 * dot * (gCos * nx - gSin * ny)) * 0.4;
+                        ball.vy = (ball.vy - 2 * dot * (gSin * nx + gCos * ny)) * 0.4;
+                    }
+                });
+            }
+
+            function resolveWallCollision(ball, wall) {
+                let closestX = Math.max(wall.x, Math.min(ball.x, wall.x + wall.w));
+                let closestY = Math.max(wall.y, Math.min(ball.y, wall.y + wall.h));
+                let distX = ball.x - closestX;
+                let distY = ball.y - closestY;
+                let distance = Math.sqrt(distX * distX + distY * distY);
+
+                if (distance < ball.radius) {
+                    if (distance === 0) { distX = 1; distY = 0; distance = 1; }
+                    let overlap = ball.radius - distance;
+                    let nx = distX / distance;
+                    let ny = distY / distance;
+                    ball.x += nx * overlap;
+                    ball.y += ny * overlap;
+                    let dot = ball.vx * nx + ball.vy * ny;
+                    ball.vx = (ball.vx - 2 * dot * nx) * 0.4;
+                    ball.vy = (ball.vy - 2 * dot * ny) * 0.4;
+                }
+            }
+
+            function drawBush(x, y, size) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.fillStyle = "rgba(40, 30, 10, 0.25)";
+                ctx.beginPath(); ctx.arc(2, 4, size * 0.8, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = "#527d3b";
+                ctx.beginPath();
+                ctx.arc(-size * 0.3, 0, size * 0.6, 0, Math.PI * 2);
+                ctx.arc(size * 0.3, -size * 0.2, size * 0.55, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#72a853";
+                ctx.beginPath();
+                ctx.arc(0, -size * 0.3, size * 0.5, 0, Math.PI * 2);
+                ctx.arc(-size * 0.2, size * 0.2, size * 0.45, 0, Math.PI * 2);
+                ctx.arc(size * 0.25, size * 0.15, size * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            function drawMiniIsland(x, y, size) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+                ctx.beginPath(); ctx.arc(0, 0, size * 1.15, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#f5deb3";
+                ctx.beginPath(); ctx.arc(0, 0, size * 0.9, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#4ca64c";
+                ctx.beginPath(); ctx.arc(-size*0.1, -size*0.1, size * 0.5, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#2d6a2d"; ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-size*0.1, -size*0.1); ctx.lineTo(size*0.4, -size*0.4);
+                ctx.moveTo(-size*0.1, -size*0.1); ctx.lineTo(-size*0.5, -size*0.3);
+                ctx.moveTo(-size*0.1, -size*0.1); ctx.lineTo(size*0.3, size*0.3);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            function drawSeaBackground() {
+                ctx.fillStyle = "#7ed6df";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.55)";
+                ctx.lineWidth = 2;
+                let timeOffset = Date.now() * 0.002;
+
+                gameState.seaWaves.forEach(w => {
+                    w.x += w.speed;
+                    if (w.x > canvas.width - borderThickness) w.x = borderThickness;
+                    let yOsc = Math.sin(timeOffset + w.phase) * 3;
+
+                    ctx.beginPath();
+                    ctx.moveTo(w.x, w.y + yOsc);
+                    ctx.quadraticCurveTo(w.x + w.length * 0.25, w.y - 4 + yOsc, w.x + w.length * 0.5, w.y + yOsc);
+                    ctx.quadraticCurveTo(w.x + w.length * 0.75, w.y + 4 + yOsc, w.x + w.length, w.y + yOsc);
+                    ctx.stroke();
+                });
+            }
+
+            function drawHeart(x, y, size) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.beginPath();
+                let topCurveHeight = size * 0.3;
+                ctx.moveTo(0, topCurveHeight);
+                ctx.bezierCurveTo(0, 0, -size / 2, 0, -size / 2, topCurveHeight);
+                ctx.bezierCurveTo(-size / 2, (size + topCurveHeight) / 2, 0, size, 0, size);
+                ctx.bezierCurveTo(0, (size + topCurveHeight) / 2, size / 2, (size + topCurveHeight) / 2, size / 2, topCurveHeight);
+                ctx.bezierCurveTo(size / 2, 0, 0, 0, 0, topCurveHeight);
+                ctx.closePath();
+                ctx.fillStyle = "#ff2244";
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+                ctx.beginPath();
+                ctx.arc(-size * 0.2, topCurveHeight * 0.8, size * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function drawCapibara(x, y, radius, speed, tintColor) {
+                ctx.save();
+                ctx.translate(x, y);
+                let isRolling = speed > 0.6;
+                const bodyMain = tintColor ? tintColor.main : "#d49a66";
+                const bodyDark = tintColor ? tintColor.dark : "#ab7142";
+                const bodyRoll = tintColor ? tintColor.roll : "#c28854";
+
+                if (isRolling) {
+                    ctx.fillStyle = bodyRoll;
+                    ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = "#6b421d"; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.strokeStyle = "#6b421d"; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.arc(0, 0, radius * 0.6, 0, Math.PI); ctx.stroke();
+                    ctx.strokeStyle = "#2b1505"; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.moveTo(-6, -3); ctx.lineTo(-2, 1); ctx.lineTo(-6, 5); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(2, -3); ctx.lineTo(6, 1); ctx.lineTo(2, 5); ctx.stroke();
+                } else {
+                    ctx.fillStyle = bodyMain;
+                    ctx.beginPath(); ctx.ellipse(0, 2, radius * 0.95, radius * 0.8, 0, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = "#6b421d"; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.fillStyle = bodyDark;
+                    ctx.fillRect(-radius * 0.6, radius * 0.5, 6, 8);
+                    ctx.fillRect(radius * 0.3, radius * 0.5, 6, 8);
+                    ctx.beginPath();
+                    ctx.arc(-radius * 0.5, -radius * 0.6, 5, 0, Math.PI * 2);
+                    ctx.arc(radius * 0.5, -radius * 0.6, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = "#bc8251"; ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = bodyDark;
+                    ctx.beginPath(); ctx.roundRect(-radius * 0.4, -radius * 0.1, radius * 0.8, radius * 0.5, 4); ctx.fill();
+                    ctx.fillStyle = "#2b1505"; ctx.fillRect(-4, -radius * 0.05, 8, 5);
+                    ctx.fillStyle = "#2b1505";
+                    ctx.beginPath(); ctx.arc(-radius * 0.45, -radius * 0.3, 3, 0, Math.PI * 2); ctx.arc(radius * 0.45, -radius * 0.3, 3, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = "#ffffff";
+                    ctx.beginPath(); ctx.arc(-radius * 0.45 - 1, -radius * 0.3 - 1, 1, 0, Math.PI * 2); ctx.arc(radius * 0.45 - 1, -radius * 0.3 - 1, 1, 0, Math.PI * 2); ctx.fill();
+                }
+
+                if (tintColor && tintColor.badge) {
+                    ctx.strokeStyle = tintColor.badge;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, radius + 3, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            function drawBoat(x, y, radius, vx, vy) {
+                ctx.save();
+                ctx.translate(x, y);
+                let speed = Math.hypot(vx, vy);
+                let angle = Math.atan2(vy, vx);
+                if (speed > 0.1) ctx.rotate(angle);
+
+                if (speed > 0.3) {
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-radius * 0.8, -radius * 0.4);
+                    ctx.lineTo(-radius * 1.5 - Math.random()*8, -radius * 0.7);
+                    ctx.moveTo(-radius * 0.8, radius * 0.4);
+                    ctx.lineTo(-radius * 1.5 - Math.random()*8, radius * 0.7);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = "#a0522d";
+                ctx.beginPath();
+                ctx.moveTo(radius * 1.1, 0);
+                ctx.quadraticCurveTo(radius * 0.3, -radius * 0.7, -radius * 0.9, -radius * 0.5);
+                ctx.lineTo(-radius * 0.9, radius * 0.5);
+                ctx.quadraticCurveTo(radius * 0.3, radius * 0.7, radius * 1.1, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#5c2e0e"; ctx.lineWidth = 2; ctx.stroke();
+
+                ctx.fillStyle = "#deb887";
+                ctx.beginPath();
+                ctx.ellipse(-radius * 0.1, 0, radius * 0.65, radius * 0.35, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.moveTo(0, -radius * 0.7);
+                ctx.quadraticCurveTo(radius * 0.5, 0, 0, radius * 0.7);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#cccccc"; ctx.lineWidth = 1.5; ctx.stroke();
+
+                ctx.fillStyle = "#4a2511";
+                ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill();
+
+                ctx.restore();
+            }
+
+            function drawPirateShip(x, y, radius, targetX, targetY) {
+                ctx.save();
+                ctx.translate(x, y);
+                let angle = Math.atan2(targetY - y, targetX - x);
+                ctx.rotate(angle);
+
+                ctx.fillStyle = "#1c1c1c";
+                ctx.beginPath();
+                ctx.moveTo(radius * 1.3, 0);
+                ctx.quadraticCurveTo(radius * 0.4, -radius * 0.85, -radius * 1.1, -radius * 0.65);
+                ctx.lineTo(-radius * 1.1, radius * 0.65);
+                ctx.quadraticCurveTo(radius * 0.4, radius * 0.85, radius * 1.3, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#b30000"; ctx.lineWidth = 2.5; ctx.stroke();
+
+                ctx.fillStyle = "#2b2b2b";
+                ctx.beginPath();
+                ctx.moveTo(radius * 0.1, -radius * 0.85);
+                ctx.quadraticCurveTo(radius * 0.7, 0, radius * 0.1, radius * 0.85);
+                ctx.closePath();
+                ctx.fill();
+                ctx.strokeStyle = "#000000"; ctx.lineWidth = 1.5; ctx.stroke();
+
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath(); ctx.arc(radius * 0.35, 0, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(radius * 0.25, -4); ctx.lineTo(radius * 0.45, 4);
+                ctx.moveTo(radius * 0.45, -4); ctx.lineTo(radius * 0.25, 4);
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            function drawTiredCapibaraGameOver() {
+                const goCanvas = document.getElementById('gameOverCanvas');
+                const gCtx = goCanvas.getContext('2d');
+                gCtx.clearRect(0, 0, goCanvas.width, goCanvas.height);
+
+                gCtx.save();
+                gCtx.translate(80, 85);
+
+                gCtx.fillStyle = "#e6b07c";
+                gCtx.beginPath(); gCtx.ellipse(0, 5, 42, 32, 0, 0, Math.PI * 2); gCtx.fill();
+                gCtx.strokeStyle = "#6b421d"; gCtx.lineWidth = 3; gCtx.stroke();
+
+                gCtx.fillStyle = "#d49a66";
+                gCtx.beginPath(); gCtx.ellipse(0, -30, 28, 22, 0, 0, Math.PI * 2); gCtx.fill(); gCtx.stroke();
+
+                gCtx.fillStyle = "#ab7142";
+                gCtx.beginPath(); gCtx.arc(-26, -34, 6, 0, Math.PI * 2); gCtx.arc(26, -34, 6, 0, Math.PI * 2); gCtx.fill(); gCtx.stroke();
+
+                gCtx.fillStyle = "#ab7142";
+                gCtx.beginPath(); gCtx.roundRect(-12, -32, 24, 14, 4); gCtx.fill();
+                gCtx.fillStyle = "#2b1505"; gCtx.fillRect(-4, -30, 8, 5);
+
+                gCtx.strokeStyle = "#2b1505"; gCtx.lineWidth = 2.5;
+                gCtx.beginPath(); gCtx.moveTo(-16, -38); gCtx.lineTo(-10, -32); gCtx.moveTo(-10, -38); gCtx.lineTo(-16, -32); gCtx.stroke();
+                gCtx.beginPath(); gCtx.moveTo(10, -38); gCtx.lineTo(16, -32); gCtx.moveTo(16, -38); gCtx.lineTo(10, -32); gCtx.stroke();
+
+                gCtx.fillStyle = "#ab7142";
+                gCtx.beginPath(); gCtx.roundRect(-30, -5, 10, 18, 4); gCtx.fill(); gCtx.stroke();
+                gCtx.beginPath(); gCtx.roundRect(20, -5, 10, 18, 4); gCtx.fill(); gCtx.stroke();
+                gCtx.beginPath(); gCtx.roundRect(-24, 20, 10, 18, 4); gCtx.fill(); gCtx.stroke();
+                gCtx.beginPath(); gCtx.roundRect(14, 20, 10, 18, 4); gCtx.fill(); gCtx.stroke();
+
+                gCtx.fillStyle = "#ffffff"; gCtx.font = "bold 16px Arial";
+                gCtx.fillText("z", 35, -45); gCtx.font = "bold 20px Arial"; gCtx.fillText("Z", 45, -58);
+
+                gCtx.restore();
+            }
+
+            function drawCar(x, y, radius, vx, vy) {
+                ctx.save();
+                ctx.translate(x, y);
+                let speed = Math.hypot(vx, vy);
+                let angle = Math.atan2(vy, vx);
+                if (speed > 0.1) ctx.rotate(angle);
+
+                if (speed > 0.5) {
+                    let flameLength = 10 + Math.random() * 12;
+                    ctx.fillStyle = "#ff4500";
+                    ctx.beginPath(); ctx.moveTo(-radius * 0.9, -5); ctx.lineTo(-radius * 0.9 - flameLength, 0); ctx.lineTo(-radius * 0.9, 5); ctx.fill();
+                    ctx.fillStyle = "#ffcc00";
+                    ctx.beginPath(); ctx.moveTo(-radius * 0.9, -3); ctx.lineTo(-radius * 0.9 - flameLength * 0.6, 0); ctx.lineTo(-radius * 0.9, 3); ctx.fill();
+                }
+
+                ctx.fillStyle = "#e61919";
+                ctx.beginPath(); ctx.roundRect(-radius * 0.8, -radius * 0.6, radius * 1.6, radius * 1.2, 6); ctx.fill();
+                ctx.strokeStyle = "#800000"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = "#87ceeb";
+                ctx.beginPath(); ctx.roundRect(-radius * 0.2, -radius * 0.4, radius * 0.7, radius * 0.8, 3); ctx.fill();
+                ctx.fillStyle = "#1a1a1a";
+                ctx.fillRect(-radius * 0.6, -radius * 0.7, 8, 4); ctx.fillRect(radius * 0.2, -radius * 0.7, 8, 4);
+                ctx.fillRect(-radius * 0.6, radius * 0.5, 8, 4); ctx.fillRect(radius * 0.2, radius * 0.5, 8, 4);
+                ctx.restore();
+            }
+
+            function drawPlane(x, y, radius, vx, vy) {
+                ctx.save();
+                ctx.translate(x, y);
+                let speed = Math.hypot(vx, vy);
+                let angle = Math.atan2(vy, vx);
+                if (speed > 0.1) ctx.rotate(angle);
+
+                if (speed > 0.2) {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                    ctx.fillRect(-radius * 1.2, -radius * 0.9, 10, 4);
+                    ctx.fillRect(-radius * 1.2, radius * 0.6, 10, 4);
+
+                    ctx.fillStyle = "#00ffff";
+                    ctx.beginPath(); ctx.moveTo(-radius * 0.9, -radius * 0.7); ctx.lineTo(-radius * 1.5, -radius * 0.7); ctx.lineTo(-radius * 0.9, -radius * 0.4); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(-radius * 0.9, radius * 0.4); ctx.lineTo(-radius * 1.5, radius * 0.7); ctx.lineTo(-radius * 0.9, radius * 0.7); ctx.fill();
+                }
+
+                ctx.fillStyle = "#2a6fb8";
+                ctx.beginPath(); ctx.ellipse(0, 0, radius * 0.9, radius * 0.5, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#123b6b"; ctx.lineWidth = 2; ctx.stroke();
+
+                ctx.fillStyle = "#1e528a";
+                ctx.beginPath(); ctx.moveTo(-radius * 0.3, -radius * 0.3); ctx.lineTo(-radius * 0.2, -radius * 1.2); ctx.lineTo(radius * 0.4, -radius * 0.9); ctx.lineTo(radius * 0.3, -radius * 0.2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-radius * 0.3, radius * 0.3); ctx.lineTo(-radius * 0.2, radius * 1.2); ctx.lineTo(radius * 0.4, radius * 0.9); ctx.lineTo(radius * 0.3, radius * 0.2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#d4f1f9"; ctx.beginPath(); ctx.ellipse(radius * 0.3, 0, radius * 0.3, radius * 0.25, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+
+            function drawCrocodile(x, y, radius, targetX, targetY) {
+                ctx.save();
+                ctx.translate(x, y);
+                let angle = Math.atan2(targetY - y, targetX - x);
+                ctx.rotate(angle);
+                ctx.fillStyle = "#429437";
+                ctx.beginPath(); ctx.ellipse(0, 0, radius * 1.1, radius * 0.75, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#1a3817"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = "#55a848";
+                ctx.beginPath(); ctx.moveTo(0, -radius * 0.5); ctx.lineTo(radius * 1.3, -radius * 0.2); ctx.lineTo(radius * 1.3, radius * 0.2); ctx.lineTo(0, radius * 0.5); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#ffffff";
+                for (let i = 0; i < 3; i++) {
+                    ctx.beginPath(); ctx.moveTo(radius * 0.4 + (i * 7), -radius * 0.3); ctx.lineTo(radius * 0.6 + (i * 7), -radius * 0.3 - 4); ctx.lineTo(radius * 0.8 + (i * 7), -radius * 0.3); ctx.fill();
+                }
+                ctx.fillStyle = "#ffcc00";
+                ctx.beginPath(); ctx.arc(-radius * 0.2, -radius * 0.4, 4.5, 0, Math.PI * 2); ctx.arc(-radius * 0.2, radius * 0.4, 4.5, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(-radius * 0.2 - 1, -radius * 0.4 - 3, 2, 6); ctx.fillRect(-radius * 0.2 - 1, radius * 0.4 - 3, 2, 6);
+                ctx.restore();
+            }
+
+            function drawMonsterTruck(x, y, radius, targetX, targetY) {
+                ctx.save();
+                ctx.translate(x, y);
+                let angle = Math.atan2(targetY - y, targetX - x);
+                ctx.rotate(angle);
+                ctx.fillStyle = "#111111";
+                ctx.beginPath();
+                ctx.roundRect(-radius * 1.1, -radius * 1.1, radius * 0.8, radius * 0.6, 4);
+                ctx.roundRect(radius * 0.3, -radius * 1.1, radius * 0.8, radius * 0.6, 4);
+                ctx.roundRect(-radius * 1.1, radius * 0.5, radius * 0.8, radius * 0.6, 4);
+                ctx.roundRect(radius * 0.3, radius * 0.5, radius * 0.8, radius * 0.6, 4);
+                ctx.fill();
+                ctx.fillStyle = "#8a2be2";
+                ctx.beginPath(); ctx.roundRect(-radius * 0.9, -radius * 0.7, radius * 1.8, radius * 1.4, 8); ctx.fill();
+                ctx.strokeStyle = "#ff0055"; ctx.lineWidth = 2.5; ctx.stroke();
+                ctx.fillStyle = "#ff0022";
+                ctx.beginPath(); ctx.arc(radius * 0.8, -radius * 0.4, 4, 0, Math.PI * 2); ctx.arc(radius * 0.8, radius * 0.4, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+
+            function drawPlaneHunter(x, y, radius, targetX, targetY) {
+                ctx.save();
+                ctx.translate(x, y);
+                let angle = Math.atan2(targetY - y, targetX - x);
+
+                ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(targetX - x, targetY - y); ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.strokeStyle = "#ff0000";
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(targetX - x, targetY - y, 18, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(targetX - x - 24, targetY - y); ctx.lineTo(targetX - x + 24, targetY - y);
+                ctx.moveTo(targetX - x, targetY - y - 24); ctx.lineTo(targetX - x, targetY - y + 24);
+                ctx.stroke();
+
+                ctx.rotate(angle);
+                ctx.fillStyle = "#777777";
+                ctx.beginPath(); ctx.ellipse(0, 0, radius * 1.2, radius * 0.6, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#ff3300"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = "#333333";
+                ctx.beginPath(); ctx.moveTo(-radius * 0.2, -radius * 0.3); ctx.lineTo(-radius * 0.3, -radius * 1.6); ctx.lineTo(radius * 0.5, -radius * 1.2); ctx.lineTo(radius * 0.4, -radius * 0.2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(-radius * 0.2, radius * 0.3); ctx.lineTo(-radius * 0.3, radius * 1.6); ctx.lineTo(radius * 0.5, radius * 1.2); ctx.lineTo(radius * 0.4, radius * 0.2); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.restore();
+            }
+
+            function drawChaserHole(x, y, radius) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.fillStyle = "rgba(100, 0, 30, 0.4)";
+                ctx.beginPath(); ctx.arc(0, 0, radius + 6, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#0d0205";
+                ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = "#ff0055"; ctx.lineWidth = 2; ctx.stroke();
+                ctx.restore();
+            }
+
+            function updateGame() {
+                if (gameState.isGameStarted && !gameState.isGameOver) {
+                    let sensitivity = parseFloat(document.getElementById('sensRange').value);
+                    let speedMultiplier = parseFloat(document.getElementById('speedRange').value);
+
+                    let tiltDeltaX = rawTiltX - offsetX;
+                    let tiltDeltaY = rawTiltY - offsetY;
+
+                    if (joystickActive) {
+                        tiltDeltaX = joystickVector.x * 120;
+                        tiltDeltaY = joystickVector.y * 120;
+                    }
+
+                    if (keysPressed['ArrowLeft'] || keysPressed['a']) tiltDeltaX -= 12;
+                    if (keysPressed['ArrowRight'] || keysPressed['d']) tiltDeltaX += 12;
+                    if (keysPressed['ArrowUp'] || keysPressed['w']) tiltDeltaY -= 12;
+                    if (keysPressed['ArrowDown'] || keysPressed['s']) tiltDeltaY += 12;
+
+                    let ax = tiltDeltaX * sensitivity * speedMultiplier;
+                    let ay = tiltDeltaY * sensitivity * speedMultiplier;
+
+                    gameState.ball.vx = (gameState.ball.vx + ax) * 0.95;
+                    gameState.ball.vy = (gameState.ball.vy + ay) * 0.95;
+
+                    gameState.ball.x += gameState.ball.vx;
+                    gameState.ball.y += gameState.ball.vy;
+
+                    syncMultiplayerTick();
+                    if (Date.now() - netState.lastRemoteTime > 350) {
+                        const rivalRng = createSeededRng(`${gameState.player.roomCode || 'SOLO'}:rival:${gameState.level}:${Math.floor(Date.now() / 400)}`);
+                        updateRivalCapibara(rivalRng);
+                    }
+                    resolveCapibaraClash(gameState.ball, gameState.rivalBall);
+
+                    if (Math.abs(gameState.ball.vx) > 0.1 || Math.abs(gameState.ball.vy) > 0.1) {
+                        let pt = { x: gameState.ball.x, y: gameState.ball.y };
+                        if (pt.y < canvas.height / 2) {
+                            if (gameState.pathNorth.length === 0 || Math.hypot(pt.x - gameState.pathNorth[gameState.pathNorth.length-1].x, pt.y - gameState.pathNorth[gameState.pathNorth.length-1].y) > 20) {
+                                gameState.pathNorth.push(pt);
+                            }
+                        } else {
+                            if (gameState.pathSouth.length === 0 || Math.hypot(pt.x - gameState.pathSouth[gameState.pathSouth.length-1].x, pt.y - gameState.pathSouth[gameState.pathSouth.length-1].y) > 20) {
+                                gameState.pathSouth.push(pt);
+                            }
+                        }
+                    }
+
+                    if (gameState.chaserEnemy) {
+                        let dx = gameState.ball.x - gameState.chaserEnemy.x;
+                        let dy = gameState.ball.y - gameState.chaserEnemy.y;
+                        let dist = Math.hypot(dx, dy);
+
+                        if (dist > 0) {
+                            gameState.chaserEnemy.x += (dx / dist) * gameState.chaserEnemy.speed;
+                            gameState.chaserEnemy.y += (dy / dist) * gameState.chaserEnemy.speed;
+                        }
+
+                        if (dist < gameState.ball.radius + gameState.chaserEnemy.radius * 0.7) {
+                            handleDeath();
+                        }
+                    }
+
+                    gameState.compositeWalls.forEach(cw => { cw.angle += cw.rotSpeed; });
+                    gameState.movingWalls.forEach(mw => {
+                        mw.x += mw.vx;
+                        if (mw.x <= mw.minX || mw.x >= mw.maxX) mw.vx *= -1;
+                    });
+
+                    if (gameState.invaderHole) {
+                        gameState.invaderHole.angle += gameState.invaderHole.speed;
+                        gameState.invaderHole.x = gameState.invaderHole.centerX + Math.cos(gameState.invaderHole.angle) * gameState.invaderHole.orbitRadius;
+                        gameState.invaderHole.y = gameState.invaderHole.centerY + Math.sin(gameState.invaderHole.angle) * gameState.invaderHole.orbitRadius;
+                    }
+
+                    const minX = borderThickness + gameState.ball.radius;
+                    const maxX = canvas.width - borderThickness - gameState.ball.radius;
+                    const minY = borderThickness + gameState.ball.radius;
+                    const maxY = canvas.height - borderThickness - gameState.ball.radius;
+
+                    if (gameState.ball.x < minX) { gameState.ball.x = minX; gameState.ball.vx *= -0.4; }
+                    else if (gameState.ball.x > maxX) { gameState.ball.x = maxX; gameState.ball.vx *= -0.4; }
+                    if (gameState.ball.y < minY) { gameState.ball.y = minY; gameState.ball.vy *= -0.4; }
+                    else if (gameState.ball.y > maxY) { gameState.ball.y = maxY; gameState.ball.vy *= -0.4; }
+
+                    gameState.compositeWalls.forEach(cw => resolveCompositeCollision(gameState.ball, cw));
+                    gameState.movingWalls.forEach(mw => resolveWallCollision(gameState.ball, mw));
+
+                    if (gameState.heartItem) {
+                        let hDist = Math.hypot(gameState.ball.x - gameState.heartItem.x, gameState.ball.y - gameState.heartItem.y);
+                        if (hDist < gameState.ball.radius + gameState.heartItem.size) {
+                            gameState.lives++;
+                            if (navigator.vibrate) navigator.vibrate(200);
+                            gameState.heartItem = null;
+                        }
+                    }
+
+                    const playerReachedGoal = Math.hypot(gameState.ball.x - gameState.winningHole.x, gameState.ball.y - gameState.winningHole.y) < gameState.winningHole.radius;
+                    const rivalReachedGoal = Math.hypot(gameState.rivalBall.x - gameState.winningHole.x, gameState.rivalBall.y - gameState.winningHole.y) < gameState.winningHole.radius;
+
+                    if (playerReachedGoal) {
+                        sendRoomMessage({ type: 'goal', level: gameState.level });
+                        completeLevelGoal();
+                    } else if (rivalReachedGoal) {
+                        const rivalPenalty = Math.max(25, Math.floor(getLevelApprovalLoss(gameState.level) * 0.6));
+                        gameState.lastLevelLoss = rivalPenalty;
+                        gameState.score = Math.max(0, gameState.score - rivalPenalty);
+                        if (gameState.score <= 0) {
+                            triggerZeroScoreDefeat('El segundo capibara llegó primero y tu puntaje cayó a 0.');
+                        } else {
+                            resetBall();
+                            updateScoreHud();
+                        }
+                    }
+
+                    gameState.trapHoles.forEach(trap => {
+                        if (Math.hypot(gameState.ball.x - trap.x, gameState.ball.y - trap.y) < trap.radius) {
+                            handleDeath();
+                        }
+                    });
+
+                    if (gameState.invaderHole) {
+                        if (Math.hypot(gameState.ball.x - gameState.invaderHole.x, gameState.ball.y - gameState.invaderHole.y) < gameState.invaderHole.radius) {
+                            handleDeath();
+                        }
+                    }
+
+                    gameState.elapsedTime = Math.floor((Date.now() - gameState.levelStartTime) / 1000);
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (gameState.avatarType === 'boat') {
+                    drawSeaBackground();
+                } else if (swampBg.complete && swampBg.naturalWidth !== 0) {
+                    ctx.globalAlpha = 0.95;
+                    ctx.drawImage(swampBg, 0, 0, canvas.width, canvas.height);
+                    ctx.globalAlpha = 1.0;
+                } else {
+                    ctx.fillStyle = gameState.avatarType === 'capibara' ? '#805533' : '#deb887';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                gameState.decorativeBushes.forEach(bush => {
+                    if (gameState.avatarType === 'boat') {
+                        drawMiniIsland(bush.x, bush.y, bush.size);
+                    } else {
+                        drawBush(bush.x, bush.y, bush.size);
+                    }
+                });
+
+                ctx.fillStyle = gameState.avatarType === 'boat' ? "#1e3799" : "#3d2817";
+                ctx.fillRect(0, 0, canvas.width, borderThickness);
+                ctx.fillRect(0, canvas.height - borderThickness, canvas.width, borderThickness);
+                ctx.fillRect(0, 0, borderThickness, canvas.height);
+                ctx.fillRect(canvas.width - borderThickness, 0, borderThickness, canvas.height);
+
+                gameState.compositeWalls.forEach(cw => {
+                    ctx.save();
+                    ctx.translate(cw.cx, cw.cy);
+                    ctx.rotate(cw.angle);
+
+                    if (gameState.avatarType === 'boat') {
+                        ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+                        cw.subRects.forEach(rect => { ctx.fillRect(rect.x - 3, rect.y - 3, rect.w + 6, rect.h + 6); });
+                        ctx.fillStyle = "#e6c373";
+                        cw.subRects.forEach(rect => { ctx.fillRect(rect.x, rect.y, rect.w, rect.h); });
+                        ctx.fillStyle = "#388e3c";
+                        cw.subRects.forEach(rect => { ctx.fillRect(rect.x + 3, rect.y + 3, rect.w - 6, rect.h - 6); });
+                    } else if (gameState.avatarType === 'capibara') {
+                        ctx.fillStyle = "#5c8a3c";
+                        cw.subRects.forEach(rect => {
+                            ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+                            ctx.fillStyle = "#7db359";
+                            ctx.beginPath();
+                            ctx.moveTo(rect.x + rect.w/2, rect.y - 4);
+                            ctx.lineTo(rect.x + rect.w/2 - 4, rect.y);
+                            ctx.lineTo(rect.x + rect.w/2 + 4, rect.y);
+                            ctx.fill();
+                            ctx.fillStyle = "#5c8a3c";
+                        });
+                    } else {
+                        ctx.fillStyle = "#8c5835";
+                        cw.subRects.forEach(rect => { ctx.fillRect(rect.x, rect.y, rect.w, rect.h); });
+                    }
+                    ctx.restore();
+                });
+
+                gameState.movingWalls.forEach(mw => {
+                    if (gameState.avatarType === 'boat') {
+                        ctx.fillStyle = "#f5deb3";
+                        ctx.fillRect(mw.x, mw.y, mw.w, mw.h);
+                        ctx.fillStyle = "#4caf50";
+                        ctx.fillRect(mw.x + 3, mw.y + 3, mw.w - 6, mw.h - 6);
+                    } else {
+                        ctx.fillStyle = gameState.avatarType === 'capibara' ? '#945c32' : '#a65224';
+                        ctx.fillRect(mw.x, mw.y, mw.w, mw.h);
+                    }
+                });
+
+                ctx.fillStyle = gameState.avatarType === 'boat' ? "#0c2461" : "#000000";
+                ctx.beginPath(); ctx.arc(gameState.winningHole.x, gameState.winningHole.y, gameState.winningHole.radius, 0, Math.PI * 2); ctx.fill();
+                if (gameState.avatarType === 'boat') {
+                    ctx.strokeStyle = "#f6b93b"; ctx.lineWidth = 3; ctx.stroke();
+                }
+
+                ctx.fillStyle = gameState.avatarType === 'capibara' ? '#324a1f' : (gameState.avatarType === 'boat' ? '#192a56' : '#3d0c02');
+                gameState.trapHoles.forEach(t => {
+                    ctx.beginPath(); ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2); ctx.fill();
+                });
+
+                if (gameState.invaderHole) {
+                    ctx.fillStyle = gameState.avatarType === 'boat' ? "#0a3d62" : "#5c0620";
+                    ctx.beginPath(); ctx.arc(gameState.invaderHole.x, gameState.invaderHole.y, gameState.invaderHole.radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = gameState.avatarType === 'boat' ? "#ffffff" : "#ff0055"; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(gameState.invaderHole.x, gameState.invaderHole.y, gameState.invaderHole.radius + 3, 0, Math.PI * 2); ctx.stroke();
+                }
+
+                if (gameState.chaserEnemy) {
+                    if (gameState.avatarType === 'capibara') {
+                        drawCrocodile(gameState.chaserEnemy.x, gameState.chaserEnemy.y, gameState.chaserEnemy.radius, gameState.ball.x, gameState.ball.y);
+                    } else if (gameState.avatarType === 'boat') {
+                        drawPirateShip(gameState.chaserEnemy.x, gameState.chaserEnemy.y, gameState.chaserEnemy.radius, gameState.ball.x, gameState.ball.y);
+                    } else if (gameState.avatarType === 'car') {
+                        drawMonsterTruck(gameState.chaserEnemy.x, gameState.chaserEnemy.y, gameState.chaserEnemy.radius, gameState.ball.x, gameState.ball.y);
+                    } else if (gameState.avatarType === 'plane') {
+                        drawPlaneHunter(gameState.chaserEnemy.x, gameState.chaserEnemy.y, gameState.chaserEnemy.radius, gameState.ball.x, gameState.ball.y);
+                    } else {
+                        drawChaserHole(gameState.chaserEnemy.x, gameState.chaserEnemy.y, gameState.chaserEnemy.radius);
+                    }
+                }
+
+                if (gameState.heartItem) {
+                    drawHeart(gameState.heartItem.x, gameState.heartItem.y - 10, gameState.heartItem.size);
+                }
+
+                const rivalSpeed = Math.hypot(gameState.rivalBall.vx, gameState.rivalBall.vy);
+                drawCapibara(gameState.rivalBall.x, gameState.rivalBall.y, gameState.rivalBall.radius, rivalSpeed, {
+                    main: "#7dd3fc",
+                    dark: "#0284c7",
+                    roll: "#38bdf8",
+                    badge: "#e0f2fe"
+                });
+
+                let currentSpeed = Math.hypot(gameState.ball.vx, gameState.ball.vy);
+                if (gameState.avatarType === 'capibara') {
+                    drawCapibara(gameState.ball.x, gameState.ball.y, gameState.ball.radius, currentSpeed, {
+                        main: "#d49a66",
+                        dark: "#ab7142",
+                        roll: "#c28854",
+                        badge: "#fbbf24"
+                    });
+                } else if (gameState.avatarType === 'boat') {
+                    drawBoat(gameState.ball.x, gameState.ball.y, gameState.ball.radius, gameState.ball.vx, gameState.ball.vy);
+                } else if (gameState.avatarType === 'car') {
+                    drawCar(gameState.ball.x, gameState.ball.y, gameState.ball.radius, gameState.ball.vx, gameState.ball.vy);
+                } else if (gameState.avatarType === 'plane') {
+                    drawPlane(gameState.ball.x, gameState.ball.y, gameState.ball.radius, gameState.ball.vx, gameState.ball.vy);
+                } else {
+                    ctx.fillStyle = "#e0e0e0";
+                    ctx.beginPath(); ctx.arc(gameState.ball.x, gameState.ball.y, gameState.ball.radius, 0, Math.PI * 2); ctx.fill();
+                }
+
+                updateScoreHud();
+
+                requestAnimationFrame(updateGame);
+            }
+
+            function handleDeath() {
+                gameState.deaths++;
+                if (navigator.vibrate) navigator.vibrate(400);
+
+                if (gameState.lives > 0) {
+                    gameState.lives--;
+                }
+
+                if (gameState.score <= 0) {
+                    triggerZeroScoreDefeat('Tu puntaje llegó a 0 y se agotó la partida.');
+                } else {
+                    resetBall();
+                    generateLevelAI();
+                    updateScoreHud();
+                }
+            }
+
+            function resetBall() {
+                gameState.ball.x = borderThickness + 60;
+                gameState.ball.y = borderThickness + 60;
+                gameState.ball.vx = 0; gameState.ball.vy = 0;
+
+                gameState.rivalBall.x = Math.min(canvas.width - borderThickness - 60, borderThickness + 125);
+                gameState.rivalBall.y = borderThickness + 60;
+                gameState.rivalBall.vx = 0; gameState.rivalBall.vy = 0;
+            }
+
+            setTimeout(() => {
+                resizeCanvas();
+                generateLevelAI();
+                updateScoreHud();
+                updateGame();
+            }, 100);
+        });
+    </script>
+</body>
+</html>
