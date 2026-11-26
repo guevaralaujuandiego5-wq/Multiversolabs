@@ -1,48 +1,55 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Artista Interdisciplinario | MultiversoLabs</title>
+  <title>Artista Interdisciplinario | MultiversoLabs · Edición Navidad</title>
   <style>
     :root {
-      --bg-mesh-1: #050814;
-      --bg-mesh-2: #0b1120;
-      --bg-mesh-3: #111827;
-      --glass-bg: rgba(15, 23, 42, 0.68);
-      --glass-bg-elevated: rgba(15, 23, 42, 0.90);
-      --glass-border: rgba(56, 189, 248, 0.22);
+      /* Tonalidad Blanco y Cristal Transparente con Reflejos */
+      --bg-mesh-1: #ffffff;
+      --bg-mesh-2: #f1f7fc;
+      --bg-mesh-3: #e2eef8;
+      --glass-bg: rgba(255, 255, 255, 0.56);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.88);
+      --glass-outer-ring: rgba(14, 165, 233, 0.22);
+      --glass-highlight: rgba(56, 189, 248, 0.35);
+      --glass-specular: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.25) 45%, rgba(186, 230, 253, 0.38) 100%);
+      --glass-shadow: 0 12px 36px rgba(15, 23, 42, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --accent-cyan: #0284c7;
+      --accent-red: #dc2626;
+      --accent-purple: #7c3aed;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --ambient-color-1: rgba(186, 230, 253, 0.45);
+      --ambient-color-2: rgba(254, 243, 199, 0.42);
+      --ambient-tint: rgba(255, 255, 255, 0.35);
+    }
+
+    [data-theme="dark"] {
+      --bg-mesh-1: #060b19;
+      --bg-mesh-2: #0c162c;
+      --bg-mesh-3: #13203c;
+      --glass-bg: rgba(15, 23, 42, 0.62);
+      --glass-bg-elevated: rgba(15, 23, 42, 0.88);
+      --glass-border: rgba(186, 230, 253, 0.28);
+      --glass-outer-ring: rgba(56, 189, 248, 0.24);
       --glass-highlight: rgba(56, 189, 248, 0.38);
+      --glass-specular: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(56, 189, 248, 0.12) 100%);
+      --glass-shadow: 0 14px 38px rgba(0, 0, 0, 0.42), inset 0 1px 1px rgba(255, 255, 255, 0.18);
       --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
+      --text-secondary: #cbd5e1;
       --accent-cyan: #38bdf8;
       --accent-red: #f43f5e;
       --accent-purple: #a855f7;
       --accent-emerald: #10b981;
-      --accent-amber: #f59e0b;
+      --accent-amber: #fbbf24;
       --ambient-color-1: rgba(56, 189, 248, 0.16);
-      --ambient-color-2: rgba(168, 85, 247, 0.14);
+      --ambient-color-2: rgba(251, 191, 36, 0.12);
       --ambient-tint: rgba(5, 8, 20, 0.35);
-    }
-
-    [data-theme="light"] {
-      --bg-mesh-1: #f1f5f9;
-      --bg-mesh-2: #e2e8f0;
-      --bg-mesh-3: #cbd5e1;
-      --glass-bg: rgba(255, 255, 255, 0.78);
-      --glass-bg-elevated: rgba(255, 255, 255, 0.95);
-      --glass-border: rgba(2, 132, 199, 0.22);
-      --glass-highlight: rgba(2, 132, 199, 0.28);
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --accent-cyan: #0284c7;
-      --accent-red: #e11d48;
-      --accent-purple: #7e22ce;
-      --accent-emerald: #059669;
-      --accent-amber: #d97706;
-      --ambient-color-1: rgba(2, 132, 199, 0.12);
-      --ambient-color-2: rgba(126, 34, 206, 0.10);
-      --ambient-tint: rgba(241, 245, 249, 0.25);
     }
 
     * {
@@ -61,20 +68,20 @@
       color: var(--text-primary);
       background: var(--bg-mesh-1);
       overflow-x: hidden;
-      transition: color 0.4s ease;
+      transition: color 0.4s ease, background 0.5s ease;
     }
 
     /* ==========================================================================
-       FONDO HOLOGRÁFICO MULTIVERSOLABS + REJILLA CUÁNTICA + PARTÍCULAS
+       FONDO BLANCO CRISTALINO MULTIVERSOLABS + REJILLA + NIEVE AMBIENTAL
        ========================================================================== */
     .living-background {
       position: fixed;
       inset: 0;
       z-index: -3;
       background:
-        radial-gradient(circle at 20% 18%, var(--ambient-color-1) 0%, transparent 52%),
-        radial-gradient(circle at 82% 76%, var(--ambient-color-2) 0%, transparent 52%),
-        radial-gradient(circle at 50% 45%, rgba(244, 63, 94, 0.08) 0%, transparent 55%),
+        radial-gradient(circle at 18% 16%, var(--ambient-color-1) 0%, transparent 55%),
+        radial-gradient(circle at 84% 74%, var(--ambient-color-2) 0%, transparent 55%),
+        radial-gradient(circle at 52% 42%, rgba(220, 38, 38, 0.06) 0%, transparent 58%),
         linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
       background-size: 200% 200%;
       animation: meshShift 22s ease infinite alternate;
@@ -87,17 +94,11 @@
       z-index: -2;
       pointer-events: none;
       background-image:
-        linear-gradient(to right, rgba(56, 189, 248, 0.055) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(168, 85, 247, 0.055) 1px, transparent 1px);
+        linear-gradient(to right, rgba(2, 132, 199, 0.065) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(14, 165, 233, 0.065) 1px, transparent 1px);
       background-size: 64px 64px;
       mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
       -webkit-mask-image: radial-gradient(ellipse at 50% 35%, black 25%, transparent 82%);
-    }
-
-    [data-theme="light"] .holo-grid {
-      background-image:
-        linear-gradient(to right, rgba(2, 132, 199, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(126, 34, 206, 0.07) 1px, transparent 1px);
     }
 
     #particle-canvas {
@@ -112,12 +113,42 @@
       100% { background-position: 100% 50%; }
     }
 
+    /* Superficie cristal transparente con reflejo especular */
+    .crystal-surface {
+      background: var(--glass-specular), var(--glass-bg);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+    }
+
+    /* ==========================================================================
+       ANIMACIÓN DE EMERGENCIA AL LLEGAR A CADA SECTOR
+       ========================================================================== */
+    .reveal-sector {
+      opacity: 0;
+      transform: translateY(38px) scale(0.975);
+      filter: blur(6px);
+      transition:
+        opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.75s ease;
+      will-change: opacity, transform, filter;
+    }
+
+    .reveal-sector.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
     /* ==========================================================================
        TICKER SUPERIOR
        ========================================================================== */
     .news-ticker {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14), rgba(244, 63, 94, 0.10));
-      backdrop-filter: blur(12px);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(224, 242, 254, 0.75), rgba(254, 226, 226, 0.68));
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--glass-border);
       padding: 8px 5%;
       font-size: 0.82rem;
@@ -127,12 +158,16 @@
       gap: 12px;
     }
 
+    [data-theme="dark"] .news-ticker {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(168, 85, 247, 0.14), rgba(244, 63, 94, 0.10));
+    }
+
     .news-badge {
-      background: var(--accent-cyan);
-      color: #050814;
+      background: linear-gradient(135deg, #dc2626, #0284c7);
+      color: #ffffff;
       font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 4px;
+      padding: 2px 9px;
+      border-radius: 5px;
       margin-right: 10px;
       font-size: 0.7rem;
       text-transform: uppercase;
@@ -159,9 +194,11 @@
       justify-content: space-between;
       align-items: center;
       padding: 14px 5%;
-      background: var(--glass-bg);
-      backdrop-filter: blur(18px);
+      background: var(--glass-specular), var(--glass-bg);
+      backdrop-filter: blur(22px) saturate(170%);
+      -webkit-backdrop-filter: blur(22px) saturate(170%);
       border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
       gap: 14px;
     }
 
@@ -192,8 +229,8 @@
       position: absolute;
       inset: 0;
       border: 1.5px solid var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.15);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      background: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
     }
 
     .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
@@ -202,9 +239,9 @@
     .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
     .cube-sim span:nth-child(5) {
       transform: rotateX(90deg) translateZ(16px);
-      background: rgba(244, 63, 94, 0.32);
+      background: rgba(220, 38, 38, 0.32);
       border-color: var(--accent-red);
-      box-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+      box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
     }
     .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
 
@@ -235,7 +272,7 @@
     .nav-links a:hover,
     .nav-links a.active {
       color: var(--accent-cyan);
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .header-actions {
@@ -245,14 +282,19 @@
     }
 
     .btn-glass {
-      background: var(--glass-bg);
+      position: relative;
+      overflow: hidden;
+      background: var(--glass-specular), var(--glass-bg);
       border: 1px solid var(--glass-border);
+      outline: 1px solid var(--glass-outer-ring);
       color: var(--text-primary);
       padding: 8px 14px;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 0.84rem;
       cursor: pointer;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.85);
       transition: all 0.25s ease;
       display: inline-flex;
       align-items: center;
@@ -262,15 +304,19 @@
 
     .btn-glass:hover {
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 16px var(--glass-highlight);
+      box-shadow: 0 8px 22px var(--glass-highlight), inset 0 1px 0 #ffffff;
       transform: translateY(-1px);
     }
 
     .btn-glass.primary {
-      background: rgba(56, 189, 248, 0.14);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(224, 242, 254, 0.72));
       border-color: var(--accent-cyan);
       color: var(--accent-cyan);
-      font-weight: 600;
+      font-weight: 700;
+    }
+
+    [data-theme="dark"] .btn-glass.primary {
+      background: rgba(56, 189, 248, 0.16);
     }
 
     /* ==========================================================================
@@ -297,134 +343,97 @@
     }
 
     /* ==========================================================================
-       HERO FUTURISTA ARTÍSTICO + LIENZO DE PAISAJES CON BORDE DE LUZ
+       SALUDO NAVIDEÑO GRANDE AL INICIO + HERO CRISTALINO
        ========================================================================== */
     .hero-artist {
-      padding: 44px 0 24px;
+      padding: 38px 0 24px;
     }
 
-    .holo-frame {
+    .christmas-hero-greeting {
       position: relative;
-      border-radius: 24px;
-      padding: 2px;
-      background: linear-gradient(120deg, rgba(56, 189, 248, 0.55), rgba(168, 85, 247, 0.45), rgba(244, 63, 94, 0.45), rgba(56, 189, 248, 0.55));
-      background-size: 300% 300%;
-      animation: borderFlow 12s linear infinite;
-      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35), 0 0 36px rgba(56, 189, 248, 0.14);
-      margin-bottom: 34px;
-    }
-
-    @keyframes borderFlow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .hero-landscape-showcase {
-      position: relative;
-      width: 100%;
-      height: clamp(260px, 42vw, 410px);
-      border-radius: 22px;
       overflow: hidden;
-      background: var(--bg-mesh-2);
+      border-radius: 26px;
+      padding: clamp(24px, 4vw, 38px);
+      margin-bottom: 30px;
+      background:
+        linear-gradient(125deg, rgba(255, 255, 255, 0.88) 0%, rgba(240, 249, 255, 0.72) 50%, rgba(254, 242, 242, 0.72) 100%);
+      border: 1.5px solid #ffffff;
+      outline: 1px solid rgba(2, 132, 199, 0.22);
+      box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08),
+        0 0 35px rgba(186, 230, 253, 0.45),
+        inset 0 2px 2px rgba(255, 255, 255, 1);
+      backdrop-filter: blur(26px) saturate(180%);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
     }
 
-    .scanline-sweep {
+    [data-theme="dark"] .christmas-hero-greeting {
+      background: linear-gradient(125deg, rgba(15, 23, 42, 0.84) 0%, rgba(12, 74, 110, 0.48) 55%, rgba(136, 19, 55, 0.35) 100%);
+      border-color: rgba(186, 230, 253, 0.35);
+    }
+
+    .christmas-hero-greeting::after {
+      content: "";
       position: absolute;
-      inset: 0;
-      z-index: 2;
+      top: -60%;
+      left: -30%;
+      width: 75%;
+      height: 220%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.65), transparent);
+      transform: rotate(24deg);
       pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(56, 189, 248, 0.04) 4px
-      );
+      animation: crystalSweep 9s ease-in-out infinite;
     }
 
-    .landscape-slide {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transform: scale(1.05);
-      transition: opacity 1.5s ease-in-out, transform 7s ease-out;
+    @keyframes crystalSweep {
+      0%, 100% { transform: translateX(-120%) rotate(24deg); }
+      50% { transform: translateX(260%) rotate(24deg); }
     }
 
-    .landscape-slide.active {
-      opacity: 1;
-      transform: scale(1);
-      z-index: 1;
-    }
-
-    .landscape-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      background: linear-gradient(
-        to top,
-        rgba(5, 8, 20, 0.88) 0%,
-        rgba(5, 8, 20, 0.22) 55%,
-        transparent 100%
-      );
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 24px 28px;
-    }
-
-    .landscape-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .landscape-caption {
-      color: var(--text-primary);
-      font-size: 0.94rem;
-      font-weight: 500;
-    }
-
-    .landscape-caption span {
-      display: block;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--accent-cyan);
-      font-weight: 700;
-      margin-bottom: 3px;
-    }
-
-    .landscape-dots {
-      display: flex;
-      gap: 8px;
+    .xmas-pill {
+      display: inline-flex;
       align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, rgba(220, 38, 38, 0.12), rgba(217, 119, 6, 0.14));
+      color: var(--accent-red);
+      border: 1px solid rgba(220, 38, 38, 0.25);
+      margin-bottom: 12px;
     }
 
-    .landscape-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 99px;
-      background: rgba(248, 250, 252, 0.35);
-      border: none;
-      cursor: pointer;
-      transition: all 0.35s ease;
+    .xmas-big-title {
+      font-size: clamp(2.1rem, 5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      background: linear-gradient(120deg, #0f172a 0%, #0284c7 45%, #dc2626 82%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .landscape-dot.active {
-      width: 26px;
-      background: var(--accent-cyan);
-      box-shadow: 0 0 10px var(--accent-cyan);
+    [data-theme="dark"] .xmas-big-title {
+      background: linear-gradient(120deg, #ffffff 0%, #7dd3fc 48%, #fda4af 82%, #fde68a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .xmas-big-sub {
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      color: var(--text-secondary);
+      max-width: 780px;
+      line-height: 1.65;
     }
 
     .hero-artist h1 {
-      font-size: clamp(2.1rem, 4.6vw, 3.5rem);
+      font-size: clamp(1.85rem, 4vw, 3.1rem);
       font-weight: 800;
-      line-height: 1.12;
+      line-height: 1.14;
       letter-spacing: -0.03em;
       margin-bottom: 20px;
     }
@@ -436,13 +445,16 @@
     }
 
     .antibiografia-box {
-      background: var(--glass-bg);
+      background: var(--glass-specular), var(--glass-bg);
       border: 1px solid var(--glass-border);
+      outline: 1px solid var(--glass-outer-ring);
       border-left: 4px solid var(--accent-purple);
       padding: 22px 26px;
-      border-radius: 16px;
+      border-radius: 18px;
       margin-bottom: 26px;
-      backdrop-filter: blur(18px);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      box-shadow: var(--glass-shadow);
     }
 
     .antibiografia-box h2 {
@@ -483,7 +495,7 @@
     }
 
     /* ==========================================================================
-       TARJETAS HOLOGRÁFICAS & ENCUENTROS
+       TARJETAS DE CRISTAL TRANSPARENTE CON REFLEJOS & ENCUENTROS
        ========================================================================== */
     .section-heading {
       font-size: clamp(1.45rem, 2.5vw, 1.85rem);
@@ -500,11 +512,14 @@
     }
 
     .encuentros-board {
-      background: var(--glass-bg);
+      background: var(--glass-specular), var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 20px;
+      outline: 1px solid var(--glass-outer-ring);
+      border-radius: 22px;
       padding: 28px;
-      backdrop-filter: blur(18px);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      box-shadow: var(--glass-shadow);
     }
 
     .encuentro-item {
@@ -512,18 +527,23 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 18px;
       padding: 20px;
-      background: rgba(56, 189, 248, 0.05);
+      background: rgba(255, 255, 255, 0.45);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      border-radius: 16px;
       margin-top: 16px;
       align-items: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    [data-theme="dark"] .encuentro-item {
+      background: rgba(56, 189, 248, 0.06);
     }
 
     .badge-cupo {
       display: inline-block;
-      background: rgba(168, 85, 247, 0.15);
+      background: rgba(124, 58, 237, 0.12);
       color: var(--accent-purple);
-      border: 1px solid rgba(168, 85, 247, 0.35);
+      border: 1px solid rgba(124, 58, 237, 0.28);
       padding: 4px 12px;
       border-radius: 999px;
       font-size: 0.76rem;
@@ -538,18 +558,34 @@
 
     .skill-card {
       position: relative;
-      background: var(--glass-bg);
+      overflow: hidden;
+      background: var(--glass-specular), var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 18px;
+      outline: 1px solid var(--glass-outer-ring);
+      border-radius: 20px;
       padding: 24px;
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      box-shadow: var(--glass-shadow);
       transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .skill-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(125deg, rgba(255, 255, 255, 0.55) 0%, transparent 42%);
+      pointer-events: none;
+    }
+
+    [data-theme="dark"] .skill-card::before {
+      background: linear-gradient(125deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%);
     }
 
     .skill-card:hover {
       transform: translateY(-5px);
       border-color: var(--accent-cyan);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 0 20px rgba(56, 189, 248, 0.14);
+      box-shadow: 0 16px 36px rgba(2, 132, 199, 0.14), inset 0 1px 1px #ffffff;
     }
 
     .skill-icon {
@@ -558,11 +594,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
+    }
+
+    [data-theme="dark"] .skill-icon {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.25);
     }
 
     .skill-card h3 {
@@ -578,12 +620,15 @@
     }
 
     .story-box {
-      background: var(--glass-bg);
+      background: var(--glass-specular), var(--glass-bg);
       border: 1px solid var(--glass-border);
+      outline: 1px solid var(--glass-outer-ring);
       border-left: 4px solid var(--accent-cyan);
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 32px;
-      backdrop-filter: blur(18px);
+      backdrop-filter: blur(22px) saturate(165%);
+      -webkit-backdrop-filter: blur(22px) saturate(165%);
+      box-shadow: var(--glass-shadow);
     }
 
     .story-box p {
@@ -598,7 +643,7 @@
     }
 
     /* ==========================================================================
-       PANEL FLOTANTE HOLOGRÁFICO (MÁX. 3 DÍAS / PEDIDOS)
+       PANEL FLOTANTE CRISTALINO (MÁX. 3 DÍAS / PEDIDOS)
        ========================================================================== */
     .group-floating-panel {
       position: fixed;
@@ -606,11 +651,13 @@
       right: 22px;
       width: 336px;
       max-width: calc(100vw - 32px);
-      background: var(--glass-bg-elevated);
-      border: 1px solid var(--accent-cyan);
-      border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45), 0 0 24px rgba(56, 189, 248, 0.18);
-      backdrop-filter: blur(22px);
+      background: var(--glass-specular), var(--glass-bg-elevated);
+      border: 1px solid var(--glass-border);
+      outline: 1px solid var(--accent-cyan);
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14), inset 0 1px 1px #ffffff;
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
       z-index: 60;
       overflow: hidden;
     }
@@ -620,7 +667,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), rgba(168, 85, 247, 0.16));
+      background: linear-gradient(90deg, rgba(2, 132, 199, 0.12), rgba(220, 38, 38, 0.10));
       border-bottom: 1px solid var(--glass-border);
     }
 
@@ -633,12 +680,12 @@
     }
 
     .close-panel-btn {
-      background: transparent;
+      background: rgba(255, 255, 255, 0.6);
       border: 1px solid var(--glass-border);
       color: var(--text-secondary);
       width: 26px;
       height: 26px;
-      border-radius: 6px;
+      border-radius: 7px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -649,14 +696,6 @@
     .close-panel-btn:hover {
       color: var(--text-primary);
       border-color: var(--accent-cyan);
-    }
-
-    .group-panel-img {
-      width: 100%;
-      height: 132px;
-      object-fit: cover;
-      display: block;
-      border-bottom: 1px solid var(--glass-border);
     }
 
     .group-panel-body {
@@ -679,7 +718,7 @@
       position: fixed;
       bottom: 22px;
       right: 22px;
-      background: var(--glass-bg-elevated);
+      background: var(--glass-specular), var(--glass-bg-elevated);
       border: 1px solid var(--accent-cyan);
       color: var(--accent-cyan);
       padding: 10px 16px;
@@ -688,9 +727,9 @@
       font-weight: 700;
       cursor: pointer;
       z-index: 55;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
       display: none;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 8px 25px rgba(15, 23, 42, 0.14);
     }
 
     /* ==========================================================================
@@ -700,8 +739,8 @@
       position: fixed;
       inset: 0;
       z-index: 130;
-      background: rgba(2, 6, 23, 0.80);
-      backdrop-filter: blur(12px);
+      background: rgba(241, 245, 249, 0.72);
+      backdrop-filter: blur(14px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -709,20 +748,25 @@
       perspective: 1100px;
     }
 
+    [data-theme="dark"] .qr-service-backdrop {
+      background: rgba(2, 6, 23, 0.80);
+    }
+
     .qr-service-backdrop.open {
       display: flex;
     }
 
     .qr-service-card {
-      background: var(--glass-bg-elevated);
-      border: 1px solid var(--accent-cyan);
+      background: var(--glass-specular), var(--glass-bg-elevated);
+      border: 1.5px solid var(--glass-border);
+      outline: 1px solid var(--accent-cyan);
       border-radius: 24px;
       max-width: 680px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
       padding: clamp(22px, 4vw, 34px);
-      box-shadow: 0 0 48px rgba(56, 189, 248, 0.25), 0 20px 50px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18), inset 0 1px 1px #ffffff;
     }
 
     .qr-service-card.arriving {
@@ -756,7 +800,7 @@
       border-radius: 999px;
       font-size: 0.78rem;
       border: 1px solid var(--glass-border);
-      background: rgba(56, 189, 248, 0.06);
+      background: rgba(255, 255, 255, 0.55);
       color: var(--text-secondary);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -766,8 +810,8 @@
     .service-qr-pill.active {
       border-color: var(--accent-cyan);
       color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.16);
-      font-weight: 600;
+      background: rgba(224, 242, 254, 0.85);
+      font-weight: 700;
     }
 
     .service-qr-layout {
@@ -787,7 +831,7 @@
       background: #ffffff;
       padding: 12px;
       border-radius: 16px;
-      box-shadow: 0 0 24px rgba(56, 189, 248, 0.22);
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.16);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -805,7 +849,7 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.76rem;
       color: var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.07);
+      background: rgba(255, 255, 255, 0.65);
       border: 1px solid var(--glass-border);
       border-radius: 10px;
       padding: 8px 12px;
@@ -814,17 +858,18 @@
     }
 
     /* ==========================================================================
-       PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA)
+       PANTALLA INTERMEDIA CRISTALINA DE BIENVENIDA NAVIDEÑA
        ========================================================================== */
     .artist-welcome-gate {
       position: fixed;
       inset: 0;
       z-index: 140;
       background:
-        radial-gradient(circle at 50% 35%, rgba(56, 189, 248, 0.20) 0%, transparent 58%),
-        radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.18) 0%, transparent 52%),
-        rgba(5, 8, 20, 0.94);
-      backdrop-filter: blur(20px);
+        radial-gradient(circle at 50% 35%, rgba(186, 230, 253, 0.55) 0%, transparent 58%),
+        radial-gradient(circle at 20% 80%, rgba(254, 226, 226, 0.45) 0%, transparent 52%),
+        rgba(248, 250, 252, 0.86);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -840,37 +885,26 @@
 
     .holo-welcome-console {
       position: relative;
-      max-width: 620px;
+      max-width: 660px;
       width: 100%;
-      background: var(--glass-bg-elevated);
-      border: 1px solid var(--accent-cyan);
-      border-radius: 26px;
-      padding: clamp(26px, 5vw, 42px);
-      box-shadow: 0 0 60px rgba(56, 189, 248, 0.25), 0 24px 60px rgba(0, 0, 0, 0.65);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(240, 249, 255, 0.82));
+      border: 1.5px solid #ffffff;
+      outline: 1px solid rgba(2, 132, 199, 0.28);
+      border-radius: 28px;
+      padding: clamp(28px, 5vw, 46px);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14), inset 0 2px 2px #ffffff;
       overflow: hidden;
       text-align: center;
     }
 
-    .holo-welcome-console::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 3px,
-        rgba(56, 189, 248, 0.05) 4px
-      );
-    }
-
     .holo-ring-emblem {
-      width: 78px;
-      height: 78px;
+      width: 82px;
+      height: 82px;
       margin: 0 auto 18px;
       border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
       border: 1.5px solid var(--accent-cyan);
-      box-shadow: 0 0 24px rgba(56, 189, 248, 0.35), inset 0 0 18px rgba(168, 85, 247, 0.28);
+      box-shadow: 0 0 24px rgba(2, 132, 199, 0.25), inset 0 0 18px rgba(186, 230, 253, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -883,7 +917,7 @@
       position: absolute;
       inset: -7px;
       border-radius: 50%;
-      border: 1px dashed rgba(168, 85, 247, 0.55);
+      border: 1.5px dashed rgba(220, 38, 38, 0.45);
       animation: spinSlow 14s linear infinite;
     }
 
@@ -898,45 +932,20 @@
     }
 
     .holo-welcome-console h2 {
-      font-size: clamp(1.5rem, 3.2vw, 2.15rem);
-      font-weight: 800;
+      font-size: clamp(1.85rem, 4vw, 2.65rem);
+      font-weight: 900;
       letter-spacing: -0.025em;
-      margin-bottom: 10px;
-      background: linear-gradient(120deg, var(--text-primary), var(--accent-cyan), var(--accent-purple));
+      margin-bottom: 12px;
+      background: linear-gradient(120deg, #0f172a, #0284c7, #dc2626);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .holo-welcome-console p {
       color: var(--text-secondary);
-      font-size: 0.96rem;
+      font-size: 1rem;
       line-height: 1.68;
-      margin-bottom: 22px;
-    }
-
-    /* Barra local para fotos propias desde el celular (sin servidor) */
-    .local-media-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-top: 14px;
-      padding: 14px 18px;
-      border-radius: 16px;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(14px);
-    }
-
-    .local-media-note {
-      font-size: 0.83rem;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-
-    .local-media-note strong {
-      color: var(--text-primary);
+      margin-bottom: 24px;
     }
 
     /* ==========================================================================
@@ -965,7 +974,7 @@
     }
 
     /* ==========================================================================
-       FONDO 3D MANDALA / TORMENTA EN TIEMPO REAL + MODO SIMULADOR
+       FONDO 3D SIMULADOR DE COPOS DE NIEVE EN TIEMPO REAL + MODO SIMULADOR
        ========================================================================== */
     #mandala-bg-canvas {
       position: fixed;
@@ -974,7 +983,7 @@
       height: 100vh;
       z-index: -1;
       pointer-events: none;
-      opacity: 0.78;
+      opacity: 0.94;
       display: block;
       transition: opacity 0.4s ease;
     }
@@ -1000,7 +1009,7 @@
     body.sim-fullscreen .news-ticker,
     body.sim-fullscreen .group-floating-panel,
     body.sim-fullscreen #reopenGroupBtn,
-    body:sim-fullscreen .living-background,
+    body.sim-fullscreen .living-background,
     body.sim-fullscreen .holo-grid,
     body.sim-fullscreen #particle-canvas {
       display: none !important;
@@ -1013,12 +1022,14 @@
       z-index: 100;
       width: 310px;
       max-width: calc(100vw - 40px);
-      background: var(--glass-bg-elevated);
+      background: var(--glass-specular), var(--glass-bg-elevated);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
+      outline: 1px solid var(--glass-outer-ring);
+      border-radius: 16px;
       padding: 15px;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(18px);
       color: var(--text-primary);
+      box-shadow: var(--glass-shadow);
     }
 
     #sim-hud h3 {
@@ -1044,7 +1055,7 @@
       height: 8px;
       border-radius: 99px;
       margin-top: 8px;
-      background: linear-gradient(90deg, #2563eb, #38bdf8, #fbbf24, #ef4444);
+      background: linear-gradient(90deg, #0284c7, #7dd3fc, #fbbf24, #dc2626);
     }
 
     #sim-deck {
@@ -1053,15 +1064,17 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 120;
-      background: var(--glass-bg-elevated);
+      background: var(--glass-specular), var(--glass-bg-elevated);
       border: 1px solid var(--glass-border);
-      border-radius: 16px;
+      outline: 1px solid var(--glass-outer-ring);
+      border-radius: 18px;
       padding: 14px 20px;
-      max-width: 720px;
+      max-width: 780px;
       width: calc(100% - 32px);
       text-align: center;
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
       color: var(--text-primary);
+      box-shadow: var(--glass-shadow);
     }
 
     #sim-deck p {
@@ -1077,17 +1090,17 @@
       flex-wrap: wrap;
     }
 
-    .sim-btn-rayo {
-      background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+    .sim-btn-xmas {
+      background: linear-gradient(135deg, #be123c, #e11d48) !important;
       border: none !important;
       color: #ffffff !important;
+      font-weight: 700;
     }
 
     .lil-gui {
       top: 76px !important;
       right: 20px !important;
       z-index: 105 !important;
-      --background-color: rgba(15, 23, 42, 0.92) !important;
     }
 
     /* ==========================================================================
@@ -1099,11 +1112,13 @@
       right: 20px;
       z-index: 95;
       width: fit-content;
-      background: var(--glass-bg-elevated);
+      background: var(--glass-specular), var(--glass-bg-elevated);
       border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      backdrop-filter: blur(18px);
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+      outline: 1px solid var(--glass-outer-ring);
+      border-radius: 16px;
+      backdrop-filter: blur(20px) saturate(165%);
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
+      box-shadow: var(--glass-shadow);
     }
 
     .mfw-bar {
@@ -1157,7 +1172,7 @@
     }
 
     .mfw-action-btn {
-      background: var(--glass-bg);
+      background: rgba(255, 255, 255, 0.55);
       border: 1px solid var(--glass-border);
       color: var(--text-primary);
       padding: 8px 12px;
@@ -1169,22 +1184,25 @@
       transition: border-color 0.2s ease, background 0.2s ease;
     }
 
+    [data-theme="dark"] .mfw-action-btn {
+      background: rgba(15, 23, 42, 0.72);
+    }
+
     .mfw-action-btn:hover {
       border-color: var(--accent-cyan);
     }
 
     .mfw-action-btn.primary {
-      background: rgba(56, 189, 248, 0.14);
+      background: rgba(2, 132, 199, 0.14);
       border-color: var(--accent-cyan);
       color: var(--accent-cyan);
     }
 
     .mfw-action-btn.active-state {
-      background: rgba(16, 185, 129, 0.18);
+      background: rgba(5, 150, 105, 0.16);
       border-color: var(--accent-emerald);
       color: var(--accent-emerald);
     }
-
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -1192,15 +1210,15 @@
 </head>
 <body>
 
-  <!-- LIENZO 3D MANDALA / MAR MOLECULAR COMO FONDO EN TIEMPO REAL -->
+  <!-- LIENZO 3D DE CRISTALIZACIÓN NAVIDEÑA DE COPOS DE NIEVE COMO FONDO EN TIEMPO REAL -->
   <canvas id="mandala-bg-canvas" aria-hidden="true"></canvas>
 
   <!-- PLANTILLA COMPACTA, FLOTANTE, DESPLEGABLE Y MOVIBLE -->
-  <aside id="mandalaFloatWidget" class="mandala-float-widget" aria-label="Control flotante del Mandala 3D">
+  <aside id="mandalaFloatWidget" class="mandala-float-widget" aria-label="Control flotante de Nevada 3D">
     <div class="mfw-bar">
       <button type="button" id="mfwDragHandle" class="mfw-drag" title="Arrastrar control" aria-label="Arrastrar control">⠿</button>
       <button type="button" id="mfwToggleBtn" class="mfw-main-btn" aria-expanded="false" aria-controls="mfwDrawer">
-        <span>◈ Mandala</span>
+        <span>❄️ Nevada 3D</span>
         <span id="mfwArrow">▾</span>
       </button>
     </div>
@@ -1214,40 +1232,44 @@
     </div>
   </aside>
 
-  <!-- HUD Y DECK DEL SIMULADOR (VISIBLES EN MODO SIMULADOR COMPLETO) -->
+  <!-- HUD Y DECK DEL SIMULADOR DE NIEVE (VISIBLES EN MODO SIMULADOR COMPLETO) -->
   <div id="sim-hud">
-    <h3>🌪️ Telemetría Atmosférica &amp; Oceánica</h3>
-    <div class="sim-row"><span>Fenómeno:</span><span class="sim-val" id="m-fen">HURACÁN</span></div>
-    <div class="sim-row"><span>Temp. Mar / Marea:</span><span class="sim-val" id="m-temp" style="color:#fbbf24;">28°C · +0.00 m</span></div>
-    <div class="sim-row"><span>Moléculas / Rayos:</span><span class="sim-val" id="m-rayo" style="color:#38bdf8;">4,624 · 75 BPM</span></div>
+    <h3>❄️ Telemetría de Cristalización Navideña</h3>
+    <div class="sim-row"><span>Estado Fase:</span><span class="sim-val" id="m-fase" style="color:var(--accent-cyan);">Tormenta Navideña (-15 °C)</span></div>
+    <div class="sim-row"><span>Copos / Gotas:</span><span class="sim-val" id="m-gotas">28 copos</span></div>
+    <div class="sim-row"><span>Moléculas H₂O:</span><span class="sim-val" id="m-mol" style="color:var(--accent-cyan);">840 H₂O</span></div>
+    <div class="sim-row"><span>Temp. Nube:</span><span class="sim-val" id="m-temp" style="color:var(--accent-amber);">-15 °C (258 K)</span></div>
+    <div class="sim-row"><span>Viento / Deriva:</span><span class="sim-val" id="m-viento">0.8 m/s</span></div>
     <div class="sim-grad-bar"></div>
   </div>
 
   <div id="sim-deck">
-    <h2 id="d-title" style="color:var(--accent-cyan);font-size:1.02rem;">Vórtice sobre Mar Molecular Abierto</h2>
-    <p id="d-desc">Sin isla central: el mar molecular completo responde al oleaje, la marea, el calor y las descargas del vórtice.</p>
+    <h2 id="d-title" style="color:var(--accent-cyan);font-size:1.02rem;">Cristalización Navideña de Copos de Nieve en 3D</h2>
+    <p id="d-desc">Arrastra cualquier copo de nieve en el espacio o cambia la temperatura de la nube para transformar su geometría hexagonal.</p>
     <div class="sim-btns">
-      <button type="button" class="btn-glass sim-btn-rayo" onclick="dispararRayo()">⚡ Descarga Eléctrica</button>
-      <button type="button" class="btn-glass" onclick="setFenomeno('huracan')">🌀 Huracán</button>
-      <button type="button" class="btn-glass" onclick="setFenomeno('tornado')">🌪️ Tornado</button>
-      <button type="button" class="btn-glass" onclick="setFenomeno('tormenta')">⛈️ Tormenta Fuerte</button>
+      <button type="button" class="btn-glass sim-btn-xmas" onclick="congelarEnCopos('aleatorio')">🎄 ¡Nevar Intenso!</button>
+      <button type="button" class="btn-glass" onclick="congelarEnCopos('dendrita')">❄️ -15 °C Dendrita</button>
+      <button type="button" class="btn-glass" onclick="congelarEnCopos('helecho')">✨ -18 °C Helecho Navideño</button>
+      <button type="button" class="btn-glass" onclick="congelarEnCopos('placa')">💎 -2 °C Placa</button>
+      <button type="button" class="btn-glass" onclick="congelarEnCopos('aguja')">🧊 -6 °C Agujas</button>
+      <button type="button" class="btn-glass" onclick="agregarGotasExtra()">➕ Más Copos</button>
     </div>
   </div>
 
-  <!-- PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA) -->
+  <!-- PANTALLA INTERMEDIA CRISTALINA DE BIENVENIDA NAVIDEÑA -->
   <div class="artist-welcome-gate" id="artistWelcomeGate" role="dialog" aria-modal="true" aria-labelledby="welcomeGateTitle">
     <div class="holo-welcome-console">
       <div class="holo-ring-emblem" aria-hidden="true">
-        <span style="font-size:1.5rem;color:var(--accent-cyan);">◈</span>
+        <span style="font-size:1.85rem;">❄️</span>
       </div>
-      <span class="kicker" style="margin-bottom:6px;">MultiversoLabs</span>
-      <h2 id="welcomeGateTitle">Bienvenido a este Espacio</h2>
+      <span class="kicker" style="margin-bottom:6px;">MultiversoLabs // Edición Especial de Navidad</span>
+      <h2 id="welcomeGateTitle">¡Feliz Navidad y Próspero Nuevo Ciclo!</h2>
       <p>
-        Estás entrando al currículum vivo y antibiografía de arte, oficio y presencia.
+        Bienvenido a este espacio cristalino de arte, código y presencia. Que la luz, la calma y la creación consciente acompañen tu camino en estas fiestas.
       </p>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
-        <button type="button" class="btn-glass primary" id="enterArtistSpaceBtn" style="padding:12px 24px;font-size:0.95rem;">
-          Entrar →
+        <button type="button" class="btn-glass primary" id="enterArtistSpaceBtn" style="padding:12px 26px;font-size:0.95rem;">
+          Entrar al Espacio Navideño →
         </button>
       </div>
     </div>
@@ -1260,8 +1282,8 @@
   <!-- BARRA SUPERIOR -->
   <div class="news-ticker" id="newsEncuentrosBar">
     <div>
-      <span class="news-badge">Frecuencia Viva</span>
-      <span><strong>ONLINE:</strong> Creaciones interdisciplinarias · ARTE 3D.</span>
+      <span class="news-badge">Navidad Viva ❄️</span>
+      <span><strong>Elemental & Tierra:</strong> Encuentros y creaciones interdisciplinarias · Presencial y online.</span>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <a href="#encuentros" style="color:var(--accent-cyan);font-weight:700;text-decoration:none;font-size:0.82rem;">Ver detalles →</a>
@@ -1292,45 +1314,53 @@
 
     <div class="header-actions">
       <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
-        <span id="themeIcon">🌙</span>
+        <span id="themeIcon">☀️</span>
       </button>
       <a href="index.html" class="btn-glass primary">Lab ↗</a>
     </div>
   </header>
 
   <main class="container">
-    <!-- HERO CON VISOR PAISAJÍSTICO EN MARCO HOLOGRÁFICO -->
-    <section class="hero-artist">
+    <!-- SALUDO NAVIDEÑO GRANDE + HERO -->
+    <section class="hero-artist reveal-sector is-visible">
+      <div class="christmas-hero-greeting">
+        <div class="xmas-pill">🎄 Saludo Navideño · MultiversoLabs</div>
+        <h2 class="xmas-big-title">¡Feliz Navidad! Que la Luz y la Creación Florezcan en tu Hogar</h2>
+        <p class="xmas-big-sub">
+          Celebramos este tiempo de encuentro, gratitud y renovación bajo una lluvia cristalina de geometría viva. Gracias por compartir el camino del arte, la presencia y la soberanía interior.
+        </p>
+      </div>
+
       <span class="kicker">Identidad, Trayectoria & Soberanía Interior</span>
       <h1>Un camino de arte, código y presencia para <span>despertar tu propia soberanía.</span></h1>
 
       <div class="antibiografia-box">
-        <h2>Arte & Soberanía Interior</h2>
+        <h2>Antibiografía, Arte & Soberanía Interior</h2>
         <div class="sub-anti">Más allá de los títulos: un camino de experiencia viva, arte y presencia.</div>
         <p>
-          La principal <strong>RAZON</strong> de mi trabajo, son mis hijos. No medimos la sabiduría humana por diplomas ni jerarquías institucionales, sino por el peso real de la experiencia: las caídas, el aprendizaje creativo, el pulso de la tierra, la convivencia comunitaria y la soberanía interior cultivada en el día a día.
+          La <strong>Antibiografía</strong> es la ruptura consciente con el currículum académico estéril. No medimos la sabiduría humana por diplomas ni jerarquías institucionales, sino por el peso real de la experiencia: las caídas, el aprendizaje creativo, el pulso de la tierra, la convivencia comunitaria y la soberanía interior cultivada en el día a día.
         </p>
       </div>
 
       <p class="bio-lead">
-        Mi nombre es <strong>Juan</strong>. Un ser Artista que ha transitado el trabajo diario, los estudios y los desvelos reales. Mi formación nació en el margen, en el ingenio, en comunidades, en la disciplina del amanecer y en la unión entre arte, presencia y código.
+        Mi nombre es <strong>Juan Diego</strong>. Un ser humano común que ha transitado el trabajo diario, los estudios y los desvelos reales. Mi formación nació en el margen, en el ingenio, en comunidades, en la disciplina del amanecer y en la unión entre arte, presencia y código.
       </p>
 
       <div class="cta-row">
         <a href="#servicios" class="btn-glass primary">Explorar Servicios y Convivencia →</a>
-        <a href="https://www.buymeacoffee.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(245,158,11,0.5);color:var(--accent-amber);">☕ Buy Me a Coffee</a>
-        <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(168,85,247,0.5);color:var(--accent-purple);">Instagram</a>
+        <a href="https://www.buymeacoffee.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(217,119,6,0.45);color:var(--accent-amber);">☕ Buy Me a Coffee</a>
+        <a href="https://instagram.com/multiversolabs.space" target="_blank" rel="noopener" class="btn-glass" style="border-color:rgba(124,58,237,0.45);color:var(--accent-purple);">Instagram</a>
         <a href="mailto:juandiego@multiversolabs.space?subject=Contacto%20Juan%20Diego%20--%20Soberania%20Interior" class="btn-glass">
            Contáctame
         </a>
-        <button type="button" class="btn-glass" id="openServiceQrBtn" style="border-color:rgba(16,185,129,0.5);color:var(--accent-emerald);">
+        <button type="button" class="btn-glass" id="openServiceQrBtn" style="border-color:rgba(5,150,105,0.45);color:var(--accent-emerald);">
           ▣ QR Servicios del Currículum
         </button>
       </div>
     </section>
 
     <!-- ENCUENTROS Y ESPACIOS -->
-    <section class="section-block" id="encuentros">
+    <section class="section-block reveal-sector" id="encuentros">
       <div class="encuentros-board">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
           <div>
@@ -1359,31 +1389,31 @@
     </section>
 
     <!-- HABILIDADES Y OFICIOS -->
-    <section class="section-block" id="habilidades">
+    <section class="section-block reveal-sector" id="habilidades">
       <span class="kicker">Oficio & Lenguajes</span>
       <h2 class="section-heading">Habilidades & Lenguajes Interdisciplinarios</h2>
       <p class="section-sub">Herramientas artísticas, físicas y digitales que convergen en mi labor cotidiana.</p>
 
       <div class="disciplines-grid">
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🖋️</span>
           <h3>Ilustración, Diseño y Estructuras</h3>
           <p>Arte manual sobre piel, madera y papel. El trazo directo como canal de expresión simbólica y memoria viva.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">📸</span>
           <h3>Fotografía & Música</h3>
           <p>Captura visual de lo orgánico, modelado de la materia y exploración sonora nacida de la sensibilidad libre.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🔅</span>
           <h3>Meditación en Movimiento</h3>
           <p>Calistenia, artes marciales y dominio de la vara, el nunchaku y los malabares para disolver el ruido mental en el presente.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🌐</span>
           <h3>Creación de Páginas Web Personales</h3>
           <p>Diseño y desarrollo de espacios web propios para artistas, creadores y proyectos independientes que buscan soberanía digital.</p>
@@ -1391,41 +1421,41 @@
       </div>
     </section>
 
-    <!-- SERVICIOS -->
-    <section class="section-block" id="servicios">
-      <span class="kicker">Territorio</span>
+    <!-- SERVICIOS DE GUÍA Y CONVIVENCIA -->
+    <section class="section-block reveal-sector" id="servicios">
+      <span class="kicker">Acompañamiento & Territorio</span>
       <h2 class="section-heading">Servicios de Guía Vivencial & Evolución Interior</h2>
-      <p class="section-sub">Respeto absoluto a tus tiempos, sin dogmas ni falsas promesas.</p>
+      <p class="section-sub">Acompañamiento humano basado en el respeto absoluto a tus tiempos, sin dogmas ni falsas promesas.</p>
 
       <div class="disciplines-grid">
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🌱</span>
           <h3>Trabajo Comunitario & Tierra</h3>
           <p>Experiencia directa cultivando la tierra, compartiendo recursos naturales y colaborando con comunidades de creadores itinerantes y medicina natural andina y amazónica.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🌅</span>
-          <h3>Disciplina de Presencia</h3>
+          <h3>Disciplina de Presencia & Madrugada</h3>
           <p>Años de inmersión en la disciplina de estar presente: el despertar antes del alba buscando la estrella de la mañana, el canto tradicional del mantra del corazón, la purificación del espacio interno y la entrega al servicio desinteresado como cimientos de la soberanía interior.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">✍️</span>
-          <h3>Cuatro Elementos</h3>
+          <h3>Liberación Emocional & Cuatro Elementos</h3>
           <p>Convivencia real con agua, fuego, tierra y aire, hábitos biológicos diarios y respeto sagrado al estancamiento ajeno sin juicios.</p>
         </div>
 
-        <div class="skill-card">
+        <div class="skill-card reveal-sector">
           <span class="skill-icon">🫂</span>
-          <h3>Conciliación Neutral</h3>
+          <h3>Conciliación Neutral & Trueque</h3>
           <p>Mediación imparcial en conflictos (sin tomar bandos) y modelo de reciprocidad equilibrada: intercambio justo.</p>
         </div>
       </div>
     </section>
 
     <!-- MANIFIESTO -->
-    <section class="section-block" id="historia">
+    <section class="section-block reveal-sector" id="historia">
       <div class="story-box">
         <span class="kicker">Perspectiva</span>
         <h2 class="section-heading">La Ley del Reflejo y la Singularidad de tu Proceso</h2>
@@ -1439,7 +1469,7 @@
     </section>
   </main>
 
-  <!-- PANEL FLOTANTE HOLOGRÁFICO -->
+  <!-- PANEL FLOTANTE CRISTALINO -->
   <aside class="group-floating-panel" id="groupFloatingPanel">
     <div class="group-panel-header">
       <span>HAZ TU PEDIDO // HOLO-DESK</span>
@@ -1454,7 +1484,7 @@
       <a href="mailto:juandiego@multiversolabs.space?subject=Solicitud%20Servicio%20/%20Web%20/%20Obra%20de%20Arte" class="btn-glass primary" style="width:100%;justify-content:center;margin-bottom:8px;">
         ✉️ Solicitar Servicio / Web / Obra →
       </a>
-      <button type="button" class="btn-glass" id="panelServiceQrBtn" style="width:100%;justify-content:center;border-color:rgba(16,185,129,0.45);color:var(--accent-emerald);">
+      <button type="button" class="btn-glass" id="panelServiceQrBtn" style="width:100%;justify-content:center;border-color:rgba(5,150,105,0.45);color:var(--accent-emerald);">
         ▣ Ver Enlace QR de Servicios
       </button>
     </div>
@@ -1506,7 +1536,7 @@
     </div>
   </div>
 
-  <footer>
+  <footer class="reveal-sector">
     <div>
       <strong>MultiversoLabs.space</strong> &copy; 2026 — Juan Diego · Exploring Dimensions.
     </div>
@@ -1518,7 +1548,25 @@
 
   <script>
     /* ==========================================================================
-       PANTALLA INTERMEDIA HOLOGRÁFICA DE BIENVENIDA (SOLO AL ENTRAR A ARTISTA)
+       EMERGENCIA PROGRESIVA DE BLOQUES AL LLEGAR A CADA SECTOR
+       ========================================================================== */
+    const revealTargets = document.querySelectorAll('.reveal-sector');
+    const sectorObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealTargets.forEach((el) => sectorObserver.observe(el));
+
+    /* ==========================================================================
+       PANTALLA INTERMEDIA CRISTALINA DE BIENVENIDA NAVIDEÑA
        ========================================================================== */
     const artistWelcomeGate = document.getElementById('artistWelcomeGate');
     const enterArtistSpaceBtn = document.getElementById('enterArtistSpaceBtn');
@@ -1535,7 +1583,7 @@
       if (e.target === artistWelcomeGate) dismissWelcomeGate();
     });
 
-    setTimeout(dismissWelcomeGate, 2600);
+    setTimeout(dismissWelcomeGate, 3200);
 
     const rootEl = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
@@ -1544,16 +1592,10 @@
     function applyTheme(theme) {
       rootEl.setAttribute('data-theme', theme);
       themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
-      localStorage.setItem('multiverso_theme', theme);
     }
 
-    const savedTheme = localStorage.getItem('multiverso_theme');
-    if (savedTheme) {
-      applyTheme(savedTheme);
-    } else {
-      const hour = new Date().getHours();
-      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
-    }
+    // Iniciamos siempre en tonalidad blanco cristalino según solicitud
+    applyTheme('light');
 
     themeToggle.addEventListener('click', () => {
       applyTheme(rootEl.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
@@ -1571,9 +1613,12 @@
       }
     }
 
+    /* ==========================================================================
+       COPOS DE NIEVE LIGEROS AMBIENTALES EN CANVAS 2D (REFUERZO DE NEVADA)
+       ========================================================================== */
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
-    let particles = [];
+    let snowflakes2D = [];
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -1582,31 +1627,41 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    for (let i = 0; i < 48; i++) {
-      particles.push({
+    for (let i = 0; i < 95; i++) {
+      snowflakes2D.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.6 + 0.4,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35
+        r: Math.random() * 2.6 + 1.0,
+        dx: (Math.random() - 0.5) * 0.65,
+        dy: Math.random() * 1.1 + 0.45,
+        phase: Math.random() * Math.PI * 2
       });
     }
 
     function animateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const isLight = rootEl.getAttribute('data-theme') === 'light';
-      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
 
-      particles.forEach(p => {
-        p.x += p.dx;
+      snowflakes2D.forEach(p => {
+        p.phase += 0.02;
+        p.x += p.dx + Math.sin(p.phase) * 0.35;
         p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+
+        if (p.y > canvas.height + 6) {
+          p.y = -6;
+          p.x = Math.random() * canvas.width;
+        }
+        if (p.x > canvas.width + 6) p.x = -6;
+        if (p.x < -6) p.x = canvas.width + 6;
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(224, 242, 254, 0.72)';
+        ctx.shadowColor = isLight ? 'rgba(2, 132, 199, 0.35)' : 'rgba(125, 211, 252, 0.5)';
+        ctx.shadowBlur = 6;
         ctx.fill();
       });
+      ctx.shadowBlur = 0;
       requestAnimationFrame(animateParticles);
     }
     animateParticles();
@@ -1752,26 +1807,21 @@
       setTimeout(() => (btn.textContent = prev), 1600);
     });
 
-  
     /* ==========================================================================
-       MOTOR 3D DEL MANDALA / HURACÁN & MAR MOLECULAR DENSO (TIEMPO REAL)
+       SIMULADOR 3D DE CRISTALIZACIÓN NAVIDEÑA DE COPOS DE NIEVE (ACTIVADO Y ABUNDANTE)
        ========================================================================== */
-    const mandalaParams = {
-      fenomeno: 'huracan',
-      radioEspacio: 16,
-      aperturaOjo: 2.6,
-      velocidadGiro: 1.4,
-      tempMar: 28,
-      amplitudMarea: 0.65,
-      oleajeMolecular: 0.75,
-      acopleLatido: true,
-      bpm: 75,
-      numParticulas: 650
+    const snowParams = {
+      cantidadGotasIniciales: 28,
+      moleculasPorCuerpo: 30,
+      temperaturaC: -15,
+      humedadPct: 88,
+      vientoLateral: 0.75,
+      gravedadNieve: 1.35,
+      regenerarInfinito: true
     };
 
     const mandalaCanvas = document.getElementById('mandala-bg-canvas');
     const simScene = new THREE.Scene();
-    simScene.fog = new THREE.FogExp2(0x040711, 0.018);
 
     const simCamera = new THREE.PerspectiveCamera(
       55,
@@ -1779,7 +1829,7 @@
       0.1,
       1000
     );
-    simCamera.position.set(14, 11, 19);
+    simCamera.position.set(0, 2.2, 19);
 
     const simRenderer = new THREE.WebGLRenderer({
       canvas: mandalaCanvas,
@@ -1791,256 +1841,534 @@
 
     const simControls = new THREE.OrbitControls(simCamera, simRenderer.domElement);
     simControls.enableDamping = true;
-    simControls.target.set(0, -1.0, 0);
     simControls.enabled = false;
 
-    simScene.add(new THREE.AmbientLight(0x93c5fd, 0.55));
-    const simDirLuz = new THREE.DirectionalLight(0xe0f2fe, 1.2);
-    simDirLuz.position.set(12, 18, 10);
-    simScene.add(simDirLuz);
+    simScene.add(new THREE.AmbientLight(0xe0f2fe, 0.95));
+    const simDirLight = new THREE.DirectionalLight(0xffffff, 1.45);
+    simDirLight.position.set(10, 18, 12);
+    simScene.add(simDirLight);
 
-    const simFlashLight = new THREE.PointLight(0x38bdf8, 0, 38);
-    simFlashLight.position.set(0, 5, 0);
-    simScene.add(simFlashLight);
+    const simWarmLight = new THREE.PointLight(0xfbbf24, 1.0, 40);
+    simWarmLight.position.set(-8, 6, 8);
+    simScene.add(simWarmLight);
 
-    const grupoTormenta = new THREE.Group();
-    simScene.add(grupoTormenta);
+    const grupoMundo = new THREE.Group();
+    simScene.add(grupoMundo);
 
-    const espejoMarMesh = new THREE.Mesh(
-      new THREE.CircleGeometry(36, 72),
-      new THREE.MeshStandardMaterial({
-        color: 0x071d36,
-        roughness: 0.18,
-        metalness: 0.78
-      })
+    // Destellos dorados y cristalinos navideños de fondo
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 340;
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 65;
+      starPos[i + 1] = (Math.random() - 0.5) * 45;
+      starPos[i + 2] = -8 - Math.random() * 35;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const stars = new THREE.Points(
+      starGeo,
+      new THREE.PointsMaterial({ color: 0xf59e0b, size: 0.16, transparent: true, opacity: 0.75 })
     );
-    espejoMarMesh.rotation.x = -Math.PI / 2;
-    espejoMarMesh.position.y = -3.45;
-    simScene.add(espejoMarMesh);
+    simScene.add(stars);
 
-    const GRID_X = 68;
-    const GRID_Z = 68;
-    const ESPACIO_MOL = 0.56;
-    const TOTAL_MOL = GRID_X * GRID_Z;
-    const dummyMol = new THREE.Object3D();
-    const colMol = new THREE.Color();
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.21;
 
-    const meshMoleculasAgua = new THREE.InstancedMesh(
-      new THREE.BoxGeometry(0.22, 0.12, 0.22),
-      new THREE.MeshStandardMaterial({
+    let cuerpos = [];
+    let siguienteId = 1;
+    let estadoGlobal = 'nieve';
+    let tipoNieveActual = 'aleatorio';
+
+    let meshCentro, meshSatelites, meshEnlaces, lineasPuentesH;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const MAX_MOLECULAS = 1200;
+    const MAX_SATELITES = MAX_MOLECULAS * 2;
+    const MAX_ENLACES = MAX_MOLECULAS * 2;
+    const MAX_PUENTES_VERTS = MAX_MOLECULAS * 8;
+
+    function inicializarBuffers() {
+      const geoC = new THREE.SphereGeometry(0.095, 10, 10);
+      const matC = new THREE.MeshPhongMaterial({
         color: 0xffffff,
-        emissive: 0x0c4a6e,
-        emissiveIntensity: 0.3,
-        roughness: 0.2,
-        metalness: 0.65
-      }),
-      TOTAL_MOL
-    );
-    meshMoleculasAgua.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    simScene.add(meshMoleculasAgua);
+        emissive: 0x38bdf8,
+        emissiveIntensity: 0.35,
+        shininess: 100
+      });
+      meshCentro = new THREE.InstancedMesh(geoC, matC, MAX_MOLECULAS);
+      meshCentro.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    const COL_AGUA_PROFUNDA = new THREE.Color(0x0369a1);
-    const COL_AGUA_CRESTA = new THREE.Color(0x38bdf8);
+      const geoS = new THREE.SphereGeometry(0.058, 8, 8);
+      const matS = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        emissive: 0x7dd3fc,
+        emissiveIntensity: 0.28
+      });
+      meshSatelites = new THREE.InstancedMesh(geoS, matS, MAX_SATELITES);
+      meshSatelites.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    let cubosVortice = [];
-    function construirSubCubos() {
-      cubosVortice.forEach(c => grupoTormenta.remove(c.mesh));
-      cubosVortice = [];
-      const count = 48;
-      for (let i = 0; i < count; i++) {
-        const t = i / count;
-        const ang = t * Math.PI * 8;
-        const r = mandalaParams.aperturaOjo + t * (mandalaParams.radioEspacio * 0.65);
-        const y = -2.6 + t * 8.5;
-        const geo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
-        const mat = new THREE.MeshPhongMaterial({
-          color: 0x38bdf8,
-          emissive: 0x1d4ed8,
-          emissiveIntensity: 0.25
-        });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(Math.cos(ang) * r, y, Math.sin(ang) * r);
-        grupoTormenta.add(mesh);
-        cubosVortice.push({ mesh, mat, t, ang, r, y });
-      }
-    }
+      const geoE = new THREE.CylinderGeometry(0.02, 0.02, LONG_ENLACE, 5);
+      const matE = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      meshEnlaces = new THREE.InstancedMesh(geoE, matE, MAX_ENLACES);
+      meshEnlaces.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
-    let meshAire, datosAire = [];
-    const dummyAire = new THREE.Object3D();
-    const colTemp = new THREE.Color();
-
-    function construirAire() {
-      if (meshAire) grupoTormenta.remove(meshAire);
-      datosAire = [];
-      const geo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
-      const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      meshAire = new THREE.InstancedMesh(geo, mat, mandalaParams.numParticulas);
-      grupoTormenta.add(meshAire);
-
-      for (let i = 0; i < mandalaParams.numParticulas; i++) {
-        datosAire.push({
-          angulo: Math.random() * Math.PI * 2,
-          radioFrac: Math.random(),
-          altFrac: Math.random(),
-          velAng: 0.8 + Math.random() * 1.4
-        });
-      }
-    }
-
-    let rayos = [];
-    function dispararRayo() {
-      const pts = [];
-      const rInicio = mandalaParams.aperturaOjo + Math.random() * 6;
-      const ang = Math.random() * Math.PI * 2;
-      let x = Math.cos(ang) * rInicio;
-      let y = 5.5;
-      let z = Math.sin(ang) * rInicio;
-      for (let s = 0; s <= 10; s++) {
-        pts.push(new THREE.Vector3(x, y, z));
-        x += (Math.random() - 0.5) * 1.2;
-        y -= 0.9;
-        z += (Math.random() - 0.5) * 1.2;
-      }
-      const line = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints(pts),
-        new THREE.LineBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 1 })
+      const posBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+      const geoP = new THREE.BufferGeometry();
+      geoP.setAttribute('position', new THREE.BufferAttribute(posBuffer, 3));
+      lineasPuentesH = new THREE.LineSegments(
+        geoP,
+        new THREE.LineBasicMaterial({ color: 0x0284c7, transparent: true, opacity: 0.36 })
       );
-      grupoTormenta.add(line);
-      rayos.push({ line, vida: 1.0 });
-      simFlashLight.intensity = 4.5;
+
+      grupoMundo.add(meshCentro, meshSatelites, meshEnlaces, lineasPuentesH);
     }
 
-    const simGui = new lil.GUI({ title: 'Controles Tormenta & Mar' });
-    simGui.add(mandalaParams, 'aperturaOjo', 0.4, 5.0, 0.1).name('Apertura Ojo').onChange(construirSubCubos);
-    simGui.add(mandalaParams, 'velocidadGiro', 0.2, 3.5, 0.1).name('Giro Circular');
-    simGui.add(mandalaParams, 'tempMar', 12, 34, 1).name('Temp. Mar (°C)');
-    simGui.add(mandalaParams, 'amplitudMarea', 0.0, 1.5, 0.05).name('Amplitud Marea');
-    simGui.add(mandalaParams, 'oleajeMolecular', 0.1, 1.6, 0.05).name('Oleaje Molecular');
-    simGui.add(mandalaParams, 'acopleLatido').name('Rayos x Latido');
-    simGui.add(mandalaParams, 'bpm', 45, 160, 1).name('Ritmo (BPM)');
+    function calcularOffsetsGota(numMoleculas, radio) {
+      const offsets = [];
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      for (let i = 0; i < numMoleculas; i++) {
+        const frac = 0.25 + 0.75 * Math.cbrt((i + 0.5) / numMoleculas);
+        const r = radio * frac;
+        const theta = (2 * Math.PI * i) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (i + 0.5)) / numMoleculas);
+        offsets.push(new THREE.Vector3(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.cos(phi),
+          r * Math.sin(phi) * Math.sin(theta)
+        ));
+      }
+      return offsets;
+    }
 
-    function setFenomeno(tipo) {
-      mandalaParams.fenomeno = tipo;
-      if (tipo === 'tornado') {
-        mandalaParams.aperturaOjo = 0.8;
-        mandalaParams.velocidadGiro = 2.6;
-      } else if (tipo === 'huracan') {
-        mandalaParams.aperturaOjo = 2.6;
-        mandalaParams.velocidadGiro = 1.4;
-        mandalaParams.tempMar = 29;
+    function calcularOffsetsCopo(numMoleculas, escala, morfologia, semilla) {
+      const offsets = [];
+      const ramas = 6;
+      const factorRamificacion = 0.45 + (semilla % 10) * 0.05;
+
+      offsets.push(new THREE.Vector3(0, 0, 0));
+
+      for (let i = 1; i < numMoleculas; i++) {
+        const rama = i % ramas;
+        const angBase = (rama * Math.PI) / 3;
+        const idxEnRama = Math.floor(i / ramas);
+        const maxPorRama = Math.ceil(numMoleculas / ramas);
+        const t = (idxEnRama + 1) / (maxPorRama + 1);
+
+        let x = 0, y = 0, z = 0;
+
+        if (morfologia === 'dendrita') {
+          const dist = t * escala * 1.45;
+          const subRama = idxEnRama % 3;
+          if (subRama === 0) {
+            x = Math.cos(angBase) * dist;
+            y = Math.sin(angBase) * dist;
+          } else {
+            const lado = subRama === 1 ? 1 : -1;
+            const angSub = angBase + lado * (Math.PI / 3);
+            const lenSub = escala * 0.42 * (1 - t * 0.5) * factorRamificacion;
+            x = Math.cos(angBase) * dist + Math.cos(angSub) * lenSub;
+            y = Math.sin(angBase) * dist + Math.sin(angSub) * lenSub;
+          }
+          z = ((i % 2 === 0 ? 1 : -1) * 0.05);
+        } else if (morfologia === 'placa') {
+          const anillo = idxEnRama % 2 === 0 ? 0.55 : 1.0;
+          const dist = escala * 1.15 * anillo;
+          const interp = (idxEnRama / maxPorRama) - 0.5;
+          const angNext = angBase + Math.PI / 3;
+          const p1x = Math.cos(angBase) * dist, p1y = Math.sin(angBase) * dist;
+          const p2x = Math.cos(angNext) * dist, p2y = Math.sin(angNext) * dist;
+          const alpha = Math.abs(interp) * 2;
+          x = p1x * (1 - alpha) + p2x * alpha;
+          y = p1y * (1 - alpha) + p2y * alpha;
+          z = 0;
+        } else if (morfologia === 'aguja') {
+          const dist = t * escala * 1.25;
+          const altura = ((idxEnRama % 3) - 1) * escala * 0.55;
+          x = Math.cos(angBase) * dist * 0.45;
+          y = altura;
+          z = Math.sin(angBase) * dist * 0.45;
+        } else {
+          const dist = t * escala * 1.65;
+          const lado = (idxEnRama % 2 === 0) ? 1 : -1;
+          const espina = (idxEnRama % 4 === 0) ? 0 : escala * 0.55 * Math.sin(t * Math.PI);
+          const angEsp = angBase + lado * (Math.PI / 3);
+          x = Math.cos(angBase) * dist + Math.cos(angEsp) * espina;
+          y = Math.sin(angBase) * dist + Math.sin(angEsp) * espina;
+          z = Math.sin(t * Math.PI * 2) * 0.06;
+        }
+
+        offsets.push(new THREE.Vector3(x, y, z));
+      }
+      return offsets;
+    }
+
+    function crearCuerpoAgua(pos, vel, numMol, radio = 1.05) {
+      const offsets = calcularOffsetsGota(numMol, radio);
+      const moleculas = offsets.map((off, idx) => ({
+        esNucleo: idx === 0,
+        posLocal: off.clone(),
+        velLocal: new THREE.Vector3(),
+        offsetEquilibrio: off.clone(),
+        eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+        velAngularPropia: new THREE.Vector3((Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 1.6, (Math.random() - 0.5) * 1.6)
+      }));
+
+      return {
+        id: siguienteId++,
+        semilla: Math.floor(Math.random() * 1000),
+        centro: pos.clone(),
+        vel: vel.clone(),
+        radio,
+        esCopo: false,
+        morfologia: 'gota',
+        velocidadCaidaBase: 0,
+        faseOscilacion: Math.random() * Math.PI * 2,
+        velAngular: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5),
+        moleculas
+      };
+    }
+
+    function transformarCuerpoACopo(cuerpo, morfologia) {
+      const tipos = ['dendrita', 'placa', 'aguja', 'helecho'];
+      const elegida = morfologia === 'aleatorio' ? tipos[cuerpo.id % tipos.length] : morfologia;
+
+      cuerpo.esCopo = true;
+      cuerpo.morfologia = elegida;
+      const escala = cuerpo.radio * 1.35;
+      const nuevosOffsets = calcularOffsetsCopo(cuerpo.moleculas.length, escala, elegida, cuerpo.semilla);
+
+      cuerpo.moleculas.forEach((m, idx) => {
+        if (nuevosOffsets[idx]) {
+          m.offsetEquilibrio.copy(nuevosOffsets[idx]);
+          m.posLocal.copy(nuevosOffsets[idx]);
+        }
+        m.velAngularPropia.multiplyScalar(0.15);
+      });
+
+      if (elegida === 'dendrita') {
+        cuerpo.velocidadCaidaBase = 0.85 + Math.random() * 0.35;
+        cuerpo.velAngular.set(0.25, 0.35, 0.9);
+      } else if (elegida === 'placa') {
+        cuerpo.velocidadCaidaBase = 1.15 + Math.random() * 0.4;
+        cuerpo.velAngular.set(0.6, 0.2, 0.5);
+      } else if (elegida === 'aguja') {
+        cuerpo.velocidadCaidaBase = 1.75 + Math.random() * 0.45;
+        cuerpo.velAngular.set(1.2, 0.8, 0.3);
       } else {
-        mandalaParams.aperturaOjo = 1.5;
-        mandalaParams.velocidadGiro = 1.8;
+        cuerpo.velocidadCaidaBase = 0.78 + Math.random() * 0.3;
+        cuerpo.velAngular.set(0.18, 0.25, 1.1);
       }
-      const fenEl = document.getElementById('m-fen');
-      if (fenEl) fenEl.innerText = tipo.toUpperCase();
+    }
+
+    function iniciarNevadaAbundante() {
+      cuerpos = [];
+      siguienteId = 1;
+      estadoGlobal = 'nieve';
+      tipoNieveActual = 'aleatorio';
+      snowParams.temperaturaC = -15;
+
+      const total = snowParams.cantidadGotasIniciales;
+      const molPorCuerpo = Math.min(snowParams.moleculasPorCuerpo, Math.floor(MAX_MOLECULAS / total));
+
+      for (let i = 0; i < total; i++) {
+        const pos = new THREE.Vector3(
+          (Math.random() - 0.5) * 24,
+          (Math.random() - 0.5) * 22,
+          (Math.random() - 0.5) * 12
+        );
+        const vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.5,
+          -0.9 - Math.random() * 0.6,
+          (Math.random() - 0.5) * 0.4
+        );
+        const nuevo = crearCuerpoAgua(pos, vel, molPorCuerpo, 0.82 + Math.random() * 0.35);
+        transformarCuerpoACopo(nuevo, 'aleatorio');
+        cuerpos.push(nuevo);
+      }
+    }
+
+    function reiniciarLluviaGotas() {
+      cuerpos = [];
+      siguienteId = 1;
+      estadoGlobal = 'liquido';
+      snowParams.temperaturaC = 12;
+
+      const total = snowParams.cantidadGotasIniciales;
+      const molPorCuerpo = Math.min(snowParams.moleculasPorCuerpo, Math.floor(MAX_MOLECULAS / total));
+
+      for (let i = 0; i < total; i++) {
+        const pos = new THREE.Vector3(
+          (Math.random() - 0.5) * 18,
+          (Math.random() - 0.5) * 12,
+          (Math.random() - 0.5) * 10
+        );
+        const vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6
+        );
+        cuerpos.push(crearCuerpoAgua(pos, vel, molPorCuerpo, 0.95 + Math.random() * 0.25));
+      }
+
+      document.getElementById('m-fase').innerText = 'Gotas Líquidas (0G)';
+      document.getElementById('m-temp').innerText = '+12 °C (285 K)';
       simGui.controllersRecursive().forEach(c => c.updateDisplay());
-      construirSubCubos();
     }
 
-    let fasePulso = 0;
-    let disparoPrev = false;
-
-    function actualizarTormenta(dt, tSeg) {
-      fasePulso = (fasePulso + dt * (mandalaParams.bpm / 60)) % 1.0;
-      const latido = fasePulso < 0.25 ? Math.sin((fasePulso / 0.25) * Math.PI) : 0;
-      if (mandalaParams.acopleLatido && latido > 0.85 && !disparoPrev) {
-        dispararRayo();
-        disparoPrev = true;
-      } else if (latido <= 0.2) {
-        disparoPrev = false;
-      }
-
-      const nivelMarea = Math.sin(tSeg * 0.75) * mandalaParams.amplitudMarea;
-      const baseAguaY = -3.45 + nivelMarea;
-      espejoMarMesh.position.y = baseAguaY - 0.04;
-
-      const giroMod = mandalaParams.velocidadGiro * (1 + latido * 0.25);
-      cubosVortice.forEach(c => {
-        c.ang += dt * giroMod * (1.4 - c.t * 0.5);
-        const perfilEmbudo = mandalaParams.fenomeno === 'tornado'
-          ? (0.4 + c.t * 1.4)
-          : (0.85 + Math.sin(c.t * Math.PI) * 0.35);
-        const rAct = (mandalaParams.aperturaOjo + c.t * (mandalaParams.radioEspacio * 0.6)) * perfilEmbudo;
-        c.mesh.position.set(Math.cos(c.ang) * rAct, c.y, Math.sin(c.ang) * rAct);
-      });
-
-      datosAire.forEach((p, i) => {
-        p.angulo += dt * giroMod * (1.8 - p.radioFrac * 0.8);
-        p.altFrac = (p.altFrac + dt * 0.28 * (1 - p.radioFrac * 0.4)) % 1.0;
-
-        const r = mandalaParams.aperturaOjo + p.radioFrac * (mandalaParams.radioEspacio * 0.72);
-        const y = -2.8 + p.altFrac * 9.5;
-        dummyAire.position.set(Math.cos(p.angulo) * r, y, Math.sin(p.angulo) * r);
-        dummyAire.updateMatrix();
-        meshAire.setMatrixAt(i, dummyAire.matrix);
-
-        const calor = Math.max(0, Math.min(1, (1 - p.altFrac * 0.85) * (mandalaParams.tempMar / 32)));
-        if (calor > 0.65) colTemp.setHex(0xf43f5e).lerp(new THREE.Color(0xfbbf24), (1 - calor) * 2);
-        else if (calor > 0.35) colTemp.setHex(0xfbbf24).lerp(new THREE.Color(0x38bdf8), (0.65 - calor) * 3);
-        else colTemp.setHex(0x38bdf8).lerp(new THREE.Color(0x2563eb), (0.35 - calor) * 2.5);
-        meshAire.setColorAt(i, colTemp);
-      });
-      meshAire.instanceMatrix.needsUpdate = true;
-      if (meshAire.instanceColor) meshAire.instanceColor.needsUpdate = true;
-
-      let idx = 0;
-      const halfX = (GRID_X - 1) * 0.5;
-      const halfZ = (GRID_Z - 1) * 0.5;
-      for (let iz = 0; iz < GRID_Z; iz++) {
-        for (let ix = 0; ix < GRID_X; ix++) {
-          const wx = (ix - halfX) * ESPACIO_MOL;
-          const wz = (iz - halfZ) * ESPACIO_MOL;
-          const distCentro = Math.hypot(wx, wz);
-
-          const ola =
-            Math.sin(wx * 0.45 + tSeg * 1.9) * Math.cos(wz * 0.42 - tSeg * 1.5) * 0.24 * mandalaParams.oleajeMolecular +
-            Math.sin(distCentro * 0.7 - tSeg * 2.5) * 0.16 * mandalaParams.oleajeMolecular;
-
-          dummyMol.position.set(wx, baseAguaY + ola, wz);
-          dummyMol.rotation.set(ola * 0.8, 0, Math.cos(wx * 0.45 + tSeg * 1.9) * 0.25);
-          const escMol = 0.8 + Math.max(0, ola) * 1.35;
-          dummyMol.scale.set(escMol, escMol, escMol);
-          dummyMol.updateMatrix();
-          meshMoleculasAgua.setMatrixAt(idx, dummyMol.matrix);
-
-          colMol.copy(COL_AGUA_PROFUNDA).lerp(COL_AGUA_CRESTA, THREE.MathUtils.clamp(ola * 2.2 + 0.45, 0, 1));
-          meshMoleculasAgua.setColorAt(idx, colMol);
-          idx++;
+    function agregarGotasExtra() {
+      if (cuerpos.length >= 36) return;
+      const molPorCuerpo = Math.min(snowParams.moleculasPorCuerpo, Math.floor(MAX_MOLECULAS / (cuerpos.length + 4)));
+      for (let i = 0; i < 4; i++) {
+        const pos = new THREE.Vector3((Math.random() - 0.5) * 22, 8 + Math.random() * 5, (Math.random() - 0.5) * 10);
+        const nuevo = crearCuerpoAgua(pos, new THREE.Vector3(0, -0.6, 0), molPorCuerpo, 0.95);
+        if (estadoGlobal === 'nieve') {
+          transformarCuerpoACopo(nuevo, tipoNieveActual);
         }
+        cuerpos.push(nuevo);
       }
-      meshMoleculasAgua.instanceMatrix.needsUpdate = true;
-      if (meshMoleculasAgua.instanceColor) meshMoleculasAgua.instanceColor.needsUpdate = true;
-
-      simFlashLight.intensity = Math.max(0, simFlashLight.intensity - dt * 16);
-      for (let i = rayos.length - 1; i >= 0; i--) {
-        rayos[i].vida -= dt * 3.5;
-        rayos[i].line.material.opacity = Math.max(0, rayos[i].vida);
-        if (rayos[i].vida <= 0) {
-          grupoTormenta.remove(rayos[i].line);
-          rayos.splice(i, 1);
-        }
-      }
-
-      const signo = nivelMarea >= 0 ? '+' : '';
-      const tempEl = document.getElementById('m-temp');
-      const rayoEl = document.getElementById('m-rayo');
-      if (tempEl) tempEl.innerText = `${mandalaParams.tempMar}°C · ${signo}${nivelMarea.toFixed(2)} m`;
-      if (rayoEl) rayoEl.innerText = `${TOTAL_MOL.toLocaleString()} · ${mandalaParams.bpm} BPM`;
     }
 
-    construirSubCubos();
-    construirAire();
+    function congelarEnCopos(morfologia) {
+      estadoGlobal = 'nieve';
+      tipoNieveActual = morfologia;
+
+      const tempMap = { dendrita: -15, placa: -2, aguja: -6, helecho: -18, aleatorio: -15 };
+      snowParams.temperaturaC = tempMap[morfologia] ?? -15;
+
+      cuerpos.forEach(c => transformarCuerpoACopo(c, morfologia));
+
+      const nombres = {
+        dendrita: 'Dendritas Estelares (-15 °C)',
+        placa: 'Placas Hexagonales (-2 °C)',
+        aguja: 'Agujas / Columnas (-6 °C)',
+        helecho: 'Helechos Navideños (-18 °C)',
+        aleatorio: 'Tormenta Navideña (-15 °C)'
+      };
+
+      document.getElementById('m-fase').innerText = nombres[morfologia];
+      document.getElementById('m-temp').innerText = `${snowParams.temperaturaC} °C (${273 + snowParams.temperaturaC} K)`;
+      simGui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    // Interacción con puntero dentro del simulador
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let cuerpoArrastrado = null;
+    let ultimoPunto = new THREE.Vector3();
+    const planoArrastre = new THREE.Plane();
+
+    function setPointer(e) {
+      const rect = simRenderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, simCamera);
+    }
+
+    simRenderer.domElement.addEventListener('pointerdown', (e) => {
+      setPointer(e);
+      let hitPt = new THREE.Vector3();
+      for (const c of cuerpos) {
+        const esf = new THREE.Sphere(c.centro, c.radio * 1.45);
+        if (raycaster.ray.intersectSphere(esf, hitPt)) {
+          cuerpoArrastrado = c;
+          simControls.enabled = false;
+          ultimoPunto.copy(hitPt);
+          const camDir = new THREE.Vector3();
+          simCamera.getWorldDirection(camDir);
+          planoArrastre.setFromNormalAndCoplanarPoint(camDir, hitPt);
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!cuerpoArrastrado) return;
+      setPointer(e);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planoArrastre, pt)) {
+        const delta = new THREE.Vector3().subVectors(pt, ultimoPunto);
+        cuerpoArrastrado.vel.addScaledVector(delta, 3.8);
+        cuerpoArrastrado.velAngular.z += delta.x * 2.5;
+        cuerpoArrastrado.velAngular.x += delta.y * 2.5;
+        ultimoPunto.copy(pt);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (!cuerpoArrastrado) return;
+      cuerpoArrastrado = null;
+      simControls.enabled = isInteracting || isSimFull;
+    });
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlace(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatelites.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlaces.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarNieve3D(dt, tiempoTotal) {
+      const puenteCoords = lineasPuentesH.geometry.attributes.position.array;
+      let idxPuente = 0;
+      let idxCentro = 0;
+      let idxSat = 0;
+      let idxEnl = 0;
+      let totalMol = 0;
+
+      const agitacionTermica = estadoGlobal === 'liquido' ? 0.25 : 0.012;
+      const rigidezRed = estadoGlobal === 'liquido' ? 3.2 : 8.5;
+
+      for (let i = 0; i < cuerpos.length; i++) {
+        const c = cuerpos[i];
+        totalMol += c.moleculas.length;
+
+        if (c.esCopo) {
+          const oscX = Math.sin(tiempoTotal * 1.4 + c.faseOscilacion) * 0.6;
+          const oscZ = Math.cos(tiempoTotal * 1.1 + c.faseOscilacion) * 0.45;
+          c.vel.x += (snowParams.vientoLateral * 0.5 + oscX - c.vel.x) * 1.8 * dt;
+          c.vel.z += (oscZ - c.vel.z) * 1.8 * dt;
+          c.vel.y += (-c.velocidadCaidaBase * snowParams.gravedadNieve - c.vel.y) * 2.5 * dt;
+
+          c.centro.addScaledVector(c.vel, dt);
+
+          if (snowParams.regenerarInfinito && c.centro.y < -12.0) {
+            c.centro.y = 12.5 + Math.random() * 3.5;
+            c.centro.x = (Math.random() - 0.5) * 24;
+            c.centro.z = (Math.random() - 0.5) * 12;
+          }
+          if (c.centro.x > 15) c.centro.x = -15;
+          if (c.centro.x < -15) c.centro.x = 15;
+        } else {
+          if (c.centro.length() > 10.5) {
+            c.vel.addScaledVector(c.centro, -0.35 * dt);
+          }
+          c.centro.addScaledVector(c.vel, dt);
+          c.vel.multiplyScalar(0.99);
+        }
+
+        const rotStep = new THREE.Euler(
+          c.velAngular.x * dt,
+          c.velAngular.y * dt,
+          c.velAngular.z * dt
+        );
+
+        const mList = c.moleculas;
+        for (let a = 0; a < mList.length && idxCentro < MAX_MOLECULAS; a++) {
+          const mol = mList[a];
+          mol.offsetEquilibrio.applyEuler(rotStep);
+
+          const fuerzaRed = new THREE.Vector3()
+            .subVectors(mol.offsetEquilibrio, mol.posLocal)
+            .multiplyScalar(rigidezRed);
+
+          if (agitacionTermica > 0.02) {
+            mol.velLocal.x += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+            mol.velLocal.y += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+            mol.velLocal.z += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+          }
+
+          mol.velLocal.addScaledVector(fuerzaRed, dt);
+          mol.velLocal.multiplyScalar(c.esCopo ? 0.88 : 0.94);
+          mol.posLocal.addScaledVector(mol.velLocal, dt);
+
+          mol.eulerPropia.x += mol.velAngularPropia.x * dt;
+          mol.eulerPropia.y += mol.velAngularPropia.y * dt;
+          mol.eulerPropia.z += mol.velAngularPropia.z * dt;
+
+          const posMundo = new THREE.Vector3().copy(c.centro).add(mol.posLocal);
+
+          for (let b = a + 1; b < mList.length && idxPuente + 6 < MAX_PUENTES_VERTS * 3; b++) {
+            const dist = mol.posLocal.distanceTo(mList[b].posLocal);
+            const umbral = c.esCopo ? 0.95 : 0.88;
+            if (dist < umbral) {
+              const p2 = new THREE.Vector3().copy(c.centro).add(mList[b].posLocal);
+              puenteCoords[idxPuente++] = posMundo.x; puenteCoords[idxPuente++] = posMundo.y; puenteCoords[idxPuente++] = posMundo.z;
+              puenteCoords[idxPuente++] = p2.x; puenteCoords[idxPuente++] = p2.y; puenteCoords[idxPuente++] = p2.z;
+            }
+          }
+
+          if (c.esCopo) {
+            if (mol.esNucleo) colTmp.setHex(0xf59e0b);
+            else colTmp.setHex(a % 6 === 0 ? 0xffffff : 0x38bdf8);
+          } else {
+            colTmp.setHex(0xef4444);
+          }
+
+          meshCentro.setColorAt(idxCentro, colTmp);
+          dummy.position.copy(posMundo);
+          dummy.rotation.set(0, 0, 0);
+          const escalaAtom = c.esCopo ? 0.94 : 1.0;
+          dummy.scale.set(escalaAtom, escalaAtom, escalaAtom);
+          dummy.updateMatrix();
+          meshCentro.setMatrixAt(idxCentro, dummy.matrix);
+
+          const mAng = ANGULO_HOH * 0.5;
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+
+          idxCentro++;
+        }
+      }
+
+      meshCentro.count = idxCentro;
+      meshSatelites.count = idxSat;
+      meshEnlaces.count = idxEnl;
+      meshCentro.instanceMatrix.needsUpdate = true;
+      if (meshCentro.instanceColor) meshCentro.instanceColor.needsUpdate = true;
+      meshSatelites.instanceMatrix.needsUpdate = true;
+      meshEnlaces.instanceMatrix.needsUpdate = true;
+
+      lineasPuentesH.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesH.geometry.setDrawRange(0, idxPuente / 3);
+
+      const gotasEl = document.getElementById('m-gotas');
+      const molEl = document.getElementById('m-mol');
+      const vientoEl = document.getElementById('m-viento');
+      if (gotasEl) gotasEl.innerText = `${cuerpos.length} ${estadoGlobal === 'nieve' ? 'copos' : 'gotas'}`;
+      if (molEl) molEl.innerText = `${totalMol} H₂O`;
+      if (vientoEl) vientoEl.innerText = `${snowParams.vientoLateral.toFixed(1)} m/s`;
+    }
+
+    const simGui = new lil.GUI({ title: '❄️ Parámetros Nevada' });
+    simGui.add(snowParams, 'cantidadGotasIniciales', 12, 36, 2).name('Cant. Copos').onChange(() => {
+      iniciarNevadaAbundante();
+    });
+    simGui.add(snowParams, 'moleculasPorCuerpo', 18, 48, 6).name('H₂O por Copo').onChange(() => {
+      iniciarNevadaAbundante();
+    });
+    simGui.add(snowParams, 'vientoLateral', -2.5, 2.5, 0.1).name('Viento Navideño');
+    simGui.add(snowParams, 'gravedadNieve', 0.4, 3.0, 0.1).name('Velocidad Caída');
+    simGui.add(snowParams, 'regenerarInfinito').name('Nevada Continua');
+
+    inicializarBuffers();
+    iniciarNevadaAbundante();
 
     let prevSimT = performance.now();
-    const inicioSimT = prevSimT;
     (function loopSim() {
       requestAnimationFrame(loopSim);
       const now = performance.now();
       const dt = Math.min((now - prevSimT) / 1000, 0.05);
-      const tSeg = (now - inicioSimT) / 1000;
       prevSimT = now;
-      actualizarTormenta(dt, tSeg);
+      stars.rotation.y += 0.015 * dt;
+      actualizarNieve3D(dt, now * 0.001);
       simControls.update();
       simRenderer.render(simScene, simCamera);
     })();
@@ -2149,7 +2477,6 @@
       simRenderer.setSize(window.innerWidth, window.innerHeight);
       clampWidgetInsideViewport();
     });
-
   </script>
 </body>
 </html>
