@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoEdu — Cristalización Navideña de Copos de Nieve</title>
+  <style>
+    :root {
+      --bg-dark: #030712;
+      --glass-bg: rgba(12, 20, 38, 0.84);
+      --glass-border: rgba(125, 211, 252, 0.32);
+      --accent-ice: #7dd3fc;
+      --accent-red: #e11d48;
+      --accent-gold: #fbbf24;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { overflow: hidden; background: radial-gradient(circle at top, #0c192c 0%, #030712 75%); color: var(--text-main); touch-action: none; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px; background: var(--glass-bg); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .brand-cluster { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); }
+    .snow-badge-icon { font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.7)); animation: spinSlow 14s linear infinite; }
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* PANELES PLEGABLES UNIVERSALES */
+    .panel-toggle-btn {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.94));
+      color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 9px 14px; border-radius: 11px; font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      backdrop-filter: blur(14px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: all 0.2s ease;
+    }
+    .panel-toggle-btn:hover { border-color: var(--accent-ice); box-shadow: 0 0 14px rgba(125, 211, 252, 0.3); }
+
+    .collapsible-body {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 14px; backdrop-filter: blur(18px); overflow: hidden;
+      max-height: 0; opacity: 0; padding: 0 16px; margin-top: 0;
+      transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease, padding 0.25s ease, margin-top 0.25s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+    .collapsible-body.open {
+      max-height: 440px; opacity: 1; padding: 14px 16px; margin-top: 8px; overflow-y: auto;
+    }
+
+    /* 1. GUÍA EDUCATIVA (ARRIBA IZQUIERDA) */
+    .edu-wrapper {
+      position: fixed; top: 68px; left: 16px; z-index: 120;
+      width: 320px; max-width: calc(100vw - 32px);
+    }
+    .edu-badge {
+      display: inline-block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.2px;
+      background: rgba(225, 29, 72, 0.22); color: #fda4af;
+      border: 1px solid rgba(225, 29, 72, 0.4); padding: 3px 8px; border-radius: 6px;
+      margin-bottom: 8px; font-weight: 700;
+    }
+    .collapsible-body h4 { font-size: 0.95rem; color: var(--accent-ice); margin-bottom: 6px; }
+    .collapsible-body p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.72rem; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .code-note {
+      background: rgba(5, 8, 20, 0.75); border-left: 3px solid var(--accent-gold);
+      padding: 7px 9px; border-radius: 6px; font-size: 0.72rem; color: #cbd5e1;
+    }
+
+    /* 2. TELEMETRÍA PLEGABLE (ABAJO IZQUIERDA) */
+    .hud-wrapper {
+      position: fixed; bottom: 16px; left: 16px; z-index: 115;
+      width: 270px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .hud-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 5px; color: var(--text-muted); }
+    .val { font-weight: 700; color: var(--text-main); }
+
+    /* 3. DECK DE CONDICIONES Y ACCIONES PLEGABLE (ABAJO DERECHA) */
+    .deck-wrapper {
+      position: fixed; bottom: 16px; right: 16px; z-index: 125;
+      width: 460px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .deck-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .btns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+    .btn {
+      background: rgba(30, 41, 59, 0.92); color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 8px 10px; border-radius: 9px; font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.15s ease; text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent-ice); }
+    .btn-dendrite { background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; }
+    .btn-plate { background: linear-gradient(135deg, #6366f1, #a855f7); border: none; color: #fff; }
+    .btn-column { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; }
+    .btn-xmas { background: linear-gradient(135deg, #be123c, #e11d48); border: none; color: #fff; }
+    .btn-gold { background: linear-gradient(135deg, #d97706, #fbbf24); border: none; color: #0f172a; font-weight: 700; }
+
+    /* LIL-GUI PLEGADO ARRIBA DERECHA */
+    .lil-gui { top: 68px !important; right: 16px !important; --background-color: rgba(12, 20, 38, 0.92) !important; z-index: 130 !important; }
+
+    @media (max-width: 780px) {
+      .hud-wrapper { bottom: 66px; width: 240px; }
+      .btns-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+<body>
+  <header>
+    <a href="#" class="brand-cluster" onclick="reiniciarLluviaGotas(); return false;">
+      <span class="snow-badge-icon">❄️</span>
+      <div>
+        <strong>MULTIVERSO EDU • NAVIDAD</strong>
+        <div style="font-size:0.68rem;color:var(--accent-gold);">De Gotas en 0G a Copos de Nieve Cristalinos</div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="btn btn-xmas" onclick="congelarEnCopos('aleatorio')">🎄 ¡Nevar Ahora!</button>
+      <button class="btn btn-gold" onclick="compartirPostal()">🎁 Compartir</button>
+    </div>
+  </header>
+
+  <!-- 1. PANEL EDUCATIVO (PLEGADO AL INICIO) -->
+  <div class="edu-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('edu-body', 'arrow-edu')">
+      <span>🎄 Guía: Física del Copo de Nieve</span>
+      <span id="arrow-edu">▼</span>
+    </button>
+    <div id="edu-body" class="collapsible-body">
+      <span class="edu-badge" id="edu-card-tag">Edición Navideña • Cristalografía</span>
+      <h4 id="edu-title">Simetría Hexagonal del H₂O</h4>
+      <p id="edu-body-text">
+        En estado líquido, las moléculas de <strong>H₂O</strong> forman gotas esféricas por tensión superficial. Al bajar la temperatura por debajo de <strong>0 °C (273 K)</strong>, los puentes de hidrógeno bloquean las moléculas en una red hexagonal (ángulos de 60°), formando copos únicos según la temperatura y humedad.
+      </p>
+      <div class="legend">
+        <span><i class="dot" style="background:#ef4444;"></i>O (Gota líquida)</span>
+        <span><i class="dot" style="background:#7dd3fc;"></i>Cristal de Hielo</span>
+        <span><i class="dot" style="background:#fbbf24;"></i>Núcleo de Cristalización</span>
+      </div>
+      <div class="code-note" id="edu-code-insight">
+        <strong>Propiedades emergentes:</strong> Cada morfología (Dendrita, Placa, Aguja o Estelar) modifica la densidad aerodinámica, velocidad de caída y rotación del copo.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HUD TELEMETRÍA (PLEGADO AL INICIO) -->
+  <div class="hud-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('hud-body', 'arrow-hud')">
+      <span>📊 Telemetría Atmosférica</span>
+      <span id="arrow-hud">▲</span>
+    </button>
+    <div id="hud-body" class="collapsible-body">
+      <div class="row"><span>Estado Fase:</span><span class="val" id="m-fase" style="color:#38bdf8;">Gotas Líquidas</span></div>
+      <div class="row"><span>Gotas / Copos:</span><span class="val" id="m-gotas">0</span></div>
+      <div class="row"><span>Moléculas Activas:</span><span class="val" id="m-mol">0</span></div>
+      <div class="row"><span>Temp. Nube:</span><span class="val" id="m-temp" style="color:#fbbf24;">+12 °C (285 K)</span></div>
+      <div class="row"><span>Viento / Deriva:</span><span class="val" id="m-viento">Suave</span></div>
+    </div>
+  </div>
+
+  <!-- 3. DECK DE CONDICIONES CLIMÁTICAS (PLEGADO AL INICIO) -->
+  <div class="deck-wrapper">
+    <button class="panel-toggle-btn" style="width:100%; border-color: var(--accent-gold);" onclick="togglePanel('deck-body', 'arrow-deck')">
+      <span>❄️ Condiciones de Cristalización y Caída</span>
+      <span id="arrow-deck">▲</span>
+    </button>
+    <div id="deck-body" class="collapsible-body">
+      <h4 id="deck-title">Elige el Clima de la Nube para Cristalizar</h4>
+      <p id="deck-desc">Cada condición congela las gotas en copos con geometría hexagonal, densidad y velocidad de caída propias:</p>
+      <div class="btns-grid">
+        <button class="btn btn-dendrite" onclick="congelarEnCopos('dendrita')">❄️ -15 °C • Dendrita Estelar (Caída lenta)</button>
+        <button class="btn btn-plate" onclick="congelarEnCopos('placa')">💎 -2 °C • Placa Hexagonal (Planeo)</button>
+        <button class="btn btn-column" onclick="congelarEnCopos('aguja')">🧊 -6 °C • Agujas / Columnas (Caída rápida)</button>
+        <button class="btn btn-xmas" onclick="congelarEnCopos('helecho')">🎄 -18 °C • Helecho Navideño (6 ramas)</button>
+        <button class="btn" onclick="reiniciarLluviaGotas()">💧 Derretir (Volver a Gotas)</button>
+        <button class="btn" onclick="agregarGotasExtra()">➕ Añadir Más Gotas</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Función genérica para plegar/desplegar paneles
+    function togglePanel(bodyId, arrowId) {
+      const body = document.getElementById(bodyId);
+      const arrow = document.getElementById(arrowId);
+      const isOpen = body.classList.toggle('open');
+      if (bodyId === 'edu-body') {
+        arrow.textContent = isOpen ? '▲' : '▼';
+      } else {
+        arrow.textContent = isOpen ? '▼' : '▲';
+      }
+    }
+
+    const params = {
+      cantidadGotasIniciales: 12,
+      moleculasPorCuerpo: 36,
+      temperaturaC: 12,
+      humedadPct: 80,
+      vientoLateral: 0.65,
+      gravedadNieve: 1.4,
+      regenerarInfinito: true
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050b18, 0.015);
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.set(0, 2.5, 19);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xdbeafe, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.35);
+    dirLight.position.set(10, 18, 12);
+    scene.add(dirLight);
+
+    const warmLight = new THREE.PointLight(0xfbbf24, 0.9, 35);
+    warmLight.position.set(-8, 6, 8);
+    scene.add(warmLight);
+
+    const grupoMundo = new THREE.Group();
+    scene.add(grupoMundo);
+
+    // Estrellas / destellos navideños de fondo
+    const starGeo = new THREE.BufferGeometry();
+    const starCount = 280;
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      starPos[i] = (Math.random() - 0.5) * 65;
+      starPos[i + 1] = (Math.random() - 0.5) * 45;
+      starPos[i + 2] = -10 - Math.random() * 35;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xfde68a, size: 0.14, transparent: true, opacity: 0.65 }));
+    scene.add(stars);
+
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.21;
+
+    let cuerpos = [];
+    let siguienteId = 1;
+    let estadoGlobal = 'liquido'; // 'liquido' | 'nieve'
+    let tipoNieveActual = 'dendrita';
+
+    let meshCentro, meshSatelites, meshEnlaces, lineasPuentesH;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const MAX_MOLECULAS = 900;
+    const MAX_SATELITES = MAX_MOLECULAS * 2;
+    const MAX_ENLACES = MAX_MOLECULAS * 2;
+    const MAX_PUENTES_VERTS = MAX_MOLECULAS * 8;
+
+    function inicializarBuffers() {
+      const geoC = new THREE.SphereGeometry(0.095, 10, 10);
+      const matC = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x1e3a8a, emissiveIntensity: 0.28, shininess: 90 });
+      meshCentro = new THREE.InstancedMesh(geoC, matC, MAX_MOLECULAS);
+      meshCentro.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoS = new THREE.SphereGeometry(0.058, 8, 8);
+      const matS = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x38bdf8, emissiveIntensity: 0.18 });
+      meshSatelites = new THREE.InstancedMesh(geoS, matS, MAX_SATELITES);
+      meshSatelites.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoE = new THREE.CylinderGeometry(0.02, 0.02, LONG_ENLACE, 5);
+      const matE = new THREE.MeshBasicMaterial({ color: 0x93c5fd });
+      meshEnlaces = new THREE.InstancedMesh(geoE, matE, MAX_ENLACES);
+      meshEnlaces.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const posBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+      const geoP = new THREE.BufferGeometry();
+      geoP.setAttribute('position', new THREE.BufferAttribute(posBuffer, 3));
+      lineasPuentesH = new THREE.LineSegments(
+        geoP,
+        new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.34 })
+      );
+
+      grupoMundo.add(meshCentro, meshSatelites, meshEnlaces, lineasPuentesH);
+    }
+
+    // Genera posiciones locales esféricas (gota líquida)
+    function calcularOffsetsGota(numMoleculas, radio) {
+      const offsets = [];
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      for (let i = 0; i < numMoleculas; i++) {
+        const frac = 0.25 + 0.75 * Math.cbrt((i + 0.5) / numMoleculas);
+        const r = radio * frac;
+        const theta = (2 * Math.PI * i) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (i + 0.5)) / numMoleculas);
+        offsets.push(new THREE.Vector3(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.cos(phi),
+          r * Math.sin(phi) * Math.sin(theta)
+        ));
+      }
+      return offsets;
+    }
+
+    // Genera patrones hexagonales cristalinos únicos por copo
+    function calcularOffsetsCopo(numMoleculas, escala, morfologia, semilla) {
+      const offsets = [];
+      const ramas = 6;
+      const factorRamificacion = 0.45 + (semilla % 10) * 0.05;
+
+      // Núcleo central dorado
+      offsets.push(new THREE.Vector3(0, 0, 0));
+
+      for (let i = 1; i < numMoleculas; i++) {
+        const rama = i % ramas;
+        const angBase = (rama * Math.PI) / 3;
+        const idxEnRama = Math.floor(i / ramas);
+        const maxPorRama = Math.ceil(numMoleculas / ramas);
+        const t = (idxEnRama + 1) / (maxPorRama + 1);
+
+        let x = 0, y = 0, z = 0;
+
+        if (morfologia === 'dendrita') {
+          const dist = t * escala * 1.45;
+          const subRama = idxEnRama % 3;
+          if (subRama === 0) {
+            x = Math.cos(angBase) * dist;
+            y = Math.sin(angBase) * dist;
+          } else {
+            const lado = subRama === 1 ? 1 : -1;
+            const angSub = angBase + lado * (Math.PI / 3);
+            const lenSub = escala * 0.42 * (1 - t * 0.5) * factorRamificacion;
+            x = Math.cos(angBase) * dist + Math.cos(angSub) * lenSub;
+            y = Math.sin(angBase) * dist + Math.sin(angSub) * lenSub;
+          }
+          z = ((i % 2 === 0 ? 1 : -1) * 0.05);
+        } else if (morfologia === 'placa') {
+          const anillo = idxEnRama % 2 === 0 ? 0.55 : 1.0;
+          const dist = escala * 1.15 * anillo;
+          const interp = (idxEnRama / maxPorRama) - 0.5;
+          const angNext = angBase + Math.PI / 3;
+          const p1x = Math.cos(angBase) * dist, p1y = Math.sin(angBase) * dist;
+          const p2x = Math.cos(angNext) * dist, p2y = Math.sin(angNext) * dist;
+          const alpha = Math.abs(interp) * 2;
+          x = p1x * (1 - alpha) + p2x * alpha;
+          y = p1y * (1 - alpha) + p2y * alpha;
+          z = 0;
+        } else if (morfologia === 'aguja') {
+          const dist = t * escala * 1.25;
+          const altura = ((idxEnRama % 3) - 1) * escala * 0.55;
+          x = Math.cos(angBase) * dist * 0.45;
+          y = altura;
+          z = Math.sin(angBase) * dist * 0.45;
+        } else {
+          // Helecho navideño estelar
+          const dist = t * escala * 1.65;
+          const lado = (idxEnRama % 2 === 0) ? 1 : -1;
+          const espina = (idxEnRama % 4 === 0) ? 0 : escala * 0.55 * Math.sin(t * Math.PI);
+          const angEsp = angBase + lado * (Math.PI / 3);
+          x = Math.cos(angBase) * dist + Math.cos(angEsp) * espina;
+          y = Math.sin(angBase) * dist + Math.sin(angEsp) * espina;
+          z = Math.sin(t * Math.PI * 2) * 0.06;
+        }
+
+        offsets.push(new THREE.Vector3(x, y, z));
+      }
+      return offsets;
+    }
+
+    function crearCuerpoAgua(pos, vel, numMol, radio = 1.15) {
+      const offsets = calcularOffsetsGota(numMol, radio);
+      const moleculas = offsets.map((off, idx) => ({
+        esNucleo: idx === 0,
+        posLocal: off.clone(),
+        velLocal: new THREE.Vector3(),
+        offsetEquilibrio: off.clone(),
+        eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+        velAngularPropia: new THREE.Vector3((Math.random() - 0.5) * 1.8, (Math.random() - 0.5) * 1.8, (Math.random() - 0.5) * 1.8)
+      }));
+
+      return {
+        id: siguienteId++,
+        semilla: Math.floor(Math.random() * 1000),
+        centro: pos.clone(),
+        vel: vel.clone(),
+        radio,
+        esCopo: false,
+        morfologia: 'gota',
+        velocidadCaidaBase: 0,
+        faseOscilacion: Math.random() * Math.PI * 2,
+        rotacionCopo: new THREE.Euler(Math.random() * 0.8, Math.random() * 0.8, Math.random() * Math.PI),
+        velAngular: new THREE.Vector3((Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.5),
+        moleculas
+      };
+    }
+
+    function reiniciarLluviaGotas() {
+      cuerpos = [];
+      siguienteId = 1;
+      estadoGlobal = 'liquido';
+      params.temperaturaC = 12;
+
+      const total = params.cantidadGotasIniciales;
+      const molPorCuerpo = Math.min(params.moleculasPorCuerpo, Math.floor(MAX_MOLECULAS / total));
+
+      for (let i = 0; i < total; i++) {
+        const pos = new THREE.Vector3(
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 9
+        );
+        const vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6,
+          (Math.random() - 0.5) * 0.6
+        );
+        cuerpos.push(crearCuerpoAgua(pos, vel, molPorCuerpo, 1.05 + Math.random() * 0.3));
+      }
+
+      document.getElementById('m-fase').innerText = 'Gotas Líquidas (0G)';
+      document.getElementById('m-fase').style.color = '#38bdf8';
+      document.getElementById('m-temp').innerText = '+12 °C (285 K)';
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function agregarGotasExtra() {
+      if (cuerpos.length >= 22) return;
+      const molPorCuerpo = Math.min(params.moleculasPorCuerpo, Math.floor(MAX_MOLECULAS / (cuerpos.length + 3)));
+      for (let i = 0; i < 3; i++) {
+        const pos = new THREE.Vector3((Math.random() - 0.5) * 15, 6 + Math.random() * 4, (Math.random() - 0.5) * 8);
+        const nuevo = crearCuerpoAgua(pos, new THREE.Vector3(0, -0.3, 0), molPorCuerpo, 1.1);
+        if (estadoGlobal === 'nieve') {
+          transformarCuerpoACopo(nuevo, tipoNieveActual);
+        }
+        cuerpos.push(nuevo);
+      }
+    }
+
+    function transformarCuerpoACopo(cuerpo, morfologia) {
+      const tipos = ['dendrita', 'placa', 'aguja', 'helecho'];
+      const elegida = morfologia === 'aleatorio' ? tipos[cuerpo.id % tipos.length] : morfologia;
+
+      cuerpo.esCopo = true;
+      cuerpo.morfologia = elegida;
+      const escala = cuerpo.radio * 1.45;
+      const nuevosOffsets = calcularOffsetsCopo(cuerpo.moleculas.length, escala, elegida, cuerpo.semilla);
+
+      cuerpo.moleculas.forEach((m, idx) => {
+        if (nuevosOffsets[idx]) {
+          m.offsetEquilibrio.copy(nuevosOffsets[idx]);
+        }
+        m.velAngularPropia.multiplyScalar(0.15);
+      });
+
+      // Propiedades aerodinámicas según morfología
+      if (elegida === 'dendrita') {
+        cuerpo.velocidadCaidaBase = 0.85 + Math.random() * 0.35; // Gran área superficial -> cae despacio
+        cuerpo.velAngular.set(0.25, 0.35, 0.9);
+      } else if (elegida === 'placa') {
+        cuerpo.velocidadCaidaBase = 1.15 + Math.random() * 0.4; // Planeo oscilante
+        cuerpo.velAngular.set(0.6, 0.2, 0.5);
+      } else if (elegida === 'aguja') {
+        cuerpo.velocidadCaidaBase = 1.95 + Math.random() * 0.5; // Compacta y densa -> cae más rápido
+        cuerpo.velAngular.set(1.2, 0.8, 0.3);
+      } else {
+        cuerpo.velocidadCaidaBase = 0.78 + Math.random() * 0.3; // Helecho amplio -> flota suavemente
+        cuerpo.velAngular.set(0.18, 0.25, 1.1);
+      }
+    }
+
+    function congelarEnCopos(morfologia) {
+      estadoGlobal = 'nieve';
+      tipoNieveActual = morfologia;
+
+      const tempMap = { dendrita: -15, placa: -2, aguja: -6, helecho: -18, aleatorio: -14 };
+      params.temperaturaC = tempMap[morfologia] ?? -15;
+
+      cuerpos.forEach(c => transformarCuerpoACopo(c, morfologia));
+
+      const nombres = {
+        dendrita: 'Dendritas Estelares (-15 °C)',
+        placa: 'Placas Hexagonales (-2 °C)',
+        aguja: 'Agujas / Columnas (-6 °C)',
+        helecho: 'Helechos Navideños (-18 °C)',
+        aleatorio: 'Tormenta Mixta (-14 °C)'
+      };
+
+      document.getElementById('m-fase').innerText = nombres[morfologia];
+      document.getElementById('m-fase').style.color = '#7dd3fc';
+      document.getElementById('m-temp').innerText = `${params.temperaturaC} °C (${273 + params.temperaturaC} K)`;
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function compartirPostal() {
+      const texto = '❄️ ¡Mira mi simulador interactivo de Cristalización Navideña de Copos de Nieve en 3D!';
+      if (navigator.share) {
+        navigator.share({ title: 'MultiversoEdu • Copos de Nieve 3D', text: texto, url: window.location.href }).catch(() => {});
+      } else {
+        navigator.clipboard?.writeText(window.location.href);
+        alert('🎁 Enlace copiado al portapapeles para compartir esta postal navideña interactiva.');
+      }
+    }
+
+    // Interacción con puntero (empujar gotas o crear ráfaga en los copos)
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let cuerpoArrastrado = null;
+    let ultimoPunto = new THREE.Vector3();
+    const planoArrastre = new THREE.Plane();
+
+    function setPointer(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      setPointer(e);
+      let hitPt = new THREE.Vector3();
+      for (const c of cuerpos) {
+        const esf = new THREE.Sphere(c.centro, c.radio * 1.45);
+        if (raycaster.ray.intersectSphere(esf, hitPt)) {
+          cuerpoArrastrado = c;
+          controls.enabled = false;
+          ultimoPunto.copy(hitPt);
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          planoArrastre.setFromNormalAndCoplanarPoint(camDir, hitPt);
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!cuerpoArrastrado) return;
+      setPointer(e);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planoArrastre, pt)) {
+        const delta = new THREE.Vector3().subVectors(pt, ultimoPunto);
+        cuerpoArrastrado.vel.addScaledVector(delta, 3.8);
+        cuerpoArrastrado.velAngular.z += delta.x * 2.5;
+        cuerpoArrastrado.velAngular.x += delta.y * 2.5;
+        ultimoPunto.copy(pt);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      cuerpoArrastrado = null;
+      controls.enabled = true;
+    });
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlace(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatelites.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlaces.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarSistema(dt, tiempoTotal) {
+      const puenteCoords = lineasPuentesH.geometry.attributes.position.array;
+      let idxPuente = 0;
+      let idxCentro = 0;
+      let idxSat = 0;
+      let idxEnl = 0;
+      let totalMol = 0;
+
+      const agitacionTermica = estadoGlobal === 'liquido' ? 0.25 : 0.015;
+      const rigidezRed = estadoGlobal === 'liquido' ? 3.2 : 8.5;
+
+      for (let i = 0; i < cuerpos.length; i++) {
+        const c = cuerpos[i];
+        totalMol += c.moleculas.length;
+
+        if (c.esCopo) {
+          // Física de caída de nieve con deriva aerodinámica y planeo
+          const oscX = Math.sin(tiempoTotal * 1.4 + c.faseOscilacion) * 0.55;
+          const oscZ = Math.cos(tiempoTotal * 1.1 + c.faseOscilacion) * 0.45;
+          c.vel.x += (params.vientoLateral * 0.5 + oscX - c.vel.x) * 1.8 * dt;
+          c.vel.z += (oscZ - c.vel.z) * 1.8 * dt;
+          c.vel.y += (-c.velocidadCaidaBase * params.gravedadNieve - c.vel.y) * 2.5 * dt;
+
+          c.centro.addScaledVector(c.vel, dt);
+
+          // Reciclar copo al llegar abajo para nevada continua
+          if (params.regenerarInfinito && c.centro.y < -11.5) {
+            c.centro.y = 12.0 + Math.random() * 3.0;
+            c.centro.x = (Math.random() - 0.5) * 18;
+            c.centro.z = (Math.random() - 0.5) * 10;
+          }
+          if (c.centro.x > 13) c.centro.x = -13;
+          if (c.centro.x < -13) c.centro.x = 13;
+        } else {
+          // Gotas flotando en 0G dentro de la nube
+          if (c.centro.length() > 9.5) {
+            c.vel.addScaledVector(c.centro, -0.35 * dt);
+          }
+          c.centro.addScaledVector(c.vel, dt);
+          c.vel.multiplyScalar(0.99);
+        }
+
+        const rotStep = new THREE.Euler(
+          c.velAngular.x * dt,
+          c.velAngular.y * dt,
+          c.velAngular.z * dt
+        );
+
+        const mList = c.moleculas;
+        for (let a = 0; a < mList.length && idxCentro < MAX_MOLECULAS; a++) {
+          const mol = mList[a];
+          mol.offsetEquilibrio.applyEuler(rotStep);
+
+          const fuerzaRed = new THREE.Vector3()
+            .subVectors(mol.offsetEquilibrio, mol.posLocal)
+            .multiplyScalar(rigidezRed);
+
+          if (agitacionTermica > 0.02) {
+            mol.velLocal.x += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+            mol.velLocal.y += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+            mol.velLocal.z += (Math.random() - 0.5) * agitacionTermica * dt * 12;
+          }
+
+          mol.velLocal.addScaledVector(fuerzaRed, dt);
+          mol.velLocal.multiplyScalar(c.esCopo ? 0.88 : 0.94);
+          mol.posLocal.addScaledVector(mol.velLocal, dt);
+
+          mol.eulerPropia.x += mol.velAngularPropia.x * dt;
+          mol.eulerPropia.y += mol.velAngularPropia.y * dt;
+          mol.eulerPropia.z += mol.velAngularPropia.z * dt;
+
+          const posMundo = new THREE.Vector3().copy(c.centro).add(mol.posLocal);
+
+          // Puentes de hidrógeno / enlaces cristalinos cercanos
+          for (let b = a + 1; b < mList.length && idxPuente + 6 < MAX_PUENTES_VERTS * 3; b++) {
+            const dist = mol.posLocal.distanceTo(mList[b].posLocal);
+            const umbral = c.esCopo ? 0.95 : 0.88;
+            if (dist < umbral) {
+              const p2 = new THREE.Vector3().copy(c.centro).add(mList[b].posLocal);
+              puenteCoords[idxPuente++] = posMundo.x; puenteCoords[idxPuente++] = posMundo.y; puenteCoords[idxPuente++] = posMundo.z;
+              puenteCoords[idxPuente++] = p2.x; puenteCoords[idxPuente++] = p2.y; puenteCoords[idxPuente++] = p2.z;
+            }
+          }
+
+          // Color según fase: rojo/blanco en gota líquida; azul hielo y dorado en copo navideño
+          if (c.esCopo) {
+            if (mol.esNucleo) colTmp.setHex(0xfbbf24); // Núcleo dorado navideño
+            else colTmp.setHex(a % 6 === 0 ? 0xe0f2fe : 0x7dd3fc);
+          } else {
+            colTmp.setHex(0xef4444);
+          }
+
+          meshCentro.setColorAt(idxCentro, colTmp);
+          dummy.position.copy(posMundo);
+          dummy.rotation.set(0, 0, 0);
+          const escalaAtom = c.esCopo ? 0.92 : 1.0;
+          dummy.scale.set(escalaAtom, escalaAtom, escalaAtom);
+          dummy.updateMatrix();
+          meshCentro.setMatrixAt(idxCentro, dummy.matrix);
+
+          const mAng = ANGULO_HOH * 0.5;
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+
+          idxCentro++;
+        }
+      }
+
+      meshCentro.count = idxCentro;
+      meshSatelites.count = idxSat;
+      meshEnlaces.count = idxEnl;
+      meshCentro.instanceMatrix.needsUpdate = true;
+      if (meshCentro.instanceColor) meshCentro.instanceColor.needsUpdate = true;
+      meshSatelites.instanceMatrix.needsUpdate = true;
+      meshEnlaces.instanceMatrix.needsUpdate = true;
+
+      lineasPuentesH.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesH.geometry.setDrawRange(0, idxPuente / 3);
+
+      document.getElementById('m-gotas').innerText = `${cuerpos.length} ${estadoGlobal === 'nieve' ? 'copos' : 'gotas'}`;
+      document.getElementById('m-mol').innerText = `${totalMol} H₂O`;
+      document.getElementById('m-viento').innerText = `${params.vientoLateral.toFixed(1)} m/s`;
+    }
+
+    // Controles lil-gui plegados al inicio (.close())
+    const gui = new lil.GUI({ title: '⚙️ Parámetros Nube' });
+    gui.close();
+    gui.add(params, 'cantidadGotasIniciales', 6, 20, 1).name('Cant. Gotas/Copos').onChange(reiniciarLluviaGotas);
+    gui.add(params, 'moleculasPorCuerpo', 18, 60, 6).name('H₂O por Copo').onChange(reiniciarLluviaGotas);
+    gui.add(params, 'vientoLateral', -2.5, 2.5, 0.1).name('Viento Navideño');
+    gui.add(params, 'gravedadNieve', 0.4, 3.0, 0.1).name('Velocidad Caída');
+    gui.add(params, 'regenerarInfinito').name('Nevada Continua');
+
+    inicializarBuffers();
+    reiniciarLluviaGotas();
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dt = Math.min((now - prevT) / 1000, 0.05);
+      prevT = now;
+      stars.rotation.y += 0.015 * dt;
+      actualizarSistema(dt, now * 0.001);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
