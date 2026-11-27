@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoEdu — Medusas Moleculares de Agua (95% H₂O)</title>
+  <style>
+    :root {
+      --bg-dark: #020817;
+      --glass-bg: rgba(8, 20, 42, 0.85);
+      --glass-border: rgba(34, 211, 238, 0.34);
+      --accent-cyan: #22d3ee;
+      --accent-magenta: #e879f9;
+      --accent-gold: #fbbf24;
+      --accent-emerald: #34d399;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { overflow: hidden; background: radial-gradient(circle at bottom, #0b2545 0%, #041026 55%, #01040c 100%); color: var(--text-main); touch-action: none; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px; background: var(--glass-bg); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .brand-cluster { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); }
+    .jelly-badge-icon { font-size: 1.55rem; filter: drop-shadow(0 0 10px rgba(232, 121, 249, 0.8)); animation: swimFloat 3s ease-in-out infinite; }
+    @keyframes swimFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.06); } }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* PANELES PLEGABLES UNIVERSALES */
+    .panel-toggle-btn {
+      background: linear-gradient(135deg, rgba(10, 25, 50, 0.94), rgba(20, 44, 80, 0.94));
+      color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 9px 14px; border-radius: 11px; font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      backdrop-filter: blur(14px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: all 0.2s ease;
+    }
+    .panel-toggle-btn:hover { border-color: var(--accent-cyan); box-shadow: 0 0 14px rgba(34, 211, 238, 0.35); }
+
+    .collapsible-body {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 14px; backdrop-filter: blur(18px); overflow: hidden;
+      max-height: 0; opacity: 0; padding: 0 16px; margin-top: 0;
+      transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease, padding 0.25s ease, margin-top 0.25s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+    .collapsible-body.open {
+      max-height: 450px; opacity: 1; padding: 14px 16px; margin-top: 8px; overflow-y: auto;
+    }
+
+    /* 1. GUÍA EDUCATIVA (ARRIBA IZQUIERDA - PLEGADA AL INICIO) */
+    .edu-wrapper {
+      position: fixed; top: 68px; left: 16px; z-index: 120;
+      width: 335px; max-width: calc(100vw - 32px);
+    }
+    .edu-badge {
+      display: inline-block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.2px;
+      background: rgba(232, 121, 249, 0.2); color: #f5d0fe;
+      border: 1px solid rgba(232, 121, 249, 0.45); padding: 3px 8px; border-radius: 6px;
+      margin-bottom: 8px; font-weight: 700;
+    }
+    .collapsible-body h4 { font-size: 0.95rem; color: var(--accent-cyan); margin-bottom: 6px; }
+    .collapsible-body p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.72rem; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .code-note {
+      background: rgba(5, 8, 20, 0.75); border-left: 3px solid var(--accent-magenta);
+      padding: 7px 9px; border-radius: 6px; font-size: 0.72rem; color: #cbd5e1;
+    }
+
+    /* 2. HUD TELEMETRÍA (ABAJO IZQUIERDA - PLEGADO AL INICIO) */
+    .hud-wrapper {
+      position: fixed; bottom: 16px; left: 16px; z-index: 115;
+      width: 275px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .hud-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 5px; color: var(--text-muted); }
+    .val { font-weight: 700; color: var(--text-main); }
+
+    /* 3. DECK DE IMPULSO Y DISPERSIÓN (ABAJO DERECHA - PLEGADO AL INICIO) */
+    .deck-wrapper {
+      position: fixed; bottom: 16px; right: 16px; z-index: 125;
+      width: 470px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .deck-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .btns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+    .btn {
+      background: rgba(18, 38, 68, 0.92); color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 8px 10px; border-radius: 9px; font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.15s ease; text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent-cyan); }
+    .btn-ascend { background: linear-gradient(135deg, #0284c7, #22d3ee); border: none; color: #041026; font-weight: 700; }
+    .btn-bio { background: linear-gradient(135deg, #a21caf, #e879f9); border: none; color: #fff; }
+    .btn-scatter { background: linear-gradient(135deg, #059669, #34d399); border: none; color: #041026; font-weight: 700; }
+    .btn-pulse { background: linear-gradient(135deg, #d97706, #fbbf24); border: none; color: #0f172a; font-weight: 700; }
+
+    /* LIL-GUI PLEGADO ARRIBA DERECHA */
+    .lil-gui { top: 68px !important; right: 16px !important; --background-color: rgba(8, 20, 42, 0.92) !important; z-index: 130 !important; }
+
+    @media (max-width: 780px) {
+      .hud-wrapper { bottom: 66px; width: 245px; }
+      .btns-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+<body>
+  <header>
+    <a href="#" class="brand-cluster" onclick="reiniciarMedusas(); return false;">
+      <span class="jelly-badge-icon">🪼</span>
+      <div>
+        <strong>MULTIVERSO EDU • BIOFÍSICA</strong>
+        <div style="font-size:0.68rem;color:var(--accent-magenta);">Medusas Moleculares (95% H₂O) • Propulsión Ascendente</div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="btn btn-ascend" onclick="activarNadoAscendente('dispersion')">🪼 ¡Nadar Hacia Arriba!</button>
+      <button class="btn btn-bio" onclick="alternarBioluminiscencia()">✨ Bioluminiscencia</button>
+    </div>
+  </header>
+
+  <!-- 1. PANEL EDUCATIVO (PLEGADO AL INICIO) -->
+  <div class="edu-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('edu-body', 'arrow-edu')">
+      <span>📖 Guía: Hidrodinámica de la Medusa</span>
+      <span id="arrow-edu">▼</span>
+    </button>
+    <div id="edu-body" class="collapsible-body">
+      <span class="edu-badge" id="edu-card-tag">95% Agua • Propulsión a Chorro</span>
+      <h4 id="edu-title">¿Cómo nada una medusa hecha casi solo de agua?</h4>
+      <p id="edu-body-text">
+        El cuerpo de una medusa (<strong>mesoglea</strong>) está compuesto en un <strong>95% por agua</strong> estructurada en una red gelatinosa. Al contraer su campana (umbrela), expulsa un vórtice de agua hacia abajo que la impulsa hacia arriba y en distintas direcciones, mientras sus tentáculos ondulan por arrastre viscoso.
+      </p>
+      <div class="legend">
+        <span><i class="dot" style="background:#22d3ee;"></i>Campana H₂O</span>
+        <span><i class="dot" style="background:#e879f9;"></i>Tentáculos Bioluminiscentes</span>
+        <span><i class="dot" style="background:#fbbf24;"></i>Ropalia (Sensores de equilibrio)</span>
+      </div>
+      <div class="code-note" id="edu-code-insight">
+        <strong>Física del código:</strong> La campana aplica una contracción asimétrica (rápida al cerrar, lenta al abrir) que genera un pico de empuje en dirección <code>dirNado</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HUD TELEMETRÍA (PLEGADO AL INICIO) -->
+  <div class="hud-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('hud-body', 'arrow-hud')">
+      <span>📊 Telemetría Oceánica</span>
+      <span id="arrow-hud">▲</span>
+    </button>
+    <div id="hud-body" class="collapsible-body">
+      <div class="row"><span>Comportamiento:</span><span class="val" id="m-fase" style="color:#22d3ee;">Flotación Suave</span></div>
+      <div class="row"><span>Medusas Activas:</span><span class="val" id="m-gotas">0</span></div>
+      <div class="row"><span>Moléculas H₂O:</span><span class="val" id="m-mol">0</span></div>
+      <div class="row"><span>Frecuencia Contracción:</span><span class="val" id="m-freq" style="color:#e879f9;">0.8 Hz</span></div>
+      <div class="row"><span>Trayectoria:</span><span class="val" id="m-dir">Ascenso Multidireccional</span></div>
+    </div>
+  </div>
+
+  <!-- 3. DECK DE MODOS DE NADO (PLEGADO AL INICIO) -->
+  <div class="deck-wrapper">
+    <button class="panel-toggle-btn" style="width:100%; border-color: var(--accent-magenta);" onclick="togglePanel('deck-body', 'arrow-deck')">
+      <span>🪼 Condiciones de Impulso y Trayectoria</span>
+      <span id="arrow-deck">▲</span>
+    </button>
+    <div id="deck-body" class="collapsible-body">
+      <h4 id="deck-title">Controla el Nado de las Medusas de Agua</h4>
+      <p id="deck-desc">Elige cómo se contraen sus campanas de agua y hacia qué direcciones del océano ascienden:</p>
+      <div class="btns-grid">
+        <button class="btn btn-scatter" onclick="activarNadoAscendente('dispersion')">↗️ Ascenso en Abanico (Hacia distintas partes)</button>
+        <button class="btn btn-ascend" onclick="activarNadoAscendente('corriente')">🌊 Corriente Ascendente Rápida</button>
+        <button class="btn btn-pulse" onclick="impulsoSincronizado()">⚡ Pulso Sincronizado (Salto hacia arriba)</button>
+        <button class="btn btn-bio" onclick="alternarBioluminiscencia()">✨ Cambiar Espectro Bioluminiscente</button>
+        <button class="btn" onclick="agregarMedusa()">➕ Añadir Medusa de Agua</button>
+        <button class="btn" onclick="reiniciarMedusas()">🔄 Reiniciar Banco de Medusas</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePanel(bodyId, arrowId) {
+      const body = document.getElementById(bodyId);
+      const arrow = document.getElementById(arrowId);
+      const isOpen = body.classList.toggle('open');
+      if (bodyId === 'edu-body') {
+        arrow.textContent = isOpen ? '▲' : '▼';
+      } else {
+        arrow.textContent = isOpen ? '▼' : '▲';
+      }
+    }
+
+    const params = {
+      cantidadMedusas: 9,
+      moleculasPorMedusa: 64,
+      frecuenciaPulso: 1.6,
+      impulsoAscendente: 1.45,
+      dispersionAngular: 0.75,
+      ascensoContinuo: true
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x020919, 0.015);
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.set(0, 1.5, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xcffafe, 0.72));
+    const topLight = new THREE.DirectionalLight(0x67e8f9, 1.35);
+    topLight.position.set(6, 20, 10);
+    scene.add(topLight);
+
+    const abyssLight = new THREE.PointLight(0xe879f9, 1.2, 42);
+    abyssLight.position.set(-8, -6, 10);
+    scene.add(abyssLight);
+
+    const grupoMundo = new THREE.Group();
+    scene.add(grupoMundo);
+
+    // Plancton y burbujas oceánicas ascendentes
+    const bubbleGeo = new THREE.BufferGeometry();
+    const bubbleCount = 260;
+    const bubblePos = new Float32Array(bubbleCount * 3);
+    for (let i = 0; i < bubbleCount * 3; i += 3) {
+      bubblePos[i] = (Math.random() - 0.5) * 55;
+      bubblePos[i + 1] = (Math.random() - 0.5) * 42;
+      bubblePos[i + 2] = -8 - Math.random() * 30;
+    }
+    bubbleGeo.setAttribute('position', new THREE.BufferAttribute(bubblePos, 3));
+    const bubbles = new THREE.Points(bubbleGeo, new THREE.PointsMaterial({ color: 0x67e8f9, size: 0.13, transparent: true, opacity: 0.5 }));
+    scene.add(bubbles);
+
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.21;
+
+    let medusas = [];
+    let siguienteId = 1;
+    let paletaBio = 0; // 0: Cian/Magenta, 1: Esmeralda/Oro, 2: Azul Profundo/Violeta
+
+    let meshCentro, meshSatelites, meshEnlaces, lineasPuentesH;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const MAX_MOLECULAS = 950;
+    const MAX_SATELITES = MAX_MOLECULAS * 2;
+    const MAX_ENLACES = MAX_MOLECULAS * 2;
+    const MAX_PUENTES_VERTS = MAX_MOLECULAS * 8;
+
+    function inicializarBuffers() {
+      const geoC = new THREE.SphereGeometry(0.095, 10, 10);
+      const matC = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x0e7490, emissiveIntensity: 0.35, shininess: 100 });
+      meshCentro = new THREE.InstancedMesh(geoC, matC, MAX_MOLECULAS);
+      meshCentro.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoS = new THREE.SphereGeometry(0.056, 8, 8);
+      const matS = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x22d3ee, emissiveIntensity: 0.2 });
+      meshSatelites = new THREE.InstancedMesh(geoS, matS, MAX_SATELITES);
+      meshSatelites.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoE = new THREE.CylinderGeometry(0.02, 0.02, LONG_ENLACE, 5);
+      const matE = new THREE.MeshBasicMaterial({ color: 0x67e8f9 });
+      meshEnlaces = new THREE.InstancedMesh(geoE, matE, MAX_ENLACES);
+      meshEnlaces.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const posBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+      const geoP = new THREE.BufferGeometry();
+      geoP.setAttribute('position', new THREE.BufferAttribute(posBuffer, 3));
+      lineasPuentesH = new THREE.LineSegments(
+        geoP,
+        new THREE.LineBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.34 })
+      );
+
+      grupoMundo.add(meshCentro, meshSatelites, meshEnlaces, lineasPuentesH);
+    }
+
+    // Construye la anatomía molecular de una medusa: Campana (umbrela) + Tentáculos colgantes
+    function construirAnatomiaMedusa(numMoleculas, escala) {
+      const moleculas = [];
+      const numCampana = Math.floor(numMoleculas * 0.56);
+      const numTentaculosTotal = numMoleculas - numCampana;
+
+      // 1. Campana hemisférica (umbrela) en la parte superior
+      const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+      for (let i = 0; i < numCampana; i++) {
+        const frac = i / Math.max(1, numCampana - 1);
+        const phi = frac * (Math.PI * 0.48); // De la cima (0) al borde de la campana (~86°)
+        const theta = i * goldenAngle;
+
+        const r = escala * 1.15;
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.cos(phi) - escala * 0.35;
+        const z = r * Math.sin(phi) * Math.sin(theta);
+
+        const basePos = new THREE.Vector3(x, y, z);
+        moleculas.push({
+          parte: 'campana',
+          esRopalia: frac > 0.85 && i % 4 === 0, // Órganos sensoriales en el borde
+          fracCampana: frac,
+          anguloRadial: theta,
+          posBase: basePos,
+          posLocal: basePos.clone(),
+          velLocal: new THREE.Vector3(),
+          eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+          velAngularPropia: new THREE.Vector3((Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5)
+        });
+      }
+
+      // 2. Tentáculos (6 largos exteriores + 3 brazos orales centrales)
+      const numHilos = 8;
+      const nodosPorHilo = Math.max(3, Math.floor(numTentaculosTotal / numHilos));
+      let creados = 0;
+
+      for (let h = 0; h < numHilos && creados < numTentaculosTotal; h++) {
+        const esBrazoCentral = h >= 6;
+        const angHilo = (h / (esBrazoCentral ? 2 : 6)) * Math.PI * 2;
+        const radioAnclaje = esBrazoCentral ? escala * 0.28 : escala * 0.92;
+        const largoMax = esBrazoCentral ? escala * 1.85 : escala * 2.55;
+
+        for (let n = 0; n < nodosPorHilo && creados < numTentaculosTotal; n++) {
+          const t = (n + 1) / nodosPorHilo; // 0 = cerca de campana, 1 = punta del tentáculo
+          const x = Math.cos(angHilo) * radioAnclaje * (1 - t * 0.25);
+          const z = Math.sin(angHilo) * radioAnclaje * (1 - t * 0.25);
+          const y = -escala * 0.32 - t * largoMax;
+
+          const basePos = new THREE.Vector3(x, y, z);
+          moleculas.push({
+            parte: 'tentaculo',
+            esRopalia: false,
+            indiceHilo: h,
+            profundidadT: t,
+            anguloRadial: angHilo,
+            posBase: basePos,
+            posLocal: basePos.clone(),
+            velLocal: new THREE.Vector3(),
+            eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+            velAngularPropia: new THREE.Vector3((Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5, (Math.random() - 0.5) * 1.5)
+          });
+          creados++;
+        }
+      }
+
+      return moleculas;
+    }
+
+    function crearMedusa(pos, numMol, escala = 1.15, direccionInicial = null) {
+      // Dirección ascendente inclinada hacia distintas partes del espacio
+      const angAzimut = Math.random() * Math.PI * 2;
+      const inclinacion = (0.15 + Math.random() * 0.55) * params.dispersionAngular;
+      const dirNado = direccionInicial || new THREE.Vector3(
+        Math.sin(inclinacion) * Math.cos(angAzimut),
+        Math.cos(inclinacion),
+        Math.sin(inclinacion) * Math.sin(angAzimut)
+      ).normalize();
+
+      // Orientar la campana de la medusa hacia su dirección de nado
+      const quatOrientacion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirNado);
+
+      return {
+        id: siguienteId++,
+        centro: pos.clone(),
+        vel: dirNado.clone().multiplyScalar(0.6),
+        dirNado,
+        quatOrientacion,
+        escala,
+        fasePulso: Math.random() * Math.PI * 2,
+        velPulsoIndividual: 0.85 + Math.random() * 0.35,
+        moleculas: construirAnatomiaMedusa(numMol, escala)
+      };
+    }
+
+    function reiniciarMedusas() {
+      medusas = [];
+      siguienteId = 1;
+      const total = params.cantidadMedusas;
+      const molPorMedusa = Math.min(params.moleculasPorMedusa, Math.floor(MAX_MOLECULAS / total));
+
+      for (let i = 0; i < total; i++) {
+        const pos = new THREE.Vector3(
+          (Math.random() - 0.5) * 15,
+          -6 + Math.random() * 10,
+          (Math.random() - 0.5) * 8
+        );
+        medusas.push(crearMedusa(pos, molPorMedusa, 1.0 + Math.random() * 0.35));
+      }
+
+      document.getElementById('m-fase').innerText = 'Ascenso Disperso (95% H₂O)';
+      document.getElementById('m-dir').innerText = 'Hacia distintas direcciones';
+    }
+
+    function agregarMedusa() {
+      if (medusas.length >= 16) return;
+      const molPorMedusa = Math.min(params.moleculasPorMedusa, Math.floor(MAX_MOLECULAS / (medusas.length + 1)));
+      const pos = new THREE.Vector3((Math.random() - 0.5) * 12, -9.5, (Math.random() - 0.5) * 7);
+      medusas.push(crearMedusa(pos, molPorMedusa, 1.1));
+    }
+
+    function activarNadoAscendente(modo) {
+      if (modo === 'dispersion') {
+        params.dispersionAngular = 0.95;
+        params.impulsoAscendente = 1.6;
+        params.frecuenciaPulso = 1.7;
+        medusas.forEach((m, idx) => {
+          const ang = (idx / medusas.length) * Math.PI * 2 + Math.random() * 0.4;
+          const inc = 0.35 + Math.random() * 0.45;
+          m.dirNado.set(Math.sin(inc) * Math.cos(ang), Math.cos(inc), Math.sin(inc) * Math.sin(ang)).normalize();
+          m.quatOrientacion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), m.dirNado);
+        });
+        document.getElementById('m-fase').innerText = 'Dispersión en Abanico';
+        document.getElementById('m-dir').innerText = 'Múltiples rumbos ascendentes';
+      } else if (modo === 'corriente') {
+        params.dispersionAngular = 0.3;
+        params.impulsoAscendente = 2.4;
+        params.frecuenciaPulso = 2.3;
+        medusas.forEach(m => {
+          m.dirNado.set((Math.random() - 0.5) * 0.35, 1, (Math.random() - 0.5) * 0.35).normalize();
+          m.quatOrientacion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), m.dirNado);
+        });
+        document.getElementById('m-fase').innerText = 'Corriente Ascendente';
+        document.getElementById('m-dir').innerText = 'Ascenso vertical rápido';
+      }
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function impulsoSincronizado() {
+      medusas.forEach(m => {
+        m.fasePulso = 0; // Todas contraen la campana al mismo tiempo
+        m.vel.addScaledVector(m.dirNado, 2.2);
+      });
+      document.getElementById('m-fase').innerText = '¡Impulso Sincronizado!';
+    }
+
+    function alternarBioluminiscencia() {
+      paletaBio = (paletaBio + 1) % 3;
+    }
+
+    // Interacción con puntero (desviar o impulsar medusas)
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let medusaArrastrada = null;
+    let ultimoPunto = new THREE.Vector3();
+    const planoArrastre = new THREE.Plane();
+
+    function setPointer(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      setPointer(e);
+      let hitPt = new THREE.Vector3();
+      for (const m of medusas) {
+        const esf = new THREE.Sphere(m.centro, m.escala * 1.5);
+        if (raycaster.ray.intersectSphere(esf, hitPt)) {
+          medusaArrastrada = m;
+          controls.enabled = false;
+          ultimoPunto.copy(hitPt);
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          planoArrastre.setFromNormalAndCoplanarPoint(camDir, hitPt);
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!medusaArrastrada) return;
+      setPointer(e);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planoArrastre, pt)) {
+        const delta = new THREE.Vector3().subVectors(pt, ultimoPunto);
+        medusaArrastrada.vel.addScaledVector(delta, 3.6);
+        if (delta.length() > 0.02) {
+          const nuevaDir = delta.clone().normalize();
+          nuevaDir.y = Math.max(0.25, nuevaDir.y); // Mantener tendencia ascendente
+          nuevaDir.normalize();
+          medusaArrastrada.dirNado.lerp(nuevaDir, 0.25).normalize();
+          medusaArrastrada.quatOrientacion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), medusaArrastrada.dirNado);
+        }
+        ultimoPunto.copy(pt);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      medusaArrastrada = null;
+      controls.enabled = true;
+    });
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlace(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatelites.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlaces.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarSistema(dt, tiempoTotal) {
+      const puenteCoords = lineasPuentesH.geometry.attributes.position.array;
+      let idxPuente = 0;
+      let idxCentro = 0;
+      let idxSat = 0;
+      let idxEnl = 0;
+      let totalMol = 0;
+
+      for (let i = 0; i < medusas.length; i++) {
+        const med = medusas[i];
+        totalMol += med.moleculas.length;
+
+        // Ciclo asimétrico de contracción de la campana:
+        // Fase rápida de cierre (propulsión) y fase lenta de apertura (planeo)
+        med.fasePulso += dt * params.frecuenciaPulso * med.velPulsoIndividual * Math.PI;
+        const ciclo = Math.sin(med.fasePulso);
+        const contraccion = ciclo > 0 ? Math.pow(ciclo, 0.65) : ciclo * 0.55;
+
+        // Impulso ascendente cuando la campana se cierra (contraccion > 0)
+        const empuje = Math.max(0, contraccion) * params.impulsoAscendente * 2.6;
+        const flotabilidad = 0.45 * params.impulsoAscendente;
+
+        // Suave deriva orgánica hacia distintas partes
+        const derivaLateral = new THREE.Vector3(
+          Math.sin(tiempoTotal * 0.7 + med.id) * 0.18,
+          0,
+          Math.cos(tiempoTotal * 0.6 + med.id * 1.3) * 0.18
+        );
+
+        med.vel.addScaledVector(med.dirNado, (empuje + flotabilidad) * dt);
+        med.vel.addScaledVector(derivaLateral, dt);
+        med.vel.multiplyScalar(0.955); // Resistencia viscosa del agua
+        med.centro.addScaledVector(med.vel, dt);
+
+        // Reciclar medusas que suben más allá del borde superior hacia distintas zonas inferiores
+        if (params.ascensoContinuo && med.centro.y > 12.5) {
+          med.centro.y = -11.5 - Math.random() * 2.5;
+          med.centro.x = (Math.random() - 0.5) * 16;
+          med.centro.z = (Math.random() - 0.5) * 8;
+
+          const ang = Math.random() * Math.PI * 2;
+          const inc = (0.15 + Math.random() * 0.55) * params.dispersionAngular;
+          med.dirNado.set(Math.sin(inc) * Math.cos(ang), Math.cos(inc), Math.sin(inc) * Math.sin(ang)).normalize();
+          med.quatOrientacion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), med.dirNado);
+        }
+
+        // Mantener dentro del campo lateral
+        if (med.centro.x > 14.5) med.centro.x = -14.5;
+        if (med.centro.x < -14.5) med.centro.x = 14.5;
+
+        const mList = med.moleculas;
+        for (let a = 0; a < mList.length && idxCentro < MAX_MOLECULAS; a++) {
+          const mol = mList[a];
+          const objetivoLocal = mol.posBase.clone();
+
+          if (mol.parte === 'campana') {
+            // El borde de la campana (fracCampana alto) se cierra hacia adentro al impulsar
+            const factorRadial = 1 - contraccion * 0.34 * mol.fracCampana;
+            objetivoLocal.x *= factorRadial;
+            objetivoLocal.z *= factorRadial;
+            objetivoLocal.y += contraccion * 0.18 * (1 - mol.fracCampana);
+          } else {
+            // Tentáculos: ondulan con retardo de fase (latigazo hidrodinámico) y estela
+            const retardo = mol.profundidadT * 2.8;
+            const ondaX = Math.sin(med.fasePulso - retardo + mol.indiceHilo * 0.7) * 0.28 * mol.profundidadT;
+            const ondaZ = Math.cos(med.fasePulso - retardo + mol.indiceHilo * 0.9) * 0.28 * mol.profundidadT;
+            const cierreBase = 1 - contraccion * 0.22 * (1 - mol.profundidadT);
+
+            objetivoLocal.x = objetivoLocal.x * cierreBase + ondaX;
+            objetivoLocal.z = objetivoLocal.z * cierreBase + ondaZ;
+            // Se estiran ligeramente hacia atrás durante el pico de velocidad
+            objetivoLocal.y -= Math.max(0, contraccion) * 0.22 * mol.profundidadT;
+          }
+
+          // Rotar la anatomía según la dirección ascendente de esta medusa
+          objetivoLocal.applyQuaternion(med.quatOrientacion);
+
+          const fuerzaRed = new THREE.Vector3()
+            .subVectors(objetivoLocal, mol.posLocal)
+            .multiplyScalar(7.5);
+
+          mol.velLocal.addScaledVector(fuerzaRed, dt);
+          mol.velLocal.multiplyScalar(0.86);
+          mol.posLocal.addScaledVector(mol.velLocal, dt);
+
+          mol.eulerPropia.x += mol.velAngularPropia.x * dt;
+          mol.eulerPropia.y += mol.velAngularPropia.y * dt;
+          mol.eulerPropia.z += mol.velAngularPropia.z * dt;
+
+          const posMundo = new THREE.Vector3().copy(med.centro).add(mol.posLocal);
+
+          // Puentes de hidrógeno gelatinosos (red de mesoglea y tentáculos)
+          for (let b = a + 1; b < mList.length && idxPuente + 6 < MAX_PUENTES_VERTS * 3; b++) {
+            const dist = mol.posLocal.distanceTo(mList[b].posLocal);
+            if (dist < 0.78) {
+              const p2 = new THREE.Vector3().copy(med.centro).add(mList[b].posLocal);
+              puenteCoords[idxPuente++] = posMundo.x; puenteCoords[idxPuente++] = posMundo.y; puenteCoords[idxPuente++] = posMundo.z;
+              puenteCoords[idxPuente++] = p2.x; puenteCoords[idxPuente++] = p2.y; puenteCoords[idxPuente++] = p2.z;
+            }
+          }
+
+          // Paleta bioluminiscente
+          if (mol.esRopalia) {
+            colTmp.setHex(0xfbbf24); // Puntos sensoriales dorados
+          } else if (paletaBio === 0) {
+            colTmp.setHex(mol.parte === 'campana' ? 0x22d3ee : 0xe879f9);
+          } else if (paletaBio === 1) {
+            colTmp.setHex(mol.parte === 'campana' ? 0x34d399 : 0xfde047);
+          } else {
+            colTmp.setHex(mol.parte === 'campana' ? 0x60a5fa : 0xc084fc);
+          }
+
+          meshCentro.setColorAt(idxCentro, colTmp);
+          dummy.position.copy(posMundo);
+          dummy.rotation.set(0, 0, 0);
+          const escalaMol = mol.parte === 'campana' ? 1.0 : 0.85;
+          dummy.scale.set(escalaMol, escalaMol, escalaMol);
+          dummy.updateMatrix();
+          meshCentro.setMatrixAt(idxCentro, dummy.matrix);
+
+          const mAng = ANGULO_HOH * 0.5;
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+
+          idxCentro++;
+        }
+      }
+
+      meshCentro.count = idxCentro;
+      meshSatelites.count = idxSat;
+      meshEnlaces.count = idxEnl;
+      meshCentro.instanceMatrix.needsUpdate = true;
+      if (meshCentro.instanceColor) meshCentro.instanceColor.needsUpdate = true;
+      meshSatelites.instanceMatrix.needsUpdate = true;
+      meshEnlaces.instanceMatrix.needsUpdate = true;
+
+      lineasPuentesH.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesH.geometry.setDrawRange(0, idxPuente / 3);
+
+      document.getElementById('m-gotas').innerText = `${medusas.length} medusas`;
+      document.getElementById('m-mol').innerText = `${totalMol} H₂O (95%)`;
+      document.getElementById('m-freq').innerText = `${(params.frecuenciaPulso * 0.5).toFixed(1)} Hz`;
+    }
+
+    // Controles lil-gui plegados al inicio
+    const gui = new lil.GUI({ title: '⚙️ Parámetros Medusas' });
+    gui.close();
+    gui.add(params, 'cantidadMedusas', 4, 15, 1).name('Cant. Medusas').onChange(reiniciarMedusas);
+    gui.add(params, 'moleculasPorMedusa', 36, 90, 6).name('H₂O por Medusa').onChange(reiniciarMedusas);
+    gui.add(params, 'frecuenciaPulso', 0.6, 3.2, 0.1).name('Ritmo Contracción');
+    gui.add(params, 'impulsoAscendente', 0.5, 3.0, 0.1).name('Empuje Ascendente');
+    gui.add(params, 'dispersionAngular', 0.1, 1.2, 0.05).name('Dispersión Rumbos');
+    gui.add(params, 'ascensoContinuo').name('Banco Continuo');
+
+    inicializarBuffers();
+    reiniciarMedusas();
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dt = Math.min((now - prevT) / 1000, 0.05);
+      prevT = now;
+      actualizarSistema(dt, now * 0.001);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
