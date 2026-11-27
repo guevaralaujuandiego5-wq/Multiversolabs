@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiversoEdu — Física Molecular de las Gotas de Lluvia</title>
+  <style>
+    :root {
+      --bg-dark: #030914;
+      --glass-bg: rgba(10, 22, 40, 0.85);
+      --glass-border: rgba(56, 189, 248, 0.34);
+      --accent-rain: #38bdf8;
+      --accent-deep: #0284c7;
+      --accent-amber: #fbbf24;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { overflow: hidden; background: radial-gradient(circle at top, #0f294a 0%, #051024 55%, #020612 100%); color: var(--text-main); touch-action: none; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 20px; background: var(--glass-bg); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .brand-cluster { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); }
+    .rain-badge-icon { font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.75)); animation: pulseDrop 2.8s ease-in-out infinite; }
+    @keyframes pulseDrop { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* PANELES PLEGABLES UNIVERSALES */
+    .panel-toggle-btn {
+      background: linear-gradient(135deg, rgba(12, 26, 48, 0.94), rgba(22, 42, 74, 0.94));
+      color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 9px 14px; border-radius: 11px; font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      backdrop-filter: blur(14px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      transition: all 0.2s ease;
+    }
+    .panel-toggle-btn:hover { border-color: var(--accent-rain); box-shadow: 0 0 14px rgba(56, 189, 248, 0.35); }
+
+    .collapsible-body {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 14px; backdrop-filter: blur(18px); overflow: hidden;
+      max-height: 0; opacity: 0; padding: 0 16px; margin-top: 0;
+      transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease, padding 0.25s ease, margin-top 0.25s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+    }
+    .collapsible-body.open {
+      max-height: 450px; opacity: 1; padding: 14px 16px; margin-top: 8px; overflow-y: auto;
+    }
+
+    /* 1. GUÍA EDUCATIVA (ARRIBA IZQUIERDA - PLEGADA AL INICIO) */
+    .edu-wrapper {
+      position: fixed; top: 68px; left: 16px; z-index: 120;
+      width: 330px; max-width: calc(100vw - 32px);
+    }
+    .edu-badge {
+      display: inline-block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.2px;
+      background: rgba(56, 189, 248, 0.2); color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.4); padding: 3px 8px; border-radius: 6px;
+      margin-bottom: 8px; font-weight: 700;
+    }
+    .collapsible-body h4 { font-size: 0.95rem; color: var(--accent-rain); margin-bottom: 6px; }
+    .collapsible-body p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 10px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.72rem; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .code-note {
+      background: rgba(5, 8, 20, 0.75); border-left: 3px solid var(--accent-amber);
+      padding: 7px 9px; border-radius: 6px; font-size: 0.72rem; color: #cbd5e1;
+    }
+
+    /* 2. HUD TELEMETRÍA (ABAJO IZQUIERDA - PLEGADO AL INICIO) */
+    .hud-wrapper {
+      position: fixed; bottom: 16px; left: 16px; z-index: 115;
+      width: 275px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .hud-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 5px; color: var(--text-muted); }
+    .val { font-weight: 700; color: var(--text-main); }
+
+    /* 3. DECK DE CONDICIONES ATMOSFÉRICAS (ABAJO DERECHA - PLEGADO AL INICIO) */
+    .deck-wrapper {
+      position: fixed; bottom: 16px; right: 16px; z-index: 125;
+      width: 470px; max-width: calc(100vw - 32px);
+      display: flex; flex-direction: column-reverse;
+    }
+    .deck-wrapper .collapsible-body.open { margin-top: 0; margin-bottom: 8px; }
+    .btns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+    .btn {
+      background: rgba(20, 38, 66, 0.92); color: var(--text-main); border: 1px solid var(--glass-border);
+      padding: 8px 10px; border-radius: 9px; font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: transform 0.15s ease, border-color 0.15s ease; text-align: center;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent-rain); }
+    .btn-drizzle { background: linear-gradient(135deg, #0369a1, #38bdf8); border: none; color: #fff; }
+    .btn-shower { background: linear-gradient(135deg, #1d4ed8, #3b82f6); border: none; color: #fff; }
+    .btn-storm { background: linear-gradient(135deg, #4338ca, #6366f1); border: none; color: #fff; }
+    .btn-coalesce { background: linear-gradient(135deg, #059669, #10b981); border: none; color: #fff; }
+    .btn-amber { background: linear-gradient(135deg, #d97706, #fbbf24); border: none; color: #0f172a; font-weight: 700; }
+
+    /* LIL-GUI PLEGADO ARRIBA DERECHA */
+    .lil-gui { top: 68px !important; right: 16px !important; --background-color: rgba(10, 22, 40, 0.92) !important; z-index: 130 !important; }
+
+    @media (max-width: 780px) {
+      .hud-wrapper { bottom: 66px; width: 245px; }
+      .btns-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.18"></script>
+</head>
+<body>
+  <header>
+    <a href="#" class="brand-cluster" onclick="reiniciarNubeMicrogotas(); return false;">
+      <span class="rain-badge-icon">🌧️</span>
+      <div>
+        <strong>MULTIVERSO EDU • PRECIPITACIÓN</strong>
+        <div style="font-size:0.68rem;color:var(--accent-rain);">De Microgotas de Nube a Gotas de Lluvia</div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="btn btn-shower" onclick="activarPrecipitacion('chubasco')">🌧️ ¡Llover Ahora!</button>
+      <button class="btn btn-amber" onclick="compartirSimulador()">🔗 Compartir</button>
+    </div>
+  </header>
+
+  <!-- 1. PANEL EDUCATIVO (PLEGADO AL INICIO) -->
+  <div class="edu-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('edu-body', 'arrow-edu')">
+      <span>📖 Guía: Aerodinámica de la Lluvia</span>
+      <span id="arrow-edu">▼</span>
+    </button>
+    <div id="edu-body" class="collapsible-body">
+      <span class="edu-badge" id="edu-card-tag">Microfísica de Nubes • Coalescencia</span>
+      <h4 id="edu-title">¿Qué forma tiene realmente una gota de lluvia?</h4>
+      <p id="edu-body-text">
+        En la nube, las microgotas flotan suspendidas por corrientes ascendentes. Al chocar y fusionarse (<strong>coalescencia</strong>), ganan masa y vencen el empuje del aire. Lejos del mito de la "lágrima", las gotas pequeñas son <strong>esféricas</strong> por tensión superficial y las grandes se <strong>achatan por debajo</strong> (forma de pan de hamburguesa) por la resistencia del aire.
+      </p>
+      <div class="legend">
+        <span><i class="dot" style="background:#38bdf8;"></i>Moléculas H₂O</span>
+        <span><i class="dot" style="background:#f8fafc;"></i>Átomos H</span>
+        <span><i class="dot" style="background:#fbbf24;"></i>Núcleo de Condensación</span>
+      </div>
+      <div class="code-note" id="edu-code-insight">
+        <strong>Deformación aerodinámica:</strong> A mayor velocidad terminal, la presión dinámica aplasta el hemisferio inferior (<code>achatarBase</code>) y puede fragmentar gotas demasiado grandes.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HUD TELEMETRÍA (PLEGADO AL INICIO) -->
+  <div class="hud-wrapper">
+    <button class="panel-toggle-btn" style="width:100%;" onclick="togglePanel('hud-body', 'arrow-hud')">
+      <span>📊 Telemetría Pluviométrica</span>
+      <span id="arrow-hud">▲</span>
+    </button>
+    <div id="hud-body" class="collapsible-body">
+      <div class="row"><span>Régimen Actual:</span><span class="val" id="m-fase" style="color:#7dd3fc;">Suspensión en Nube</span></div>
+      <div class="row"><span>Gotas Activas:</span><span class="val" id="m-gotas">0</span></div>
+      <div class="row"><span>Moléculas H₂O:</span><span class="val" id="m-mol">0</span></div>
+      <div class="row"><span>Vel. Terminal Media:</span><span class="val" id="m-vel" style="color:#fbbf24;">0.0 m/s</span></div>
+      <div class="row"><span>Geometría Predominante:</span><span class="val" id="m-forma">Esférica (0G)</span></div>
+    </div>
+  </div>
+
+  <!-- 3. DECK DE CONDICIONES ATMOSFÉRICAS (PLEGADO AL INICIO) -->
+  <div class="deck-wrapper">
+    <button class="panel-toggle-btn" style="width:100%; border-color: var(--accent-rain);" onclick="togglePanel('deck-body', 'arrow-deck')">
+      <span>🌦️ Condiciones de Lluvia y Coalescencia</span>
+      <span id="arrow-deck">▲</span>
+    </button>
+    <div id="deck-body" class="collapsible-body">
+      <h4 id="deck-title">Elige las Condiciones de Precipitación</h4>
+      <p id="deck-desc">Transforma las microgotas de nube en distintos regímenes de lluvia con su propia deformación aerodinámica y velocidad de caída:</p>
+      <div class="btns-grid">
+        <button class="btn btn-drizzle" onclick="activarPrecipitacion('llovizna')">🌦️ Llovizna Fina (Esféricas • Caída lenta)</button>
+        <button class="btn btn-shower" onclick="activarPrecipitacion('chubasco')">🌧️ Chubasco Moderado (Base achatada)</button>
+        <button class="btn btn-storm" onclick="activarPrecipitacion('tormenta')">⛈️ Aguacero Convectivo (Gotas grandes rápidas)</button>
+        <button class="btn btn-coalesce" onclick="fusionarEnGotasGrandes()">🧲 Coalescencia (Choque y fusión)</button>
+        <button class="btn" onclick="reiniciarNubeMicrogotas()">☁️ Volver a Nube (Suspensión)</button>
+        <button class="btn" onclick="agregarMicrogotas()">💧 Condensar Más Vapor</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePanel(bodyId, arrowId) {
+      const body = document.getElementById(bodyId);
+      const arrow = document.getElementById(arrowId);
+      const isOpen = body.classList.toggle('open');
+      if (bodyId === 'edu-body') {
+        arrow.textContent = isOpen ? '▲' : '▼';
+      } else {
+        arrow.textContent = isOpen ? '▼' : '▲';
+      }
+    }
+
+    const params = {
+      cantidadGotasIniciales: 12,
+      moleculasPorGota: 38,
+      vientoRacha: 0.75,
+      gravedadLluvia: 2.2,
+      tensionSuperficial: 4.2,
+      lluviaContinua: true
+    };
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x040d1c, 0.015);
+    const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
+    camera.position.set(0, 2.0, 18.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0xdbeafe, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xe0f2fe, 1.4);
+    dirLight.position.set(8, 18, 12);
+    scene.add(dirLight);
+
+    const rimLight = new THREE.PointLight(0x38bdf8, 1.1, 40);
+    rimLight.position.set(-10, -4, 10);
+    scene.add(rimLight);
+
+    const grupoMundo = new THREE.Group();
+    scene.add(grupoMundo);
+
+    // Partículas ambientales de humedad / bruma
+    const mistGeo = new THREE.BufferGeometry();
+    const mistCount = 240;
+    const mistPos = new Float32Array(mistCount * 3);
+    for (let i = 0; i < mistCount * 3; i += 3) {
+      mistPos[i] = (Math.random() - 0.5) * 55;
+      mistPos[i + 1] = (Math.random() - 0.5) * 40;
+      mistPos[i + 2] = -8 - Math.random() * 30;
+    }
+    mistGeo.setAttribute('position', new THREE.BufferAttribute(mistPos, 3));
+    const mist = new THREE.Points(mistGeo, new THREE.PointsMaterial({ color: 0x7dd3fc, size: 0.12, transparent: true, opacity: 0.45 }));
+    scene.add(mist);
+
+    const ANGULO_HOH = (104.5 * Math.PI) / 180;
+    const LONG_ENLACE = 0.21;
+
+    let gotas = [];
+    let siguienteId = 1;
+    let estadoLluvia = 'nube'; // 'nube' | 'lluvia'
+    let regimenActual = 'chubasco';
+
+    let meshCentro, meshSatelites, meshEnlaces, lineasPuentesH;
+    const dummy = new THREE.Object3D();
+    const colTmp = new THREE.Color();
+
+    const MAX_MOLECULAS = 900;
+    const MAX_SATELITES = MAX_MOLECULAS * 2;
+    const MAX_ENLACES = MAX_MOLECULAS * 2;
+    const MAX_PUENTES_VERTS = MAX_MOLECULAS * 8;
+
+    function inicializarBuffers() {
+      const geoC = new THREE.SphereGeometry(0.102, 10, 10);
+      const matC = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x0c4a6e, emissiveIntensity: 0.3, shininess: 100 });
+      meshCentro = new THREE.InstancedMesh(geoC, matC, MAX_MOLECULAS);
+      meshCentro.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoS = new THREE.SphereGeometry(0.06, 8, 8);
+      const matS = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x38bdf8, emissiveIntensity: 0.15 });
+      meshSatelites = new THREE.InstancedMesh(geoS, matS, MAX_SATELITES);
+      meshSatelites.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const geoE = new THREE.CylinderGeometry(0.02, 0.02, LONG_ENLACE, 5);
+      const matE = new THREE.MeshBasicMaterial({ color: 0x7dd3fc });
+      meshEnlaces = new THREE.InstancedMesh(geoE, matE, MAX_ENLACES);
+      meshEnlaces.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+      const posBuffer = new Float32Array(MAX_PUENTES_VERTS * 3);
+      const geoP = new THREE.BufferGeometry();
+      geoP.setAttribute('position', new THREE.BufferAttribute(posBuffer, 3));
+      lineasPuentesH = new THREE.LineSegments(
+        geoP,
+        new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.32 })
+      );
+
+      grupoMundo.add(meshCentro, meshSatelites, meshEnlaces, lineasPuentesH);
+    }
+
+    // Calcula la posición de equilibrio de cada molécula según tamaño y resistencia del aire
+    function calcularOffsetsGotaLluvia(numMoleculas, radio, factorAchatamiento) {
+      const offsets = [];
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
+      // Núcleo de condensación (aerosol/polvo atmosférico) en el interior
+      offsets.push(new THREE.Vector3(0, 0, 0));
+
+      for (let i = 1; i < numMoleculas; i++) {
+        const frac = 0.28 + 0.72 * Math.cbrt((i + 0.5) / numMoleculas);
+        const theta = (2 * Math.PI * i) / goldenRatio;
+        const phi = Math.acos(1 - (2 * (i + 0.5)) / numMoleculas);
+
+        let x = radio * frac * Math.sin(phi) * Math.cos(theta);
+        let y = radio * frac * Math.cos(phi);
+        let z = radio * frac * Math.sin(phi) * Math.sin(theta);
+
+        // Física real de gotas de lluvia:
+        // Gotas pequeñas -> esféricas (factorAchatamiento ~ 0)
+        // Gotas grandes -> base achatada por presión aerodinámica ascendente y cúpula redondeada
+        if (factorAchatamiento > 0.01) {
+          const ensanchamiento = 1 + factorAchatamiento * 0.36;
+          x *= ensanchamiento;
+          z *= ensanchamiento;
+          if (y < 0) {
+            // Aplasta la parte inferior de la gota
+            y *= (1 - factorAchatamiento * 0.58);
+          } else {
+            // Suaviza ligeramente la cúpula superior
+            y *= (1 - factorAchatamiento * 0.14);
+          }
+        }
+
+        offsets.push(new THREE.Vector3(x, y, z));
+      }
+      return offsets;
+    }
+
+    function crearGota(pos, vel, numMol, radio = 1.05, achatamiento = 0.0) {
+      const offsets = calcularOffsetsGotaLluvia(numMol, radio, achatamiento);
+      const moleculas = offsets.map((off, idx) => ({
+        esNucleo: idx === 0,
+        posLocal: off.clone(),
+        velLocal: new THREE.Vector3(),
+        offsetEquilibrio: off.clone(),
+        eulerPropia: new THREE.Euler(Math.random() * 6, Math.random() * 6, Math.random() * 6),
+        velAngularPropia: new THREE.Vector3((Math.random() - 0.5) * 2.0, (Math.random() - 0.5) * 2.0, (Math.random() - 0.5) * 2.0)
+      }));
+
+      return {
+        id: siguienteId++,
+        centro: pos.clone(),
+        vel: vel.clone(),
+        radio,
+        achatamiento,
+        caendo: false,
+        velocidadTerminal: 0,
+        faseOscilacion: Math.random() * Math.PI * 2,
+        velAngular: new THREE.Vector3((Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 0.4),
+        moleculas
+      };
+    }
+
+    function reiniciarNubeMicrogotas() {
+      gotas = [];
+      siguienteId = 1;
+      estadoLluvia = 'nube';
+
+      const total = params.cantidadGotasIniciales;
+      const molPorGota = Math.min(params.moleculasPorGota, Math.floor(MAX_MOLECULAS / total));
+
+      for (let i = 0; i < total; i++) {
+        const pos = new THREE.Vector3(
+          (Math.random() - 0.5) * 16,
+          (Math.random() - 0.5) * 10,
+          (Math.random() - 0.5) * 8
+        );
+        const vel = new THREE.Vector3(
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.5,
+          (Math.random() - 0.5) * 0.5
+        );
+        gotas.push(crearGota(pos, vel, molPorGota, 0.95 + Math.random() * 0.25, 0.0));
+      }
+
+      document.getElementById('m-fase').innerText = 'Suspensión en Nube';
+      document.getElementById('m-fase').style.color = '#7dd3fc';
+      document.getElementById('m-vel').innerText = '0.2 m/s (corrientes)';
+      document.getElementById('m-forma').innerText = 'Esférica (Tensión Sup.)';
+      gui.controllersRecursive().forEach(c => c.updateDisplay());
+    }
+
+    function agregarMicrogotas() {
+      if (gotas.length >= 22) return;
+      const molPorGota = Math.min(params.moleculasPorGota, Math.floor(MAX_MOLECULAS / (gotas.length + 3)));
+      for (let i = 0; i < 3; i++) {
+        const pos = new THREE.Vector3((Math.random() - 0.5) * 15, 7 + Math.random() * 4, (Math.random() - 0.5) * 8);
+        const g = crearGota(pos, new THREE.Vector3(0, -0.4, 0), molPorGota, 1.0, 0.0);
+        if (estadoLluvia === 'lluvia') {
+          configurarGotaParaRegimen(g, regimenActual);
+        }
+        gotas.push(g);
+      }
+    }
+
+    function configurarGotaParaRegimen(gota, regimen) {
+      gota.caendo = true;
+      let nuevoRadio = gota.radio;
+      let achatamiento = 0.0;
+      let velBase = 1.5;
+
+      if (regimen === 'llovizna') {
+        nuevoRadio = 0.78 + Math.random() * 0.2;
+        achatamiento = 0.05; // Casi esférica por alta tensión superficial relativa
+        velBase = 1.2 + Math.random() * 0.4;
+      } else if (regimen === 'chubasco') {
+        nuevoRadio = 1.15 + Math.random() * 0.25;
+        achatamiento = 0.48; // Base claramente achatada por resistencia del aire
+        velBase = 2.4 + Math.random() * 0.6;
+      } else if (regimen === 'tormenta') {
+        nuevoRadio = 1.48 + Math.random() * 0.3;
+        achatamiento = 0.82; // Muy achatada y con oscilación aerodinámica intensa
+        velBase = 3.8 + Math.random() * 0.8;
+      }
+
+      gota.radio = nuevoRadio;
+      gota.achatamiento = achatamiento;
+      gota.velocidadTerminal = velBase;
+      // En caída libre las gotas mantienen orientación vertical estable por arrastre
+      gota.velAngular.set(0, (Math.random() - 0.5) * 0.4, 0);
+
+      const nuevosOffsets = calcularOffsetsGotaLluvia(gota.moleculas.length, nuevoRadio, achatamiento);
+      gota.moleculas.forEach((m, idx) => {
+        if (nuevosOffsets[idx]) m.offsetEquilibrio.copy(nuevosOffsets[idx]);
+      });
+    }
+
+    function activarPrecipitacion(regimen) {
+      estadoLluvia = 'lluvia';
+      regimenActual = regimen;
+      gotas.forEach(g => configurarGotaParaRegimen(g, regimen));
+
+      const info = {
+        llovizna: { fase: 'Llovizna Fina', vel: '2.1 m/s', forma: 'Esférica (Ø < 1 mm)' },
+        chubasco: { fase: 'Chubasco Moderado', vel: '5.8 m/s', forma: 'Base Achatada (Ø 2-3 mm)' },
+        tormenta: { fase: 'Aguacero Convectivo', vel: '8.9 m/s', forma: 'Pan de Hamburguesa (Ø > 4 mm)' }
+      }[regimen];
+
+      document.getElementById('m-fase').innerText = info.fase;
+      document.getElementById('m-fase').style.color = '#38bdf8';
+      document.getElementById('m-vel').innerText = info.vel;
+      document.getElementById('m-forma').innerText = info.forma;
+    }
+
+    function fusionarEnGotasGrandes() {
+      if (gotas.length < 2) return;
+      // Fusiona pares cercanos simulando coalescencia por colisión
+      const nuevas = [];
+      gotas.sort((a, b) => a.centro.x - b.centro.x);
+
+      for (let i = 0; i < gotas.length; i += 2) {
+        if (i + 1 < gotas.length) {
+          const gA = gotas[i];
+          const gB = gotas[i + 1];
+          const radioComb = Math.min(2.1, Math.cbrt(Math.pow(gA.radio, 3) + Math.pow(gB.radio, 3)));
+          const achatComb = Math.min(0.9, Math.max(gA.achatamiento, gB.achatamiento) + 0.35);
+          const combinadas = gA.moleculas.concat(gB.moleculas);
+          const offsets = calcularOffsetsGotaLluvia(combinadas.length, radioComb, achatComb);
+
+          combinadas.forEach((m, idx) => {
+            m.esNucleo = idx === 0;
+            if (offsets[idx]) m.offsetEquilibrio.copy(offsets[idx]);
+          });
+
+          gA.centro.lerp(gB.centro, 0.5);
+          gA.radio = radioComb;
+          gA.achatamiento = achatComb;
+          gA.caendo = true;
+          gA.velocidadTerminal = Math.max(gA.velocidadTerminal, 3.2) + 0.7;
+          gA.moleculas = combinadas;
+          nuevas.push(gA);
+        } else {
+          nuevas.push(gotas[i]);
+        }
+      }
+
+      gotas = nuevas;
+      estadoLluvia = 'lluvia';
+      document.getElementById('m-fase').innerText = 'Post-Coalescencia';
+      document.getElementById('m-forma').innerText = 'Gotas Grandes Achatadas';
+    }
+
+    function compartirSimulador() {
+      const texto = '🌧️ ¡Explora cómo se forman y deforman las gotas de lluvia a nivel molecular en 3D!';
+      if (navigator.share) {
+        navigator.share({ title: 'MultiversoEdu • Gotas de Lluvia 3D', text: texto, url: window.location.href }).catch(() => {});
+      } else {
+        navigator.clipboard?.writeText(window.location.href);
+        alert('🔗 Enlace copiado al portapapeles para compartir este simulador.');
+      }
+    }
+
+    // Interacción con puntero (empujar o salpicar gotas)
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let gotaArrastrada = null;
+    let ultimoPunto = new THREE.Vector3();
+    const planoArrastre = new THREE.Plane();
+
+    function setPointer(e) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      setPointer(e);
+      let hitPt = new THREE.Vector3();
+      for (const g of gotas) {
+        const esf = new THREE.Sphere(g.centro, g.radio * 1.4);
+        if (raycaster.ray.intersectSphere(esf, hitPt)) {
+          gotaArrastrada = g;
+          controls.enabled = false;
+          ultimoPunto.copy(hitPt);
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          planoArrastre.setFromNormalAndCoplanarPoint(camDir, hitPt);
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!gotaArrastrada) return;
+      setPointer(e);
+      const pt = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(planoArrastre, pt)) {
+        const delta = new THREE.Vector3().subVectors(pt, ultimoPunto);
+        gotaArrastrada.vel.addScaledVector(delta, 4.0);
+        // Perturbación superficial al tocar la gota
+        gotaArrastrada.moleculas.forEach(m => {
+          m.velLocal.addScaledVector(delta, 1.8);
+        });
+        ultimoPunto.copy(pt);
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      gotaArrastrada = null;
+      controls.enabled = true;
+    });
+
+    const upVec = new THREE.Vector3(0, 1, 0);
+    const quatEnlace = new THREE.Quaternion();
+    const dirEnlace = new THREE.Vector3();
+    const satOffset = new THREE.Vector3();
+    const satPos = new THREE.Vector3();
+
+    function colocarSateliteYEnlace(idxSat, idxEnl, origenAtomo, direccionLocal, eulerMolecula) {
+      satOffset.copy(direccionLocal).multiplyScalar(LONG_ENLACE).applyEuler(eulerMolecula);
+      satPos.copy(origenAtomo).add(satOffset);
+
+      dummy.position.copy(satPos);
+      dummy.rotation.set(0, 0, 0);
+      dummy.scale.set(1, 1, 1);
+      dummy.updateMatrix();
+      meshSatelites.setMatrixAt(idxSat, dummy.matrix);
+
+      dirEnlace.subVectors(satPos, origenAtomo).normalize();
+      quatEnlace.setFromUnitVectors(upVec, dirEnlace);
+      dummy.position.copy(origenAtomo).addScaledVector(dirEnlace, LONG_ENLACE * 0.5);
+      dummy.quaternion.copy(quatEnlace);
+      dummy.updateMatrix();
+      meshEnlaces.setMatrixAt(idxEnl, dummy.matrix);
+    }
+
+    function actualizarSistema(dt, tiempoTotal) {
+      const puenteCoords = lineasPuentesH.geometry.attributes.position.array;
+      let idxPuente = 0;
+      let idxCentro = 0;
+      let idxSat = 0;
+      let idxEnl = 0;
+      let totalMol = 0;
+
+      for (let i = 0; i < gotas.length; i++) {
+        const g = gotas[i];
+        totalMol += g.moleculas.length;
+
+        if (g.caendo) {
+          // Caída con velocidad terminal, viento lateral y vibración aerodinámica
+          const rachaX = Math.sin(tiempoTotal * 1.8 + g.faseOscilacion) * 0.35;
+          g.vel.x += (params.vientoRacha * 0.65 + rachaX - g.vel.x) * 2.2 * dt;
+          g.vel.y += (-g.velocidadTerminal * (params.gravedadLluvia / 2.2) - g.vel.y) * 3.0 * dt;
+          g.vel.z *= 0.96;
+
+          g.centro.addScaledVector(g.vel, dt);
+
+          // Reciclar gota al salir por abajo
+          if (params.lluviaContinua && g.centro.y < -11.5) {
+            g.centro.y = 12.0 + Math.random() * 3.0;
+            g.centro.x = (Math.random() - 0.5) * 18;
+            g.centro.z = (Math.random() - 0.5) * 9;
+          }
+          if (g.centro.x > 13.5) g.centro.x = -13.5;
+          if (g.centro.x < -13.5) g.centro.x = 13.5;
+        } else {
+          // Suspensión en nube
+          if (g.centro.length() > 9.2) {
+            g.vel.addScaledVector(g.centro, -0.35 * dt);
+          }
+          g.centro.addScaledVector(g.vel, dt);
+          g.vel.multiplyScalar(0.99);
+        }
+
+        const rotStep = new THREE.Euler(
+          g.velAngular.x * dt,
+          g.velAngular.y * dt,
+          g.velAngular.z * dt
+        );
+
+        // Vibración aerodinámica de la base achatada en gotas grandes
+        const pulsoAero = g.caendo && g.achatamiento > 0.3
+          ? 1 + Math.sin(tiempoTotal * 11 + g.faseOscilacion) * 0.06 * g.achatamiento
+          : 1;
+
+        const mList = g.moleculas;
+        for (let a = 0; a < mList.length && idxCentro < MAX_MOLECULAS; a++) {
+          const mol = mList[a];
+          mol.offsetEquilibrio.applyEuler(rotStep);
+
+          const objetivo = mol.offsetEquilibrio.clone();
+          objetivo.x *= pulsoAero;
+          objetivo.z *= pulsoAero;
+
+          const fuerzaTension = new THREE.Vector3()
+            .subVectors(objetivo, mol.posLocal)
+            .multiplyScalar(params.tensionSuperficial);
+
+          // Agitación térmica del agua líquida
+          mol.velLocal.x += (Math.random() - 0.5) * 3.2 * dt;
+          mol.velLocal.y += (Math.random() - 0.5) * 3.2 * dt;
+          mol.velLocal.z += (Math.random() - 0.5) * 3.2 * dt;
+
+          mol.velLocal.addScaledVector(fuerzaTension, dt);
+          mol.velLocal.multiplyScalar(0.93);
+          mol.posLocal.addScaledVector(mol.velLocal, dt);
+
+          mol.eulerPropia.x += mol.velAngularPropia.x * dt;
+          mol.eulerPropia.y += mol.velAngularPropia.y * dt;
+          mol.eulerPropia.z += mol.velAngularPropia.z * dt;
+
+          const posMundo = new THREE.Vector3().copy(g.centro).add(mol.posLocal);
+
+          // Puentes de hidrógeno dinámicos
+          for (let b = a + 1; b < mList.length && idxPuente + 6 < MAX_PUENTES_VERTS * 3; b++) {
+            const dist = mol.posLocal.distanceTo(mList[b].posLocal);
+            if (dist < 0.88) {
+              const p2 = new THREE.Vector3().copy(g.centro).add(mList[b].posLocal);
+              puenteCoords[idxPuente++] = posMundo.x; puenteCoords[idxPuente++] = posMundo.y; puenteCoords[idxPuente++] = posMundo.z;
+              puenteCoords[idxPuente++] = p2.x; puenteCoords[idxPuente++] = p2.y; puenteCoords[idxPuente++] = p2.z;
+            }
+          }
+
+          if (mol.esNucleo) {
+            colTmp.setHex(0xfbbf24); // Núcleo de condensación
+          } else {
+            colTmp.setHex(g.caendo ? 0x38bdf8 : 0x60a5fa);
+          }
+
+          meshCentro.setColorAt(idxCentro, colTmp);
+          dummy.position.copy(posMundo);
+          dummy.rotation.set(0, 0, 0);
+          dummy.scale.set(1, 1, 1);
+          dummy.updateMatrix();
+          meshCentro.setMatrixAt(idxCentro, dummy.matrix);
+
+          const mAng = ANGULO_HOH * 0.5;
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+          colocarSateliteYEnlace(idxSat++, idxEnl++, posMundo, new THREE.Vector3(-Math.sin(mAng), Math.cos(mAng), 0), mol.eulerPropia);
+
+          idxCentro++;
+        }
+      }
+
+      meshCentro.count = idxCentro;
+      meshSatelites.count = idxSat;
+      meshEnlaces.count = idxEnl;
+      meshCentro.instanceMatrix.needsUpdate = true;
+      if (meshCentro.instanceColor) meshCentro.instanceColor.needsUpdate = true;
+      meshSatelites.instanceMatrix.needsUpdate = true;
+      meshEnlaces.instanceMatrix.needsUpdate = true;
+
+      lineasPuentesH.geometry.attributes.position.needsUpdate = true;
+      lineasPuentesH.geometry.setDrawRange(0, idxPuente / 3);
+
+      document.getElementById('m-gotas').innerText = `${gotas.length} gotas`;
+      document.getElementById('m-mol').innerText = `${totalMol} H₂O`;
+    }
+
+    // Controles técnicos lil-gui plegados al inicio
+    const gui = new lil.GUI({ title: '⚙️ Parámetros Lluvia' });
+    gui.close();
+    gui.add(params, 'cantidadGotasIniciales', 6, 20, 1).name('Cant. Gotas').onChange(reiniciarNubeMicrogotas);
+    gui.add(params, 'moleculasPorGota', 20, 60, 4).name('H₂O por Gota').onChange(reiniciarNubeMicrogotas);
+    gui.add(params, 'tensionSuperficial', 1.5, 8.0, 0.2).name('Tensión Sup.');
+    gui.add(params, 'vientoRacha', -2.5, 2.5, 0.1).name('Viento Lateral');
+    gui.add(params, 'gravedadLluvia', 0.8, 4.5, 0.1).name('Intensidad Caída');
+    gui.add(params, 'lluviaContinua').name('Lluvia Continua');
+
+    inicializarBuffers();
+    reiniciarNubeMicrogotas();
+
+    let prevT = performance.now();
+    (function loop() {
+      requestAnimationFrame(loop);
+      const now = performance.now();
+      const dt = Math.min((now - prevT) / 1000, 0.05);
+      prevT = now;
+      actualizarSistema(dt, now * 0.001);
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
