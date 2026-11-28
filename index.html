@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,8 +31,9 @@
       --bg-mesh-2: #0b1120;
       --bg-mesh-3: #111827;
       --glass-bg: rgba(15, 23, 42, 0.65);
-      --glass-border: rgba(56, 189, 248, 0.18);
+      --glass-border: rgba(56, 189, 248, 0.22);
       --glass-highlight: rgba(56, 189, 248, 0.35);
+      --glare-color: rgba(255, 255, 255, 0.16);
       --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
       --accent-cyan: #38bdf8;
@@ -43,12 +44,13 @@
     }
 
     [data-theme="light"] {
-      --bg-mesh-1: #f1f5f9;
-      --bg-mesh-2: #e2e8f0;
-      --bg-mesh-3: #cbd5e1;
-      --glass-bg: rgba(255, 255, 255, 0.75);
-      --glass-border: rgba(2, 132, 199, 0.2);
-      --glass-highlight: rgba(2, 132, 199, 0.3);
+      --bg-mesh-1: #f8fafc;
+      --bg-mesh-2: #eef2ff;
+      --bg-mesh-3: #e0f2fe;
+      --glass-bg: rgba(255, 255, 255, 0.78);
+      --glass-border: rgba(2, 132, 199, 0.22);
+      --glass-highlight: rgba(2, 132, 199, 0.32);
+      --glare-color: rgba(255, 255, 255, 0.85);
       --text-primary: #0f172a;
       --text-secondary: #475569;
       --accent-cyan: #0284c7;
@@ -70,22 +72,67 @@
       color: var(--text-primary);
       background: var(--bg-mesh-1);
       overflow-x: hidden;
-      transition: color 0.4s ease;
+      transition: color 0.4s ease, background 0.4s ease;
     }
 
     /* ==========================================================================
-       FONDO DINÁMICO HOLOGRÁFICO (VIVO)
+       FONDO DINÁMICO + SIMULADOR ATMOSFÉRICO A PANTALLA COMPLETA
        ========================================================================== */
     .living-background {
       position: fixed;
       inset: 0;
-      z-index: -2;
-      background: 
-        radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+      z-index: -3;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(244, 63, 94, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.14) 0%, transparent 45%),
         linear-gradient(135deg, var(--bg-mesh-1), var(--bg-mesh-2), var(--bg-mesh-3));
       background-size: 200% 200%;
       animation: meshShift 20s ease infinite alternate;
+    }
+
+    /* Velo que opaca el contenido de la página al traer el simulador al frente */
+    .page-focus-dimmer {
+      position: fixed;
+      inset: 0;
+      z-index: 28;
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .page-focus-dimmer.active {
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .wallpaper-sim-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: 0.52;
+      transform: scale(1);
+      transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Sale del fondo de pantalla hacia adelante para interactuar */
+    .wallpaper-sim-layer.interactive-active {
+      z-index: 30;
+      pointer-events: auto;
+      opacity: 0.96;
+      transform: scale(1.02);
+    }
+
+    .wallpaper-sim-layer.sim-paused {
+      opacity: 0.12;
+    }
+
+    #wallpaperHurricaneCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
     #particle-canvas {
@@ -104,19 +151,25 @@
        BARRA DE NOTICIAS / TICKER SUPERIOR
        ========================================================================== */
     .news-ticker {
-      background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(244, 63, 94, 0.12));
-      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--glass-border);
       padding: 8px 20px;
       font-size: 0.82rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
+      z-index: 40;
+    }
+
+    [data-theme="dark"] .news-ticker {
+      background: rgba(15, 23, 42, 0.72);
     }
 
     .news-badge {
       background: var(--accent-cyan);
-      color: #000;
+      color: #fff;
       font-weight: 700;
       padding: 2px 8px;
       border-radius: 4px;
@@ -147,6 +200,7 @@
       background: var(--glass-bg);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px rgba(2, 132, 199, 0.06);
     }
 
     .brand-cluster {
@@ -175,15 +229,15 @@
       position: absolute;
       inset: 0;
       border: 1.5px solid var(--accent-cyan);
-      background: rgba(56, 189, 248, 0.15);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+      background: rgba(2, 132, 199, 0.14);
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.25);
     }
 
     .cube-sim span:nth-child(1) { transform: rotateY(0deg) translateZ(16px); }
     .cube-sim span:nth-child(2) { transform: rotateY(90deg) translateZ(16px); }
     .cube-sim span:nth-child(3) { transform: rotateY(180deg) translateZ(16px); }
     .cube-sim span:nth-child(4) { transform: rotateY(-90deg) translateZ(16px); }
-    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(244, 63, 94, 0.3); border-color: var(--accent-red); box-shadow: 0 0 15px rgba(244, 63, 94, 0.5); }
+    .cube-sim span:nth-child(5) { transform: rotateX(90deg) translateZ(16px); background: rgba(225, 29, 72, 0.25); border-color: var(--accent-red); }
     .cube-sim span:nth-child(6) { transform: rotateX(-90deg) translateZ(16px); }
 
     @keyframes rotateCube {
@@ -222,198 +276,126 @@
       border-radius: 8px;
       font-size: 0.85rem;
       cursor: pointer;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       transition: all 0.25s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       text-decoration: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
     .btn-glass:hover {
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 15px var(--glass-highlight);
+      box-shadow: 0 0 16px var(--glass-highlight), inset 0 1px 0 rgba(255, 255, 255, 0.85);
       transform: translateY(-1px);
     }
 
     .btn-glass.active {
       border-color: var(--accent-green);
-      background: rgba(16, 185, 129, 0.16);
+      background: rgba(5, 150, 105, 0.15);
       color: var(--accent-green);
       font-weight: 600;
     }
 
     /* ==========================================================================
-       PORTADA PRINCIPAL GRANDE ARRIBA (HURACÁN 3D + INDICADORES + GRÁFICO)
+       APARICIÓN DE AFUERA HACIA ADENTRO + BRILLO + INCLINACIÓN 3D EN BLOQUES
        ========================================================================== */
-    .main-cover-wrap {
-      max-width: 1200px;
-      margin: 28px auto 0;
-      padding: 0 5%;
+    .reveal-block {
+      opacity: 0;
+      transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.3s ease,
+                  box-shadow 0.3s ease;
+      will-change: transform, opacity;
     }
 
-    .main-cover-panel {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 22px;
-      overflow: hidden;
-      backdrop-filter: blur(22px);
-      display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(290px, 0.9fr);
-      min-height: 410px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    .reveal-left {
+      transform: translateX(-90px) scale(0.96);
     }
 
-    @media (max-width: 920px) {
-      .main-cover-panel {
-        grid-template-columns: 1fr;
-      }
+    .reveal-right {
+      transform: translateX(90px) scale(0.96);
     }
 
-    .cover-viewport {
+    .reveal-bottom {
+      transform: translateY(70px) scale(0.96);
+    }
+
+    .reveal-top {
+      transform: translateY(-50px) scale(0.96);
+    }
+
+    .reveal-block.is-visible {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    .bright-tilt-card {
       position: relative;
-      min-height: 360px;
-      background: #040711;
-      border-right: 1px solid var(--glass-border);
+      transform-style: preserve-3d;
+      perspective: 900px;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      box-shadow:
+        0 14px 34px -10px rgba(2, 132, 199, 0.16),
+        inset 0 1px 1px rgba(255, 255, 255, 0.85);
     }
 
-    @media (max-width: 920px) {
-      .cover-viewport {
-        border-right: none;
-        border-bottom: 1px solid var(--glass-border);
-        min-height: 300px;
-      }
-    }
-
-    #coverHurricaneCanvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      min-height: 360px;
-    }
-
-    .cover-hud-top {
+    .bright-tilt-card::before {
+      content: "";
       position: absolute;
-      top: 14px;
-      left: 14px;
-      right: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        460px circle at var(--mouse-x) var(--mouse-y),
+        var(--glare-color),
+        transparent 62%
+      );
+      opacity: 0;
+      transition: opacity 0.25s ease;
       pointer-events: none;
-      z-index: 4;
+      z-index: 2;
     }
 
-    .cover-chip {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      padding: 5px 11px;
-      border-radius: 999px;
-      background: rgba(5, 8, 20, 0.78);
-      border: 1px solid var(--glass-border);
-      color: var(--accent-cyan);
+    .bright-tilt-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1.2px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.9),
+        rgba(2, 132, 199, 0.45) 45%,
+        rgba(126, 34, 206, 0.35)
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 2;
     }
 
-    .cover-chip.live {
-      color: var(--accent-green);
-      border-color: rgba(16, 185, 129, 0.5);
+    .bright-tilt-card.is-visible:hover {
+      border-color: var(--accent-cyan);
+      box-shadow:
+        0 24px 48px -12px rgba(2, 132, 199, 0.28),
+        0 0 24px rgba(56, 189, 248, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+      transform: translate3d(0, -5px, 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1.015);
     }
 
-    .cover-telemetry-side {
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
+    .bright-tilt-card:hover::before {
+      opacity: 1;
     }
 
-    .cover-brief-tag {
-      font-size: 0.72rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent-cyan);
-      font-weight: 700;
-    }
-
-    .cover-brief-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      margin-top: 4px;
-      letter-spacing: -0.02em;
-    }
-
-    .cover-brief-sub {
-      font-size: 0.84rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    .live-kpis {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .kpi-cell {
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(2, 6, 23, 0.45);
-      border: 1px solid var(--glass-border);
-    }
-
-    [data-theme="light"] .kpi-cell {
-      background: rgba(255, 255, 255, 0.65);
-    }
-
-    .kpi-label {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-secondary);
-    }
-
-    .kpi-value {
-      font-size: 0.98rem;
-      font-weight: 700;
-      margin-top: 2px;
-      color: var(--accent-cyan);
-    }
-
-    .chart-box {
-      padding: 12px;
-      border-radius: 14px;
-      background: rgba(2, 6, 23, 0.5);
-      border: 1px solid var(--glass-border);
-    }
-
-    [data-theme="light"] .chart-box {
-      background: rgba(255, 255, 255, 0.72);
-    }
-
-    .chart-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    #telemetryChartCanvas {
-      display: block;
-      width: 100%;
-      height: 82px;
-    }
-
-    .cover-actions-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .bright-tilt-card > * {
+      position: relative;
+      z-index: 3;
+      transform: translateZ(14px);
     }
 
     /* ==========================================================================
@@ -422,8 +404,10 @@
     .hero {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 64px 5% 56px;
+      padding: 72px 5% 56px;
       text-align: center;
+      position: relative;
+      z-index: 10;
     }
 
     .hero-tag {
@@ -434,10 +418,15 @@
       font-weight: 700;
       display: inline-block;
       margin-bottom: 16px;
-      background: rgba(56, 189, 248, 0.1);
-      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 6px 16px;
       border-radius: 99px;
       border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 16px rgba(2, 132, 199, 0.1);
+    }
+
+    [data-theme="dark"] .hero-tag {
+      background: rgba(56, 189, 248, 0.12);
     }
 
     .hero h1 {
@@ -456,7 +445,17 @@
       font-size: clamp(1.05rem, 2vw, 1.25rem);
       max-width: 760px;
       margin: 0 auto 36px;
-      line-height: 1.6;
+      line-height: 1.65;
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(10px);
+      padding: 16px 22px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    [data-theme="dark"] .hero p {
+      background: rgba(15, 23, 42, 0.45);
+      border-color: var(--glass-border);
     }
 
     /* ==========================================================================
@@ -466,6 +465,8 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 5% 60px;
+      position: relative;
+      z-index: 10;
     }
 
     .section-title {
@@ -484,42 +485,17 @@
     }
 
     .command-card {
-      position: relative;
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: 28px;
       backdrop-filter: blur(20px);
       overflow: hidden;
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
-
-    .command-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        var(--glass-highlight),
-        transparent 40%
-      );
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-
-    .command-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--accent-cyan);
-    }
-
-    .command-card:hover::before {
-      opacity: 1;
     }
 
     .command-card h3 {
@@ -531,16 +507,18 @@
     .command-card p {
       color: var(--text-secondary);
       font-size: 0.92rem;
-      line-height: 1.5;
+      line-height: 1.55;
       margin-bottom: 20px;
     }
 
     .card-meta {
       font-size: 0.78rem;
       color: var(--accent-cyan);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: block;
     }
 
     /* ==========================================================================
@@ -550,15 +528,16 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px 5% 80px;
+      position: relative;
+      z-index: 10;
     }
 
     .manifesto-box {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 20px;
+      border-radius: 22px;
       padding: 48px;
       backdrop-filter: blur(20px);
-      position: relative;
     }
 
     .manifesto-box h2 {
@@ -570,7 +549,7 @@
     .manifesto-box p {
       color: var(--text-secondary);
       font-size: 1.05rem;
-      line-height: 1.7;
+      line-height: 1.75;
       margin-bottom: 20px;
     }
 
@@ -582,12 +561,208 @@
     }
 
     .div-badge {
-      background: rgba(56, 189, 248, 0.08);
+      background: rgba(255, 255, 255, 0.85);
       border: 1px solid var(--glass-border);
       padding: 8px 16px;
       border-radius: 99px;
       font-size: 0.85rem;
       color: var(--text-primary);
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.08);
+    }
+
+    [data-theme="dark"] .div-badge {
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* ==========================================================================
+       BOTÓN FLOTANTE MOVIBLE DESPLEGABLE DEL SIMULADOR (60 BPM / VISTA SUPERIOR)
+       ========================================================================== */
+    .floating-sim-widget {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 95;
+      user-select: none;
+      max-width: calc(100vw - 24px);
+    }
+
+    .sim-fab-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid var(--accent-cyan);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: grab;
+      backdrop-filter: blur(18px);
+      box-shadow:
+        0 12px 30px rgba(2, 132, 199, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      transition: box-shadow 0.25s ease, transform 0.2s ease;
+    }
+
+    [data-theme="dark"] .sim-fab-pill {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .sim-fab-pill:active {
+      cursor: grabbing;
+      transform: scale(0.98);
+    }
+
+    .beat-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+      animation: beat60bpm 1s ease-in-out infinite;
+    }
+
+    .beat-dot.paused {
+      animation: none;
+      background: var(--text-secondary);
+      box-shadow: none;
+    }
+
+    @keyframes beat60bpm {
+      0%, 100% { transform: scale(1); opacity: 0.65; }
+      20% { transform: scale(1.45); opacity: 1; }
+      40% { transform: scale(1); opacity: 0.75; }
+    }
+
+    .sim-drawer {
+      display: none;
+      width: 340px;
+      max-width: calc(100vw - 24px);
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      margin-bottom: 12px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.5px solid var(--glass-border);
+      backdrop-filter: blur(22px);
+      box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.24),
+        inset 0 1px 1px rgba(255, 255, 255, 0.95);
+    }
+
+    [data-theme="dark"] .sim-drawer {
+      background: rgba(15, 23, 42, 0.92);
+    }
+
+    .sim-drawer.open {
+      display: block;
+      animation: drawerPop 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes drawerPop {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .sim-drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      cursor: grab;
+    }
+
+    .sim-drawer-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .sim-drawer-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .island-note {
+      font-size: 0.7rem;
+      color: var(--accent-gold);
+      background: rgba(217, 119, 6, 0.1);
+      border: 1px solid rgba(217, 119, 6, 0.28);
+      padding: 6px 9px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      line-height: 1.35;
+    }
+
+    .live-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .kpi-cell {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--glass-border);
+    }
+
+    [data-theme="dark"] .kpi-cell {
+      background: rgba(2, 6, 23, 0.45);
+    }
+
+    .kpi-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+    }
+
+    .kpi-value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 2px;
+      color: var(--accent-cyan);
+    }
+
+    .chart-box {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid var(--glass-border);
+      margin-bottom: 12px;
+    }
+
+    [data-theme="dark"] .chart-box {
+      background: rgba(2, 6, 23, 0.5);
+    }
+
+    .chart-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    #telemetryChartCanvas {
+      display: block;
+      width: 100%;
+      height: 68px;
+    }
+
+    .drawer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* ==========================================================================
@@ -595,9 +770,12 @@
        ========================================================================== */
     footer {
       max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 5%;
-      border-top: 1px solid var(--glass-border);
+      margin: 0 auto 32px;
+      padding: 32px 5%;
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -605,6 +783,8 @@
       text-align: center;
       color: var(--text-secondary);
       font-size: 0.9rem;
+      position: relative;
+      z-index: 10;
     }
 
     @media (min-width: 768px) {
@@ -614,14 +794,24 @@
         text-align: left;
       }
     }
+
+    @media (max-width: 768px) {
+      .reveal-left, .reveal-right {
+        transform: translateY(50px) scale(0.97);
+      }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
-  <!-- Fondo vivo holográfico y partículas -->
+  <!-- Fondo vivo blando + Simulador de fondo a 60 BPM visto desde arriba + Velo de enfoque + Partículas -->
   <div class="living-background"></div>
+  <div class="page-focus-dimmer" id="pageFocusDimmer"></div>
+  <div class="wallpaper-sim-layer" id="wallpaperSimLayer">
+    <canvas id="wallpaperHurricaneCanvas"></canvas>
+  </div>
   <canvas id="particle-canvas"></canvas>
 
   <!-- Barra de Noticias / Ticker Superior -->
@@ -656,68 +846,14 @@
 
     <div class="admin-controls">
       <button class="btn-glass" id="themeToggle" title="Cambiar iluminación">
-        <span id="themeIcon">🌙</span>
+        <span id="themeIcon">☀️</span>
       </button>
       <a href="admin.html" class="btn-glass">🔒 Admin</a>
     </div>
   </header>
 
-  <!-- Portada principal grande arriba antes de los títulos -->
-  <section class="main-cover-wrap" aria-label="Portada Principal MultiversoLabs">
-    <div class="main-cover-panel">
-      <div class="cover-viewport" id="coverViewport">
-        <div class="cover-hud-top">
-          <span class="cover-chip" id="coverStateChip">VISUAL // VÓRTICE 3D</span>
-          <span class="cover-chip" id="coverPhenomenonChip">HURACÁN</span>
-        </div>
-        <canvas id="coverHurricaneCanvas"></canvas>
-      </div>
-
-      <div class="cover-telemetry-side">
-        <div>
-          <span class="cover-brief-tag">MultiversoLabs.space</span>
-          <h2 class="cover-brief-title">Simulación Atmosférica & Enjambres</h2>
-          <p class="cover-brief-sub">Laboratorio de sistemas complejos, vida artificial y arte generativo.</p>
-        </div>
-
-        <div class="live-kpis">
-          <div class="kpi-cell">
-            <div class="kpi-label">Giro</div>
-            <div class="kpi-value" id="kpiGiro">1.4 rad/s</div>
-          </div>
-          <div class="kpi-cell">
-            <div class="kpi-label">Mar / Tierra</div>
-            <div class="kpi-value" id="kpiTemp" style="color:var(--accent-gold);">29°C / 21°C</div>
-          </div>
-          <div class="kpi-cell">
-            <div class="kpi-label">Pulso</div>
-            <div class="kpi-value" id="kpiPulso">75 BPM</div>
-          </div>
-          <div class="kpi-cell">
-            <div class="kpi-label">Nodos Activos</div>
-            <div class="kpi-value" id="kpiNodos" style="color:var(--accent-green);">520</div>
-          </div>
-        </div>
-
-        <div class="chart-box">
-          <div class="chart-head">
-            <span>Energía del vórtice</span>
-            <span id="chartPeakLabel" style="color:var(--accent-cyan);">TIEMPO REAL</span>
-          </div>
-          <canvas id="telemetryChartCanvas" width="320" height="82"></canvas>
-        </div>
-
-        <div class="cover-actions-row">
-          <button class="btn-glass" id="btnToggleInteractive" type="button">Entrar a interactivo</button>
-          <button class="btn-glass" id="btnPulse" type="button">⚡ Rayo</button>
-          <button class="btn-glass" id="btnCycle" type="button">🌀 Vórtice</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Hero Section (Títulos) -->
-  <section class="hero">
+  <section class="hero reveal-block reveal-top">
     <span class="hero-tag">Ecosistema Tecnológico & Artístico</span>
     <h1>Un universo de ideas, tecnología y creación.</h1>
     <p>
@@ -727,37 +863,37 @@
 
   <!-- Command Center / Accesos Directos Dinámicos -->
   <section class="command-center">
-    <div class="section-title">🎧 Command Center // Accesos Directos</div>
+    <div class="section-title reveal-block reveal-left">🎧 Command Center // Accesos Directos</div>
     <div class="command-grid">
-      
-      <!-- Acceso 1: División Entretenimiento y Juegos -->
-      <a href="division-entretenimiento.html" class="command-card">
+
+      <!-- Acceso 1: Entra desde la izquierda -->
+      <a href="division-entretenimiento.html" class="command-card bright-tilt-card reveal-block reveal-left">
         <div>
           <span class="card-meta">Sector 02 // Interactivo</span>
           <h3>Aplicaciones y Entretenimiento</h3>
           <p>Explora el Ajedrez Holográfico, Laberinto Capibara y entornos experimentales en tiempo real.</p>
         </div>
-        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">Acceder al sector →</div>
+        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 700;">Acceder al sector →</div>
       </a>
 
-      <!-- Acceso 2: Tesis e Investigación -->
-      <a href="investigacion.html" class="command-card">
+      <!-- Acceso 2: Entra desde abajo -->
+      <a href="investigacion.html" class="command-card bright-tilt-card reveal-block reveal-bottom">
         <div>
           <span class="card-meta">Sector 03 // Académico</span>
           <h3>Investigación & Tesis</h3>
           <p>Fundamentos sobre ética de uso de inteligencia artificial y el valor indiscutible de la creatividad humana.</p>
         </div>
-        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">Leer papers y tesis →</div>
+        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 700;">Leer papers y tesis →</div>
       </a>
 
-      <!-- Acceso 3: Proyectos Potenciales y Arte Multidisciplinario -->
-      <a href="proyectos.html" class="command-card">
+      <!-- Acceso 3: Entra desde la derecha -->
+      <a href="proyectos.html" class="command-card bright-tilt-card reveal-block reveal-right">
         <div>
           <span class="card-meta">Sector 04 // Innovación</span>
           <h3>Arte Multidisciplinario & Enjambres</h3>
           <p>Modelos de vida artificial, hilos concurrentes y fósiles estelares generativos procedurales.</p>
         </div>
-        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600;">Ver proyectos →</div>
+        <div style="font-size: 0.85rem; color: var(--accent-cyan); font-weight: 700;">Ver proyectos →</div>
       </a>
 
     </div>
@@ -765,7 +901,7 @@
 
   <!-- Bloque Institucional y Manifiesto -->
   <section class="manifesto-section">
-    <div class="manifesto-box">
+    <div class="manifesto-box bright-tilt-card reveal-block reveal-bottom">
       <h2>Filosofía y Estructura Organizacional</h2>
       <p>
         MultiversoLabs nace conceptualmente de la convicción de que <strong>la creatividad humana es la fuente primordial e indiscutible de valor</strong>. Operamos bajo un modelo híbrido innovador de cooperación humano-inteligencia artificial, donde la tecnología potencia la ejecución técnica mientras el juicio humano dirige el propósito artístico y ético.
@@ -779,8 +915,62 @@
     </div>
   </section>
 
+  <!-- Botón Flotante Movible Desplegable para Activar / Controlar el Simulador -->
+  <div class="floating-sim-widget" id="floatingSimWidget" aria-label="Control flotante del simulador">
+    <div class="sim-drawer" id="simDrawer">
+      <div class="sim-drawer-head" id="drawerDragHandle" title="Arrastrar panel">
+        <span class="sim-drawer-title">🌀 Simulador 60 BPM · Vista Superior</span>
+        <button class="btn-glass" id="btnCloseDrawer" type="button" style="padding: 4px 9px; font-size: 0.75rem;">✕</button>
+      </div>
+      <p class="sim-drawer-sub">Al activar el modo interactivo, el simulador pasa al frente y atenúa el resto de la página.</p>
+      <div class="island-note">
+        Isla oculta visualmente por estética; su factor térmico sigue activo en la simulación.
+      </div>
+
+      <div class="live-kpis">
+        <div class="kpi-cell">
+          <div class="kpi-label">Pulso</div>
+          <div class="kpi-value" id="kpiPulso">60 BPM</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Fenómeno</div>
+          <div class="kpi-value" id="kpiFenomeno" style="color:var(--accent-purple);">HURACÁN</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Mar / Tierra (Térm.)</div>
+          <div class="kpi-value" id="kpiTemp" style="color:var(--accent-gold);">29°C / 21°C</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Nodos Activos</div>
+          <div class="kpi-value" id="kpiNodos" style="color:var(--accent-green);">520</div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-head">
+          <span>Energía cenital (60 BPM)</span>
+          <span id="chartPeakLabel" style="color:var(--accent-cyan);">60%</span>
+        </div>
+        <canvas id="telemetryChartCanvas" width="300" height="68"></canvas>
+      </div>
+
+      <div class="drawer-actions">
+        <button class="btn-glass active" id="btnToggleSimEnabled" type="button">Simulador: ON</button>
+        <button class="btn-glass" id="btnToggleInteractive" type="button">Traer al frente</button>
+        <button class="btn-glass" id="btnPulse" type="button">⚡ Rayo</button>
+        <button class="btn-glass" id="btnCycle" type="button">🌀 Cambiar</button>
+      </div>
+    </div>
+
+    <div class="sim-fab-pill" id="simFabPill" title="Arrastra para mover o haz clic para desplegar">
+      <span class="beat-dot" id="beatDot"></span>
+      <span id="simFabLabel">Simulador 60 BPM</span>
+      <span id="simFabArrow">▲</span>
+    </div>
+  </div>
+
   <!-- Footer Institucional con Créditos Obligatorios -->
-  <footer>
+  <footer class="bright-tilt-card reveal-block reveal-bottom">
     <div>
       <strong>MultiversoLabs.space</strong> &copy; 2026 — Exploring Dimensions. Pioneering Solutions.
     </div>
@@ -791,7 +981,7 @@
 
   <script>
     /* ==========================================================================
-       1. MODO NOCTURNO / DIURNO (AUTOMÁTICO Y MANUAL)
+       1. MODO BLANDO / CLARO POR DEFECTO + NOCTURNO MANUAL
        ========================================================================== */
     const rootEl = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
@@ -804,12 +994,7 @@
     }
 
     const savedTheme = localStorage.getItem('multiverso_theme');
-    if (savedTheme) {
-      applyTheme(savedTheme);
-    } else {
-      const hour = new Date().getHours();
-      applyTheme((hour >= 7 && hour < 19) ? 'light' : 'dark');
-    }
+    applyTheme(savedTheme || 'light');
 
     themeToggle.addEventListener('click', () => {
       const current = rootEl.getAttribute('data-theme');
@@ -817,18 +1002,48 @@
     });
 
     /* ==========================================================================
-       2. EFECTO SPOTLIGHT EN TARJETAS DEL COMMAND CENTER
+       2. APARICIÓN DE AFUERA HACIA ADENTRO + BRILLO + INCLINACIÓN 3D
        ========================================================================== */
-    document.querySelectorAll('.command-card').forEach(card => {
+    const revealElements = document.querySelectorAll('.reveal-block');
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.14,
+      rootMargin: '0px 0px -35px 0px'
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    document.querySelectorAll('.bright-tilt-card').forEach(card => {
       card.addEventListener('mousemove', e => {
         const rect = card.getBoundingClientRect();
-        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const normX = (x / rect.width) - 0.5;
+        const normY = (y / rect.height) - 0.5;
+
+        const tiltY = (normX * 7).toFixed(2);
+        const tiltX = (-normY * 7).toFixed(2);
+
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+        card.style.setProperty('--tilt-x', `${tiltX}deg`);
+        card.style.setProperty('--tilt-y', `${tiltY}deg`);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.setProperty('--tilt-x', '0deg');
+        card.style.setProperty('--tilt-y', '0deg');
       });
     });
 
     /* ==========================================================================
-       3. PARTÍCULAS HOLOGRÁFICAS EN CANVAS
+       3. PARTÍCULAS SUAVES EN CANVAS
        ========================================================================== */
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
@@ -841,20 +1056,20 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    for (let i = 0; i < 48; i++) {
+    for (let i = 0; i < 44; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         r: Math.random() * 1.6 + 0.4,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35
+        dx: (Math.random() - 0.5) * 0.32,
+        dy: (Math.random() - 0.5) * 0.32
       });
     }
 
     function animateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const isLight = rootEl.getAttribute('data-theme') === 'light';
-      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.22)' : 'rgba(56, 189, 248, 0.28)';
+      ctx.fillStyle = isLight ? 'rgba(2, 132, 199, 0.18)' : 'rgba(56, 189, 248, 0.25)';
 
       particles.forEach(p => {
         p.x += p.dx;
@@ -871,52 +1086,161 @@
     animateParticles();
 
     /* ==========================================================================
-       4. PORTADA PRINCIPAL DE HURACÁN 3D + INDICADORES + GRÁFICO EN TIEMPO REAL
+       4. BOTÓN FLOTANTE MOVIBLE Y DESPLEGABLE (CON LÍMITES DE PANTALLA)
        ========================================================================== */
-    const coverViewport = document.getElementById('coverViewport');
-    const coverCanvas = document.getElementById('coverHurricaneCanvas');
+    const floatingWidget = document.getElementById('floatingSimWidget');
+    const simFabPill = document.getElementById('simFabPill');
+    const drawerDragHandle = document.getElementById('drawerDragHandle');
+    const simDrawer = document.getElementById('simDrawer');
+    const btnCloseDrawer = document.getElementById('btnCloseDrawer');
+    const simFabArrow = document.getElementById('simFabArrow');
+
+    let isDragging = false;
+    let movedDuringDrag = false;
+    let dragStartX = 0, dragStartY = 0;
+
+    function clampWidgetToViewport() {
+      const rect = floatingWidget.getBoundingClientRect();
+      if (!floatingWidget.style.left && !floatingWidget.style.top) return;
+
+      const margin = 12;
+      const maxX = Math.max(margin, window.innerWidth - floatingWidget.offsetWidth - margin);
+      const maxY = Math.max(margin, window.innerHeight - floatingWidget.offsetHeight - margin);
+
+      let left = parseFloat(floatingWidget.style.left);
+      let top = parseFloat(floatingWidget.style.top);
+
+      if (Number.isNaN(left)) left = rect.left;
+      if (Number.isNaN(top)) top = rect.top;
+
+      left = Math.max(margin, Math.min(maxX, left));
+      top = Math.max(margin, Math.min(maxY, top));
+
+      floatingWidget.style.right = 'auto';
+      floatingWidget.style.bottom = 'auto';
+      floatingWidget.style.left = `${left}px`;
+      floatingWidget.style.top = `${top}px`;
+    }
+
+    function startDrag(clientX, clientY) {
+      const rect = floatingWidget.getBoundingClientRect();
+      isDragging = true;
+      movedDuringDrag = false;
+      dragStartX = clientX - rect.left;
+      dragStartY = clientY - rect.top;
+      floatingWidget.style.right = 'auto';
+      floatingWidget.style.bottom = 'auto';
+      floatingWidget.style.left = `${rect.left}px`;
+      floatingWidget.style.top = `${rect.top}px`;
+    }
+
+    function moveDrag(clientX, clientY) {
+      if (!isDragging) return;
+      movedDuringDrag = true;
+      const margin = 12;
+      const maxX = Math.max(margin, window.innerWidth - floatingWidget.offsetWidth - margin);
+      const maxY = Math.max(margin, window.innerHeight - floatingWidget.offsetHeight - margin);
+      const nextLeft = Math.max(margin, Math.min(maxX, clientX - dragStartX));
+      const nextTop = Math.max(margin, Math.min(maxY, clientY - dragStartY));
+      floatingWidget.style.left = `${nextLeft}px`;
+      floatingWidget.style.top = `${nextTop}px`;
+    }
+
+    function endDrag() {
+      isDragging = false;
+      clampWidgetToViewport();
+    }
+
+    simFabPill.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+    drawerDragHandle.addEventListener('mousedown', e => {
+      if (e.target.closest('button')) return;
+      startDrag(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', endDrag);
+
+    simFabPill.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      startDrag(t.clientX, t.clientY);
+    }, { passive: true });
+    window.addEventListener('touchmove', e => {
+      if (!isDragging) return;
+      const t = e.touches[0];
+      moveDrag(t.clientX, t.clientY);
+    }, { passive: true });
+    window.addEventListener('touchend', endDrag);
+
+    function toggleDrawer(forceState) {
+      const nextOpen = typeof forceState === 'boolean' ? forceState : !simDrawer.classList.contains('open');
+      simDrawer.classList.toggle('open', nextOpen);
+      simFabArrow.textContent = nextOpen ? '▼' : '▲';
+      requestAnimationFrame(clampWidgetToViewport);
+    }
+
+    simFabPill.addEventListener('click', () => {
+      if (movedDuringDrag) {
+        movedDuringDrag = false;
+        return;
+      }
+      toggleDrawer();
+    });
+
+    btnCloseDrawer.addEventListener('click', () => toggleDrawer(false));
+
+    /* ==========================================================================
+       5. SIMULADOR DE FONDO A 60 BPM + VISTA DESDE ARRIBA + VELO AL FRENTE
+       ========================================================================== */
+    const pageFocusDimmer = document.getElementById('pageFocusDimmer');
+    const wallpaperSimLayer = document.getElementById('wallpaperSimLayer');
+    const wallpaperCanvas = document.getElementById('wallpaperHurricaneCanvas');
+    const btnToggleSimEnabled = document.getElementById('btnToggleSimEnabled');
     const btnToggleInteractive = document.getElementById('btnToggleInteractive');
     const btnPulse = document.getElementById('btnPulse');
     const btnCycle = document.getElementById('btnCycle');
-    const coverStateChip = document.getElementById('coverStateChip');
-    const coverPhenomenonChip = document.getElementById('coverPhenomenonChip');
+    const beatDot = document.getElementById('beatDot');
+    const simFabLabel = document.getElementById('simFabLabel');
 
     const chartCanvas = document.getElementById('telemetryChartCanvas');
     const chartCtx = chartCanvas.getContext('2d');
-    const energySeries = new Array(48).fill(0.45);
+    const energySeries = new Array(48).fill(0.5);
     let sampleTimer = 0;
 
+    let simEnabled = true;
     let interactiveMode = false;
+
     const simParams = {
       fenomeno: 'huracan',
-      radioEspacio: 16,
+      radioEspacio: 17,
       aperturaOjo: 2.6,
       velocidadGiro: 1.4,
       tempMar: 29,
       tempTierra: 21,
       acopleLatido: true,
-      bpm: 75,
+      bpm: 60,
       numParticulas: 520
     };
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x040711, 0.02);
+    scene.fog = new THREE.FogExp2(0xe0f2fe, 0.012);
 
-    const w0 = coverViewport.clientWidth || 680;
-    const h0 = coverViewport.clientHeight || 380;
-    const camera = new THREE.PerspectiveCamera(55, w0 / h0, 0.1, 1000);
-    camera.position.set(20, 16, 24);
+    const w0 = window.innerWidth || 1280;
+    const h0 = window.innerHeight || 720;
+    const camera = new THREE.PerspectiveCamera(50, w0 / h0, 0.1, 1000);
+    camera.position.set(0.01, 26, 5.2);
+    camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ canvas: coverCanvas, antialias: true, alpha: true });
+    const renderer = new THREE.WebGLRenderer({ canvas: wallpaperCanvas, antialias: true, alpha: true });
     renderer.setSize(w0, h0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.enabled = false;
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.65));
-    const flashLight = new THREE.PointLight(0x38bdf8, 0, 35);
-    flashLight.position.set(0, 5, 0);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    const flashLight = new THREE.PointLight(0x0284c7, 0, 42);
+    flashLight.position.set(0, 8, 0);
     scene.add(flashLight);
 
     const grupoTormenta = new THREE.Group();
@@ -924,17 +1248,19 @@
 
     const baseMar = new THREE.Mesh(
       new THREE.CircleGeometry(simParams.radioEspacio, 64),
-      new THREE.MeshPhongMaterial({ color: 0x0369a1, transparent: true, opacity: 0.55, side: THREE.DoubleSide })
+      new THREE.MeshPhongMaterial({ color: 0x0284c7, transparent: true, opacity: 0.42, side: THREE.DoubleSide })
     );
     baseMar.rotation.x = -Math.PI / 2;
     baseMar.position.y = -3.5;
     grupoTormenta.add(baseMar);
 
+    // Isla oculta visualmente por estética; su factor térmico permanece activo en la simulación
     const masaTierra = new THREE.Mesh(
       new THREE.CylinderGeometry(5.5, 6.2, 0.4, 24),
-      new THREE.MeshPhongMaterial({ color: 0x5c4033, transparent: true, opacity: 0.75 })
+      new THREE.MeshPhongMaterial({ color: 0x78716c, transparent: true, opacity: 0.65 })
     );
     masaTierra.position.set(5.2, -3.4, 3.5);
+    masaTierra.visible = false;
     grupoTormenta.add(masaTierra);
 
     let cubosVortice = [];
@@ -947,8 +1273,8 @@
         const ang = t * Math.PI * 8;
         const r = simParams.aperturaOjo + t * (simParams.radioEspacio * 0.65);
         const y = -2.8 + t * 8.5;
-        const geo = new THREE.BoxGeometry(0.32, 0.32, 0.32);
-        const mat = new THREE.MeshPhongMaterial({ color: 0x38bdf8, emissive: 0x1d4ed8, emissiveIntensity: 0.25 });
+        const geo = new THREE.BoxGeometry(0.34, 0.34, 0.34);
+        const mat = new THREE.MeshPhongMaterial({ color: 0x0284c7, emissive: 0x38bdf8, emissiveIntensity: 0.25 });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.set(Math.cos(ang) * r, y, Math.sin(ang) * r);
         grupoTormenta.add(mesh);
@@ -963,7 +1289,7 @@
     function construirAire() {
       if (meshAire) grupoTormenta.remove(meshAire);
       datosAire = [];
-      const geo = new THREE.BoxGeometry(0.14, 0.14, 0.14);
+      const geo = new THREE.BoxGeometry(0.16, 0.16, 0.16);
       const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
       meshAire = new THREE.InstancedMesh(geo, mat, simParams.numParticulas);
       grupoTormenta.add(meshAire);
@@ -980,19 +1306,20 @@
 
     let rayos = [];
     function dispararRayo() {
+      if (!simEnabled) return;
       const pts = [];
       const rInicio = simParams.aperturaOjo + Math.random() * 6;
       const ang = Math.random() * Math.PI * 2;
-      let x = Math.cos(ang) * rInicio, y = 5.5, z = Math.sin(ang) * rInicio;
+      let x = Math.cos(ang) * rInicio, y = 6.5, z = Math.sin(ang) * rInicio;
       for (let s = 0; s <= 10; s++) {
         pts.push(new THREE.Vector3(x, y, z));
         x += (Math.random() - 0.5) * 1.2;
-        y -= 0.9;
+        y -= 1.0;
         z += (Math.random() - 0.5) * 1.2;
       }
       const line = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints(pts),
-        new THREE.LineBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 1 })
+        new THREE.LineBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 1 })
       );
       grupoTormenta.add(line);
       rayos.push({ line, vida: 1.0 });
@@ -1003,7 +1330,7 @@
       simParams.fenomeno = tipo;
       if (tipo === 'tornado') {
         simParams.aperturaOjo = 0.8;
-        simParams.velocidadGiro = 2.6;
+        simParams.velocidadGiro = 2.4;
         simParams.tempTierra = 26;
       } else if (tipo === 'huracan') {
         simParams.aperturaOjo = 2.6;
@@ -1014,27 +1341,30 @@
         simParams.velocidadGiro = 1.8;
         simParams.tempTierra = 17;
       }
-      coverPhenomenonChip.textContent = tipo.toUpperCase();
-      document.getElementById('kpiGiro').textContent = `${simParams.velocidadGiro.toFixed(1)} rad/s`;
+      document.getElementById('kpiFenomeno').textContent = tipo.toUpperCase();
       construirSubCubos();
     }
 
     function setInteractive(active) {
-      interactiveMode = active;
-      controls.enabled = active;
-      if (active) {
-        btnToggleInteractive.textContent = 'Salir de interactivo';
-        btnToggleInteractive.classList.add('active');
-        coverStateChip.textContent = 'INTERACTIVO // ÓRBITA 3D';
-        coverStateChip.classList.add('live');
-      } else {
-        btnToggleInteractive.textContent = 'Entrar a interactivo';
-        btnToggleInteractive.classList.remove('active');
-        coverStateChip.textContent = 'VISUAL // VÓRTICE 3D';
-        coverStateChip.classList.remove('live');
-      }
+      interactiveMode = active && simEnabled;
+      controls.enabled = interactiveMode;
+      wallpaperSimLayer.classList.toggle('interactive-active', interactiveMode);
+      pageFocusDimmer.classList.toggle('active', interactiveMode);
+      btnToggleInteractive.classList.toggle('active', interactiveMode);
+      btnToggleInteractive.textContent = interactiveMode ? 'Volver al fondo' : 'Traer al frente';
     }
 
+    function setSimEnabled(enabled) {
+      simEnabled = enabled;
+      wallpaperSimLayer.classList.toggle('sim-paused', !simEnabled);
+      beatDot.classList.toggle('paused', !simEnabled);
+      btnToggleSimEnabled.classList.toggle('active', simEnabled);
+      btnToggleSimEnabled.textContent = simEnabled ? 'Simulador: ON' : 'Simulador: OFF';
+      simFabLabel.textContent = simEnabled ? 'Simulador 60 BPM' : 'Simulador Pausa';
+      if (!simEnabled) setInteractive(false);
+    }
+
+    btnToggleSimEnabled.addEventListener('click', () => setSimEnabled(!simEnabled));
     btnToggleInteractive.addEventListener('click', () => setInteractive(!interactiveMode));
     btnPulse.addEventListener('click', dispararRayo);
     btnCycle.addEventListener('click', () => {
@@ -1051,8 +1381,8 @@
       const isLight = rootEl.getAttribute('data-theme') === 'light';
       chartCtx.strokeStyle = isLight ? 'rgba(2, 132, 199, 0.16)' : 'rgba(56, 189, 248, 0.14)';
       chartCtx.lineWidth = 1;
-      for (let g = 1; g <= 3; g++) {
-        const gy = (ch / 4) * g;
+      for (let g = 1; g <= 2; g++) {
+        const gy = (ch / 3) * g;
         chartCtx.beginPath();
         chartCtx.moveTo(0, gy);
         chartCtx.lineTo(cw, gy);
@@ -1060,9 +1390,9 @@
       }
 
       const grad = chartCtx.createLinearGradient(0, 0, cw, 0);
-      grad.addColorStop(0, '#38bdf8');
-      grad.addColorStop(0.6, '#a855f7');
-      grad.addColorStop(1, '#f43f5e');
+      grad.addColorStop(0, '#0284c7');
+      grad.addColorStop(0.6, '#7e22ce');
+      grad.addColorStop(1, '#e11d48');
 
       chartCtx.strokeStyle = grad;
       chartCtx.lineWidth = 2;
@@ -1070,8 +1400,8 @@
 
       energySeries.forEach((val, idx) => {
         const x = (idx / (energySeries.length - 1)) * cw;
-        const clamped = Math.max(0.06, Math.min(0.96, val));
-        const y = ch - clamped * (ch - 10) - 5;
+        const clamped = Math.max(0.08, Math.min(0.96, val));
+        const y = ch - clamped * (ch - 8) - 4;
         if (idx === 0) chartCtx.moveTo(x, y);
         else chartCtx.lineTo(x, y);
       });
@@ -1082,27 +1412,33 @@
 
     let fasePulso = 0, disparoPrev = false;
     function actualizarTormenta(dt) {
+      if (!simEnabled) return;
+
       fasePulso = (fasePulso + dt * (simParams.bpm / 60)) % 1.0;
       const latido = fasePulso < 0.25 ? Math.sin((fasePulso / 0.25) * Math.PI) : 0;
+
       if (simParams.acopleLatido && latido > 0.85 && !disparoPrev) {
         dispararRayo();
         disparoPrev = true;
-      } else if (latido <= 0.2) disparoPrev = false;
-
-      if (!interactiveMode) {
-        const tCam = performance.now() * 0.00024;
-        camera.position.x = Math.cos(tCam) * 19;
-        camera.position.z = Math.sin(tCam) * 19;
-        camera.position.y = 11.5;
-        camera.lookAt(0, 0.5, 0);
+      } else if (latido <= 0.2) {
+        disparoPrev = false;
       }
 
+      if (!interactiveMode) {
+        const tCam = performance.now() * 0.00018;
+        camera.position.x = Math.cos(tCam) * 6.5;
+        camera.position.z = Math.sin(tCam) * 6.5;
+        camera.position.y = 26.0;
+        camera.lookAt(0, 0, 0);
+      }
+
+      // Factor térmico de la isla oculta activo en el cálculo y el estado térmico
       const difTermica = (simParams.tempMar - simParams.tempTierra) * 0.01;
       const tempEfectivaTierra = (simParams.tempTierra + difTermica * Math.sin(performance.now() * 0.001)).toFixed(1);
-      baseMar.material.color.setHex(simParams.tempMar > 26 ? 0x0369a1 : 0x1e3a8a);
-      masaTierra.material.color.setHex(tempEfectivaTierra < 19 ? 0x475569 : 0x5c4033);
+      baseMar.material.color.setHex(simParams.tempMar > 26 ? 0x0284c7 : 0x1d4ed8);
+      masaTierra.material.color.setHex(tempEfectivaTierra < 19 ? 0x64748b : 0x78716c);
 
-      const giroMod = simParams.velocidadGiro * (1 + latido * 0.25);
+      const giroMod = simParams.velocidadGiro * (1 + latido * 0.22);
       cubosVortice.forEach(c => {
         c.ang += dt * giroMod * (1.4 - c.t * 0.5);
         const perfilEmbudo = simParams.fenomeno === 'tornado' ? (0.4 + c.t * 1.4) : (0.85 + Math.sin(c.t * Math.PI) * 0.35);
@@ -1121,9 +1457,9 @@
         meshAire.setMatrixAt(i, dummy.matrix);
 
         const calor = Math.max(0, Math.min(1, (1 - p.altFrac * 0.85) * (simParams.tempMar / 32)));
-        if (calor > 0.65) colTemp.setHex(0xf43f5e).lerp(new THREE.Color(0xfbbf24), (1 - calor) * 2);
-        else if (calor > 0.35) colTemp.setHex(0xfbbf24).lerp(new THREE.Color(0x38bdf8), (0.65 - calor) * 3);
-        else colTemp.setHex(0x38bdf8).lerp(new THREE.Color(0x2563eb), (0.35 - calor) * 2.5);
+        if (calor > 0.65) colTemp.setHex(0xe11d48).lerp(new THREE.Color(0xd97706), (1 - calor) * 2);
+        else if (calor > 0.35) colTemp.setHex(0xd97706).lerp(new THREE.Color(0x0284c7), (0.65 - calor) * 3);
+        else colTemp.setHex(0x0284c7).lerp(new THREE.Color(0x7e22ce), (0.35 - calor) * 2.5);
         meshAire.setColorAt(i, colTemp);
       });
       meshAire.instanceMatrix.needsUpdate = true;
@@ -1145,7 +1481,7 @@
       sampleTimer += dt;
       if (sampleTimer >= 0.14) {
         sampleTimer = 0;
-        const baseEnergy = Math.min(0.95, 0.25 + (simParams.velocidadGiro / 3.2) * 0.45 + latido * 0.22 + (flashLight.intensity > 0.5 ? 0.18 : 0));
+        const baseEnergy = Math.min(0.95, 0.3 + (simParams.velocidadGiro / 3.2) * 0.35 + latido * 0.25 + (flashLight.intensity > 0.5 ? 0.15 : 0));
         energySeries.push(baseEnergy);
         energySeries.shift();
         drawTelemetryChart(baseEnergy);
@@ -1154,8 +1490,9 @@
 
     construirSubCubos();
     construirAire();
+    setSimEnabled(true);
     setInteractive(false);
-    drawTelemetryChart(0.45);
+    drawTelemetryChart(0.5);
 
     let prevT = performance.now();
     (function loop() {
@@ -1168,14 +1505,15 @@
       renderer.render(scene, camera);
     })();
 
-    function resizeCover() {
-      const w = coverViewport.clientWidth || 680;
-      const h = coverViewport.clientHeight || 360;
+    function resizeWallpaper() {
+      const w = window.innerWidth || 1280;
+      const h = window.innerHeight || 720;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      clampWidgetToViewport();
     }
-    window.addEventListener('resize', resizeCover);
+    window.addEventListener('resize', resizeWallpaper);
   </script>
 </body>
 </html>
